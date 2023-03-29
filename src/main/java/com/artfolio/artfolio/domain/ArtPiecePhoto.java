@@ -1,12 +1,13 @@
 package com.artfolio.artfolio.domain;
 
+import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ArtPiecePhoto {
+public class ArtPiecePhoto extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -15,7 +16,7 @@ public class ArtPiecePhoto {
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "art_piece_id")
+    @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
     @Builder

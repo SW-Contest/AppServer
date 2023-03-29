@@ -1,19 +1,20 @@
 package com.artfolio.artfolio.domain;
 
+import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Auction {
+public class Auction extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long artStartPrice;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long artFinalPrice;
 
     @Setter

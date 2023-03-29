@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.domain;
 
+import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ArtPiece {
+public class ArtPiece extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

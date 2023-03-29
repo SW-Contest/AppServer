@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.domain;
 
+import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Member {
+public class Member extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,8 +26,8 @@ public class Member {
     @Column(nullable = false)
     private Boolean isCreator;
 
-    @Column(name = "member_like", nullable = false)
-    private Long like;
+    @Column(nullable = false)
+    private Long memberLike;
 
     @Column(length = 255, nullable = false)
     private String photo;
@@ -38,11 +39,11 @@ public class Member {
     private final Set<ArtPiece> artPieces = new HashSet<>();
 
     @Builder
-    public Member(String name, String email, Boolean isCreator, Long like, String photo, String content) {
+    public Member(String name, String email, Boolean isCreator, Long memberLike, String photo, String content) {
         this.name = name;
         this.email = email;
         this.isCreator = isCreator;
-        this.like = like;
+        this.memberLike = memberLike;
         this.photo = photo;
         this.content = content;
     }
@@ -52,6 +53,3 @@ public class Member {
         artPiece.setCreator(this);
     }
 }
-
-// 멤버에서 그동안 진행한 경매 리스트를 보여주려면 1:N 구조를 가져야 함
-// 근데, 옥션 입장에서 낙찰자는 1명이니까 1:1임
