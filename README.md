@@ -15,4 +15,4 @@
 <hr/>
 
 ## ERD
-![](document/artpolio_erd.png)
+![](document/artfolio_erd.png)
