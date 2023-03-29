@@ -1,10 +1,7 @@
 package com.artfolio.artfolio.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,6 +13,7 @@ public class ArtPiecePhoto {
     @Column(length = 255, nullable = false)
     private String path;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "art_piece_id")
     private ArtPiece artPiece;
@@ -23,11 +21,6 @@ public class ArtPiecePhoto {
     @Builder
     public ArtPiecePhoto(String path, ArtPiece artPiece) {
         this.path = path;
-        this.artPiece = artPiece;
-    }
-
-    public void updateArtPiecePhoto(ArtPiece artPiece) {
-        artPiece.getArtPiecePhotos().add(this);
         this.artPiece = artPiece;
     }
 }

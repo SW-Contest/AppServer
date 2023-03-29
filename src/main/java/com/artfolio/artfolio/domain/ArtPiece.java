@@ -1,10 +1,7 @@
 package com.artfolio.artfolio.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,13 +22,14 @@ public class ArtPiece {
     @Column(nullable = false)
     private Long art_like;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private Member creator;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "artPiece")
-    private Set<ArtPiecePhoto> artPiecePhotos = new HashSet<>();
+    private final Set<ArtPiecePhoto> artPiecePhotos = new HashSet<>();
 
     @Builder
     public ArtPiece(String title, String content, Long art_like, Member creator) {
@@ -41,8 +39,8 @@ public class ArtPiece {
         this.creator = creator;
     }
 
-    public void updateArtPiece(Member creator) {
-        creator.getArtPieces().add(this);
-        this.creator = creator;
+    public void addPhoto(ArtPiecePhoto artPiecePhoto) {
+        artPiecePhotos.add(artPiecePhoto);
+        artPiecePhoto.setArtPiece(this);
     }
 }

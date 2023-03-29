@@ -35,10 +35,10 @@ public class Member {
     private String content;
 
     @OneToMany(mappedBy = "bidder")
-    private Set<Auction> bids = new HashSet<>();
+    private final Set<Auction> bids = new HashSet<>();
 
     @OneToMany(mappedBy = "creator")
-    private Set<ArtPiece> artPieces = new HashSet<>();
+    private final Set<ArtPiece> artPieces = new HashSet<>();
 
     @Builder
     public Member(String name, String email, Boolean isCreator, Long like, String photo, String content) {
@@ -48,5 +48,10 @@ public class Member {
         this.like = like;
         this.photo = photo;
         this.content = content;
+    }
+
+    public void updateArtPiece(ArtPiece artPiece) {
+        artPieces.add(artPiece);
+        artPiece.setCreator(this);
     }
 }

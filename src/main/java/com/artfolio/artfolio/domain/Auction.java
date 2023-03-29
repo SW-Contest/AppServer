@@ -29,7 +29,7 @@ public class Auction {
         this.artFinalPrice = artFinalPrice;
     }
 
-    public void bigSuccessful(Member bidder) {
+    public void bidSuccessful(Member bidder) {
         bidder.getBids().add(this);
         this.bidder = bidder;
     }
