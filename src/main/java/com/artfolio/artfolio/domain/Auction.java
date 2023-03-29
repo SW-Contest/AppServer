@@ -1,10 +1,7 @@
 package com.artfolio.artfolio.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,7 +16,8 @@ public class Auction {
     @Column(nullable = false)
     private Long artFinalPrice;
 
-    @ManyToOne
+    @Setter
+    @OneToOne
     @JoinColumn(name = "art_bidder_id")
     private Member bidder;
 
@@ -27,10 +25,5 @@ public class Auction {
     public Auction(Long artStartPrice, Long artFinalPrice) {
         this.artStartPrice = artStartPrice;
         this.artFinalPrice = artFinalPrice;
-    }
-
-    public void bidSuccessful(Member bidder) {
-        bidder.getBids().add(this);
-        this.bidder = bidder;
     }
 }

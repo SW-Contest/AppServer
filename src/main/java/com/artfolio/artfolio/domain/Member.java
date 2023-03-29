@@ -34,9 +34,6 @@ public class Member {
     @Column(length = 1500, nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "bidder")
-    private final Set<Auction> bids = new HashSet<>();
-
     @OneToMany(mappedBy = "creator")
     private final Set<ArtPiece> artPieces = new HashSet<>();
 
@@ -55,3 +52,6 @@ public class Member {
         artPiece.setCreator(this);
     }
 }
+
+// 멤버에서 그동안 진행한 경매 리스트를 보여주려면 1:N 구조를 가져야 함
+// 근데, 옥션 입장에서 낙찰자는 1명이니까 1:1임
