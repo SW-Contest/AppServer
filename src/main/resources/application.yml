@@ -19,6 +19,16 @@ spring:
     base-path: /api
     detection-strategy: annotated
 
+  # 파일 업로드 관련 설정
+  servlet:
+    multipart:
+      enabled: true
+      location: \upload
+      max-request-size: 30MB
+      max-file-size: 10MB
+
+  sql.init.mode: always
+
 # HTTPs 설정
 server:
   ssl:
