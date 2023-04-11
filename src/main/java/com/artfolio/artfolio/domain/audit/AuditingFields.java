@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public abstract class AuditingFields {
     @CreatedBy
     @Column(nullable = false, updatable = false)
-    private String createBy;
+    private String createdBy;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @CreatedDate
