@@ -14,10 +14,10 @@ public class ArtPiece extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "art_piece_title", length = 255, nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "art_piece_content", length = 10000, nullable = false)
+    @Column(length = 10000, nullable = false)
     private String content;
 
     @Column(name = "art_piece_like", nullable = false)

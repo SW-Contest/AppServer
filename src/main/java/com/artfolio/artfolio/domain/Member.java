@@ -13,10 +13,10 @@ public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "member_name",length = 255, nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "member_email",length = 255, unique = true, nullable = false, updatable = false)
+    @Column(unique = true, nullable = false, updatable = false)
     private String email;
 
     @Column(nullable = false)
@@ -25,10 +25,10 @@ public class Member {
     @Column(name = "member_like", nullable = false)
     private Long like;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String profilePhoto;
 
-    @Column(name = "member_content",length = 1500, nullable = false)
+    @Column(length = 1500, nullable = false)
     private String content;
 
     @OneToMany(mappedBy = "creator")

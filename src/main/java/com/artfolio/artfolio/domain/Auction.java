@@ -11,10 +11,10 @@ public class Auction extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "auction_start_price", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Long startPrice;
 
-    @Column(name ="auction_final_price", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private Long finalPrice;
 
     @Column(nullable = false)
@@ -22,7 +22,7 @@ public class Auction extends AuditingFields {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_bidder_id")
+    @JoinColumn(name = "bidder_id")
     private Member bidder;
 
     @ManyToOne(fetch = FetchType.LAZY)
