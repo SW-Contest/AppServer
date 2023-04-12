@@ -17,34 +17,37 @@ public class Member extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(name = "member_name",length = 255, nullable = false)
     private String name;
 
-    @Column(length = 255, unique = true, nullable = false, updatable = false)
+    @Column(name = "member_email",length = 255, unique = true, nullable = false, updatable = false)
     private String email;
 
     @Column(nullable = false)
     private Boolean isCreator;
 
-    @Column(nullable = false)
-    private Long memberLike;
+    @Column(name = "member_like",nullable = false)
+    private Long like;
 
     @Column(length = 255, nullable = false)
-    private String photo;
+    private String profilePhoto;
 
-    @Column(length = 1500, nullable = false)
+    @Column(name = "member_content",length = 1500, nullable = false)
     private String content;
 
     @OneToMany(mappedBy = "creator")
     private final Set<ArtPiece> artPieces = new HashSet<>();
 
+    @OneToOne(mappedBy = "bidder")
+    private Auction auction;
+
     @Builder
-    public Member(String name, String email, Boolean isCreator, Long memberLike, String photo, String content) {
+    public Member(String name, String email, Boolean isCreator, Long like, String profilePhoto, String content) {
         this.name = name;
         this.email = email;
         this.isCreator = isCreator;
-        this.memberLike = memberLike;
-        this.photo = photo;
+        this.like = like;
+        this.profilePhoto = profilePhoto;
         this.content = content;
     }
 
