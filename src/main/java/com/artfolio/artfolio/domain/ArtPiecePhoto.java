@@ -11,7 +11,7 @@ public class ArtPiecePhoto extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 255, nullable = false)
+    @Column(name = "art_piece_photo_path",length = 255, nullable = false)
     private String path;
 
     @Setter
