@@ -14,17 +14,17 @@ public class ArtPiece extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "art_piece_title", length = 255, nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "art_piece_content", length = 10000, nullable = false)
+    @Column(length = 10000, nullable = false)
     private String content;
 
     @Column(name = "art_piece_like", nullable = false)
     private Long like;
 
     @Setter
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
     private Member creator;
 
@@ -44,7 +44,7 @@ public class ArtPiece extends AuditingFields {
         this.creator = creator;
     }
 
-    public void addPhoto(ArtPiecePhoto artPiecePhoto) {
+    public void updatePhoto(ArtPiecePhoto artPiecePhoto) {
         artPiecePhotos.add(artPiecePhoto);
         artPiecePhoto.setArtPiece(this);
     }
