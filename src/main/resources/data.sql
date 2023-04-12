@@ -74,29 +74,29 @@ VALUES (12, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd3.jpg', 4);
 /* (PK, CREATED_AT, CREATED_BY, MODIFIED_AT, MODIFIED_BY, ART_START_PRICE, ART_FINAL_PRICE, IS_SOLD, ART_PIECE_ID, ART_BIDDER_ID) */
 
 /* 예술품(1번)은 1회차에 유찰되었고 2회차에 승수(1)가 25000원에 최종 낙찰 받음 */
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (1, now(), 'seungsu', now(), 'seungsu', 15000, 15000, false, 1, NULL);
 
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (2, now(), 'seungsu', now(), 'seungsu', 15000, 25000, true, 1, 1);
 
 /* 예술품(2번)은 1회차에 지영(2)이 50000원에 낙찰 받음 */
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (3, now(), 'seungsu', now(), 'seungsu', 35000, 50000, true, 2, 2);
 
 /* 예술품(3번)은 3회차에 지영(2)이 150000원에 낙찰 받음 */
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (4, now(), 'seungsu', now(), 'seungsu', 100000, 100000, false, 3, NULL);
 
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (5, now(), 'seungsu', now(), 'seungsu', 100000, 100000, false, 3, NULL);
 
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (6, now(), 'seungsu', now(), 'seungsu', 100000, 150000, true, 3, 2);
 
 /* 예술품(4번)은 2회차에 승수(1)가 200000원에 낙찰 받음 */
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (7, now(), 'seungsu', now(), 'seungsu', 150000, 150000, false, 4, NULL);
 
-INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, art_bidder_id)
+INSERT INTO auction(id, created_at, created_by, modified_at, modified_by, auction_start_price, auction_final_price, is_sold, art_piece_id, auction_bidder_id)
 VALUES (8, now(), 'seungsu', now(), 'seungsu', 160000, 200000, true, 4, 1);

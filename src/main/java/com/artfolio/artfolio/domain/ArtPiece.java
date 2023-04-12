@@ -32,6 +32,10 @@ public class ArtPiece extends AuditingFields {
     @OneToMany(mappedBy = "artPiece")
     private final Set<ArtPiecePhoto> artPiecePhotos = new HashSet<>();
 
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "artPiece")
+    private final Set<Auction> auctions = new HashSet<>();
+
     @Builder
     public ArtPiece(String title, String content, Long like, Member creator) {
         this.title = title;

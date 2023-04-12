@@ -38,6 +38,9 @@ public class Member extends AuditingFields {
     @OneToMany(mappedBy = "creator")
     private final Set<ArtPiece> artPieces = new HashSet<>();
 
+    @OneToOne(mappedBy = "bidder")
+    private Auction auction;
+
     @Builder
     public Member(String name, String email, Boolean isCreator, Long like, String profilePhoto, String content) {
         this.name = name;
