@@ -19,9 +19,13 @@ public class ArtPiecePhoto extends AuditingFields {
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
+    @Column(nullable = false)
+    private Boolean isThumbnail;
+
     @Builder
-    public ArtPiecePhoto(String path, ArtPiece artPiece) {
+    public ArtPiecePhoto(String path, ArtPiece artPiece, Boolean isThumbnail) {
         this.path = path;
         this.artPiece = artPiece;
+        this.isThumbnail = isThumbnail;
     }
 }

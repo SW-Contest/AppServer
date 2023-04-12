@@ -2,7 +2,7 @@
 /* (PK, CREATED_AT, CREATED_BY, MODIFIED_AT, MODIFIED_BY, CONTENT, EMAIL, IS_CREATOR, MEMBER_LIKE, NAME, PROFILE_PHOTO */
 
 INSERT INTO member(id, created_at, created_by, modified_at, modified_by, member_content, member_email, is_creator, member_like, member_name, profile_photo)
-VALUES(1, now(), 'seungsu', now(), 'seungsu', '소개글입니다... (황승수)', 'seungsu@naver.com', true, 0, '항승수', '/images/seungsu.png');
+VALUES(1, now(), 'seungsu', now(), 'seungsu', '소개글입니다... (황승수)', 'seungsu@naver.com', true, 0, '황승수', '/images/seungsu.png');
 
 INSERT INTO member(id, created_at, created_by, modified_at, modified_by, member_content, member_email, is_creator, member_like, member_name, profile_photo)
 VALUES(2, now(), 'seungsu', now(), 'seungsu', '소개글입니다... (이지영)', 'jiyoung@naver.com', true, 10, '이지영', '/images/jiyoung.jpg');
@@ -29,44 +29,44 @@ VALUES(4, now(), 'seungsu', now(), 'seungsu', 20, '예술품 소개글4', '예�
 /* (PK, CREATED_AT, CREATED_BY, MODIFIED_AT, MODIFIED_BY, PATH, ART_PIECE_ID) */
 
 /* ArtPiece 1번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (1, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa1.jpg', 1);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (1, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa1.jpg', 1, true);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (2, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa2.jpg', 1);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (2, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa2.jpg', 1, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (3, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa2.jpg', 1);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (3, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/aaa3.jpg', 1, false);
 
 /* ArtPiece 2번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (4, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb1.jpg', 2);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (4, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb1.jpg', 2, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (5, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb2.jpg', 2);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (5, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb2.jpg', 2, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (6, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb3.jpg', 2);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (6, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/bbb3.jpg', 2, true);
 
 /* ArtPiece 3번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (7, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc1.jpg', 3);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (7, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc1.jpg', 3, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (8, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc2.jpg', 3);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (8, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc2.jpg', 3, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (9, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc3.jpg', 3);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (9, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ccc3.jpg', 3, true);
 
 /* ArtPiece 4번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (10, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd1.jpg', 4);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (10, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd1.jpg', 4, false);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (11, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd2.jpg', 4);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (11, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd2.jpg', 4, true);
 
-INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id)
-VALUES (12, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd3.jpg', 4);
+INSERT INTO art_piece_photo(id, created_at, created_by, modified_at, modified_by, art_piece_photo_path, art_piece_id, is_thumbnail)
+VALUES (12, now(), 'seungsu', now(), 'seungsu', '/image/artpiece/ddd3.jpg', 4, false);
 
 /* ------------------------------------------------------ */
 
