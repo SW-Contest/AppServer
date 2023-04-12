@@ -24,7 +24,7 @@ public class ArtPiece extends AuditingFields {
     private Long like;
 
     @Setter
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
     private Member creator;
 
@@ -44,7 +44,7 @@ public class ArtPiece extends AuditingFields {
         this.creator = creator;
     }
 
-    public void addPhoto(ArtPiecePhoto artPiecePhoto) {
+    public void updatePhoto(ArtPiecePhoto artPiecePhoto) {
         artPiecePhotos.add(artPiecePhoto);
         artPiecePhoto.setArtPiece(this);
     }

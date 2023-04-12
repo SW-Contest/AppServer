@@ -21,11 +21,11 @@ public class Auction extends AuditingFields {
     private Boolean isSold;
 
     @Setter
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_bidder_id")
     private Member bidder;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
