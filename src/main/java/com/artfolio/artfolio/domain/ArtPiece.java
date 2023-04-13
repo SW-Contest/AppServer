@@ -24,7 +24,7 @@ public class ArtPiece extends AuditingFields {
     private Long like;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private Member creator;
 

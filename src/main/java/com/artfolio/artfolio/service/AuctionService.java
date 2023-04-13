@@ -1,7 +1,7 @@
 package com.artfolio.artfolio.service;
 
 import com.artfolio.artfolio.domain.Auction;
-import com.artfolio.artfolio.dto.auction.DetailPageInfoRes;
+import com.artfolio.artfolio.dto.DetailPageInfoRes;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.repository.AuctionRepository;
 import lombok.RequiredArgsConstructor;
