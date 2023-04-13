@@ -8,11 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
-    @Query(
-            "select a, p, m from Auction a " +
-            "join fetch ArtPiece p on a.artPiece = p " +
-            "join fetch Member m on p.creator = m " +
-            "where a.id = :auctionId"
-    )
+    @Query("select a, p, m " +
+           "from Auction a " +
+           "join fetch ArtPiece p on a.artPiece = p " +
+           "join fetch Member m on p.creator = m " +
+           "where a.id = :auctionId")
     Optional<Auction> findByAuctionIdWithFetch(@Param("auctionId") Long auctionId);
 }
