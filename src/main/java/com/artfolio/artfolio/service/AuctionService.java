@@ -2,7 +2,7 @@ package com.artfolio.artfolio.service;
 
 import com.artfolio.artfolio.domain.Auction;
 import com.artfolio.artfolio.dto.DetailPageInfoRes;
-import com.artfolio.artfolio.exception.AuctionAlreadySoldException;
+import com.artfolio.artfolio.exception.AuctionAlreadyFinishedException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.repository.AuctionRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class AuctionService {
 
         /* 이미 낙찰된 경매건인지 검사 */
         if (auction.getIsSold()) {
-            throw new AuctionAlreadySoldException(auctionId);
+            throw new AuctionAlreadyFinishedException(auctionId);
         }
 
         return DetailPageInfoRes.of(auction);
