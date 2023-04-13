@@ -8,8 +8,7 @@ public record ErrorResponse(
         String code,
         String message,
         Integer status,
-        @JsonInclude(JsonInclude.Include.NON_EMPTY)
-        List<FieldError> errors
+        @JsonInclude(JsonInclude.Include.NON_EMPTY) List<FieldError> errors
 ) {
     public record FieldError(String field, String value, String reason) { }
 }

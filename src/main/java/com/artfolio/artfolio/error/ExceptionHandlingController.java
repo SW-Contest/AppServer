@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.error;
 
+import com.artfolio.artfolio.exception.AuctionAlreadySoldException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,16 @@ public class ExceptionHandlingController {
     @ExceptionHandler(AuctionNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleAuctionNotFoundException(AuctionNotFoundException e) {
-        log.error("프론트로부터 잘못된 경매 번호가 전달됨");
+        log.error("프론트로부터 잘못된 경매 번호가 전달되었습니다. auction ID : " + e.getAuctionId());
         return buildError(ErrorCode.AUCTION_NOT_FOUND);
+    }
+
+    /* 이미 낙찰된 경매에 대한 경매 번호가 넘어왔을 때 예외 핸들링 메서드 */
+    @ExceptionHandler(AuctionAlreadySoldException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleAuctionAlreadySoldException(AuctionAlreadySoldException e) {
+        log.error("이미 종료된 경매 건입니다. auction ID : " + e.getAuctionId());
+        return buildError(ErrorCode.AUCTION_ALREADY_SOLD);
     }
 
     private List<ErrorResponse.FieldError> getFieldErrors(BindingResult binding) {
