@@ -1,6 +1,6 @@
 package com.artfolio.artfolio.controller;
 
-import com.artfolio.artfolio.dto.auction.DetailPageInfoRes;
+import com.artfolio.artfolio.dto.DetailPageInfoRes;
 import com.artfolio.artfolio.service.AuctionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

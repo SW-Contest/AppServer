@@ -23,7 +23,7 @@ public class ArtPiecePhoto {
     private Boolean isThumbnail;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 

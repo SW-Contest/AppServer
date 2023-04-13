@@ -25,7 +25,7 @@ public class Auction extends AuditingFields {
     @JoinColumn(name = "bidder_id")
     private Member bidder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
