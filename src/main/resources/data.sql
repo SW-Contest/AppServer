@@ -25,48 +25,6 @@ VALUES(4, now(), 'seungsu', 20, '예술품 소개글4', '예술품 타이틀4', 
 
 /* ------------------------------------------------------ */
 
-/* ArtPiecePhoto 테이블 */
-/* (PK, CREATED_AT, CREATED_BY, PATH, ART_PIECE_ID) */
-
-/* ArtPiece 1번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (1, 'aaa1', 'jpg', '/image/artpiece/2023041223260000.jpg', 1, true);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (2, 'aaa2', 'png', '/image/artpiece/2023041223261111.png', 1, false);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (3, 'aaa3', 'jpeg', '/image/artpiece/2023041223262222.jpeg', 1, false);
-
-/* ArtPiece 2번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (4, 'bbb1', 'jpg', '/image/artpiece/2023041223263333.jpg', 2, true);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (5, 'bbb2', 'png', '/image/artpiece/2023041223264444.png', 2, false);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (6, 'bbb3', 'jpeg', '/image/artpiece/2023041223265555.jpeg', 2, false);
-
-/* ArtPiece 3번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (7, 'ccc1', 'jpg', '/image/artpiece/2023041223266666.jpg', 3, true);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (8, 'ccc2', 'png', '/image/artpiece/2023041223267777.png', 3, false);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (9, 'ccc3', 'jpeg', '/image/artpiece/2023041223268888.jpeg', 3, false);
-
-/* ArtPiece 4번에 대한 사진 목록 */
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (10, 'ddd1', 'jpg', '/image/artpiece/2023041223269991.jpg', 4, true);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (11, 'ddd2', 'png', '/image/artpiece/2023041223269992.png', 4, false);
-
-INSERT INTO art_piece_photo(id, original_filename, file_extension, file_path, art_piece_id, is_thumbnail)
-VALUES (12, 'ddd3', 'jpeg', '/image/artpiece/2023041223269993.jpeg', 4, false);
 
 /* ------------------------------------------------------ */
 

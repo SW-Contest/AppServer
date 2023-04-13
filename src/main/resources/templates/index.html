@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>파일 업로드 테스트</title>
+</head>
+<body>
+    <h1>File Upload</h1>
+    <form method="post" action="/image/upload" enctype="multipart/form-data">
+        <input type="text" name="artpieceId">
+        <input type="text" name="thumbnail">
+        <input type="file" name="files" multiple="multiple">
+        <input type="submit">
+    </form>
+</body>
+</html>

@@ -5,8 +5,10 @@ spring:
     password: 1111
     driver-class-name: org.postgresql.Driver
 
+  sql.init.mode: always
+
   jpa:
-    defer-datasource-initialization: true
+    defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
     hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
@@ -15,19 +17,18 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
-  data.rest:
-    base-path: /api
-    detection-strategy: annotated
-
   # 파일 업로드 관련 설정
   servlet:
     multipart:
-      enabled: true
-      location: \upload
+      enabled: true                  # 파일 업로드 가능 여부
+      location: classpath:assets/    # 파일 임시 저장 경로
       max-request-size: 30MB
-      max-file-size: 10MB
+      max-file-size: 5MB
 
-  sql.init.mode: always
+  # 타임리프 설정
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
 
 # HTTPs 설정
 server:

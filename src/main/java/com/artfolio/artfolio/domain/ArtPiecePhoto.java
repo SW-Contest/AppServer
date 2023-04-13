@@ -14,10 +14,19 @@ public class ArtPiecePhoto {
     private String originalFilename;
 
     @Column(nullable = false)
+    private String hashedFilename;
+
+    @Column(nullable = false)
     private String fileExtension;
 
     @Column(nullable = false)
     private String filePath;
+
+    @Column(nullable = false)
+    private String contentType;
+
+    @Column(nullable = false)
+    private Long size;
 
     @Column(nullable = false)
     private Boolean isThumbnail;
@@ -28,11 +37,14 @@ public class ArtPiecePhoto {
     private ArtPiece artPiece;
 
     @Builder
-    public ArtPiecePhoto(String originalFilename, String fileExtension, String filePath, ArtPiece artPiece, Boolean isThumbnail) {
+    public ArtPiecePhoto(String originalFilename, String hashedFilename, String fileExtension, String filePath, String contentType, Long size, Boolean isThumbnail, ArtPiece artPiece) {
         this.originalFilename = originalFilename;
+        this.hashedFilename = hashedFilename;
         this.fileExtension = fileExtension;
         this.filePath = filePath;
-        this.artPiece = artPiece;
+        this.contentType = contentType;
+        this.size = size;
         this.isThumbnail = isThumbnail;
+        this.artPiece = artPiece;
     }
 }
