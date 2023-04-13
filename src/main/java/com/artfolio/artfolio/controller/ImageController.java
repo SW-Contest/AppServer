@@ -54,7 +54,7 @@ public class ImageController {
             String hashedFileFullName = hashedFileName + "." + ext;
 
             ArtPieceImageReq dto = ArtPieceImageReq.builder()
-                    .originalFileName(file.getOriginalFilename())
+                    .originalFileName(originalFileName)
                     .hashedFileName(hashedFileFullName)
                     .extension(ext)
                     .size(file.getSize())

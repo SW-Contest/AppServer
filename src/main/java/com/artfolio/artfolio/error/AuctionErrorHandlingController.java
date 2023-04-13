@@ -12,7 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.List;
 
-import static com.artfolio.artfolio.error.ErrorHandleFactory.*;
+import static com.artfolio.artfolio.util.ErrorBuildFactory.*;
 
 @Slf4j
 @RestControllerAdvice

@@ -1,11 +1,13 @@
-package com.artfolio.artfolio.error;
+package com.artfolio.artfolio.util;
 
+import com.artfolio.artfolio.error.ErrorCode;
+import com.artfolio.artfolio.error.ErrorResponse;
 import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ErrorHandleFactory {
+public class ErrorBuildFactory {
     public static List<ErrorResponse.FieldError> getFieldErrors(BindingResult binding) {
         return binding.getFieldErrors()
                 .stream()
