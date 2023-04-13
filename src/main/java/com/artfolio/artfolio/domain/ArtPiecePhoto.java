@@ -32,7 +32,7 @@ public class ArtPiecePhoto {
     private Boolean isThumbnail;
 
     @Setter
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
