@@ -7,14 +7,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ArtPiecePhoto {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String originalFilename;
-
-    @Column(nullable = false)
-    private String hashedFilename;
+    private String fileName;
 
     @Column(nullable = false)
     private String fileExtension;
@@ -23,13 +21,7 @@ public class ArtPiecePhoto {
     private String filePath;
 
     @Column(nullable = false)
-    private String contentType;
-
-    @Column(nullable = false)
     private Long size;
-
-    @Column(nullable = false)
-    private Boolean isThumbnail;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -37,14 +29,11 @@ public class ArtPiecePhoto {
     private ArtPiece artPiece;
 
     @Builder
-    public ArtPiecePhoto(String originalFilename, String hashedFilename, String fileExtension, String filePath, String contentType, Long size, Boolean isThumbnail, ArtPiece artPiece) {
-        this.originalFilename = originalFilename;
-        this.hashedFilename = hashedFilename;
+    public ArtPiecePhoto(String fileName, String fileExtension, String filePath, Long size, ArtPiece artPiece) {
+        this.fileName = fileName;
         this.fileExtension = fileExtension;
         this.filePath = filePath;
-        this.contentType = contentType;
         this.size = size;
-        this.isThumbnail = isThumbnail;
         this.artPiece = artPiece;
     }
 }

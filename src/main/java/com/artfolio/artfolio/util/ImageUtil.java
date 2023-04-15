@@ -26,7 +26,7 @@ public class ImageUtil {
     }
 
     /* 리사이즈 실행 메서드 */
-    public static BufferedImage resize(InputStream is, int width, int height) throws IOException {
+    private static BufferedImage resize(InputStream is, int width, int height) throws IOException {
         BufferedImage inputImage = ImageIO.read(is);
         BufferedImage outputImage = new BufferedImage(width, height, inputImage.getType());
 
