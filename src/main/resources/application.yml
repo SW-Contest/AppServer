@@ -41,3 +41,16 @@ server:
   port.http: 8080
 
 security.require-ssl: true
+
+# S3 설정
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIASNXCUWGU5733BG3J
+      secretKey: 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
+    s3:
+      bucket: artfolio-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
