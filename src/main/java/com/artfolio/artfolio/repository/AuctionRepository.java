@@ -8,14 +8,12 @@ import java.util.Optional;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
     /*
-    --> EntityGraph 대체
     @Query("select a, p, m " +
            "from Auction a " +
            "join fetch ArtPiece p on a.artPiece = p " +
            "join fetch Member m on p.creator = m " +
            "where a.id = :auctionId")
      */
-
-    @EntityGraph(attributePaths = { "artPiece", "member" })
+    @EntityGraph(attributePaths = { "artPiece", "artPiece.creator" })
     Optional<Auction> findById(Long id);
 }
