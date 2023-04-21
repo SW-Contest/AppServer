@@ -17,7 +17,7 @@ public class AuctionService {
 
     @Transactional(readOnly = true)
     public DetailPageInfoRes getDetailPageInfo(Long auctionId) {
-        Auction auction = auctionRepository.findByAuctionIdWithFetch(auctionId)
+        Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionId));
 
         /* 이미 낙찰된 경매건인지 검사 */
