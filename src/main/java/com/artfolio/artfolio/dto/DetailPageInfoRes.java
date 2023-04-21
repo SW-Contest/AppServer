@@ -3,7 +3,6 @@ package com.artfolio.artfolio.dto;
 import com.artfolio.artfolio.domain.ArtPiece;
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.domain.Auction;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.time.LocalDateTime;
@@ -19,11 +18,10 @@ import java.util.stream.Collectors;
         "auctionStartPrice",  /* 경매 시작가 */
         "auctionStartTime",   /* 경매 시작 시간 */
         "photoLength",        /* 작품 사진 목록 개수 */
-        "artPiecePhotoPaths"  /* 작품 사진 경로 목록 */
+        "photoPaths"          /* 작품 사진 경로 목록 */
 })
 public record DetailPageInfoRes(
-    @JsonProperty("photoPaths")
-    Set<String> paths,
+    Set<String> photoPaths,
     Integer photoLength,
     String creatorName,
     String artPieceTitle,
