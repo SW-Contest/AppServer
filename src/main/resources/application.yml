@@ -17,14 +17,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
-  # 파일 업로드 관련 설정
-  servlet:
-    multipart:
-      enabled: true                  # 파일 업로드 가능 여부
-      location: classpath:assets/    # 파일 임시 저장 경로
-      max-request-size: 30MB
-      max-file-size: 5MB
-
   # 타임리프 설정
   thymeleaf:
     cache: false

@@ -20,8 +20,8 @@ public class S3Uploader {
     private String bucket;
 
     /* S3 파일 업로드 메서드 */
-    public String upload(File uploadFile) {
-        String DEFAULT_DIR = "static";
+    public String upload(Long artPieceId, File uploadFile) {
+        String DEFAULT_DIR = "static/" + artPieceId;
         String fileName = DEFAULT_DIR + "/" + uploadFile.getName();
         return putS3(uploadFile, fileName);
     }

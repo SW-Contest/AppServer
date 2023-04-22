@@ -41,22 +41,23 @@ public class ImageService {
         List<ArtPiecePhoto> photos = new ArrayList<>();
 
         for (File img : Objects.requireNonNull(imgDir.listFiles())) {
-            String s3Path = s3Uploader.upload(img);
+            String s3Path = s3Uploader.upload(artPieceId, img);
             String fileFullName = img.getName();
             String fileName = fileFullName.substring(0, fileFullName.indexOf("."));
             String ext = fileFullName.substring(fileFullName.indexOf(".") + 1);
 
-            if (fileName.contains("_compressed")) continue;
+            if (!fileName.contains("_compressed")) {
+                ArtPiecePhoto entity = ArtPiecePhoto.builder()
+                        .fileName(fileName)
+                        .filePath(s3Path)
+                        .fileExtension(ext)
+                        .size(img.length())
+                        .artPiece(artPiece)
+                        .build();
 
-            ArtPiecePhoto entity = ArtPiecePhoto.builder()
-                    .fileName(fileName)
-                    .filePath(s3Path)
-                    .fileExtension(ext)
-                    .size(img.length())
-                    .artPiece(artPiece)
-                    .build();
+                photos.add(entity);
+            }
 
-            photos.add(entity);
             img.delete();
         }
 
