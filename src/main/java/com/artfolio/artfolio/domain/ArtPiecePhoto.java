@@ -7,11 +7,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ArtPiecePhoto {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String originalFilename;
+    private String fileName;
 
     @Column(nullable = false)
     private String fileExtension;
@@ -20,19 +21,19 @@ public class ArtPiecePhoto {
     private String filePath;
 
     @Column(nullable = false)
-    private Boolean isThumbnail;
+    private Long size;
 
     @Setter
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 
     @Builder
-    public ArtPiecePhoto(String originalFilename, String fileExtension, String filePath, ArtPiece artPiece, Boolean isThumbnail) {
-        this.originalFilename = originalFilename;
+    public ArtPiecePhoto(String fileName, String fileExtension, String filePath, Long size, ArtPiece artPiece) {
+        this.fileName = fileName;
         this.fileExtension = fileExtension;
         this.filePath = filePath;
+        this.size = size;
         this.artPiece = artPiece;
-        this.isThumbnail = isThumbnail;
     }
 }

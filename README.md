@@ -10,7 +10,6 @@
 - Test: JUnit5 (BDDMockito)
 - 보안: Spring Security
 - DB: PostgreSQL, Redis
-- API: Rest Repositories + HAL Explorer
 
 <hr/>
 
