@@ -4,8 +4,9 @@ import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,11 +31,11 @@ public class ArtPiece extends AuditingFields {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "artPiece")
-    private final Set<ArtPiecePhoto> artPiecePhotos = new HashSet<>();
+    private final List<ArtPiecePhoto> artPiecePhotos = new ArrayList<>();
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "artPiece")
-    private final Set<Auction> auctions = new HashSet<>();
+    private final List<Auction> auctions = new ArrayList<>();
 
     @Builder
     public ArtPiece(String title, String content, Long like, Member creator) {
@@ -44,8 +45,16 @@ public class ArtPiece extends AuditingFields {
         this.creator = creator;
     }
 
-    public void updatePhoto(ArtPiecePhoto artPiecePhoto) {
-        artPiecePhotos.add(artPiecePhoto);
-        artPiecePhoto.setArtPiece(this);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArtPiece artPiece = (ArtPiece) o;
+        return Objects.equals(id, artPiece.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

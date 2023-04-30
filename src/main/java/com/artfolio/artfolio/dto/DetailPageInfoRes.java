@@ -6,8 +6,7 @@ import com.artfolio.artfolio.domain.Auction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 
 @JsonPropertyOrder({
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
         "photoPaths"          /* 작품 사진 경로 목록 */
 })
 public record DetailPageInfoRes(
-    Set<String> photoPaths,
+    List<String> photoPaths,
     Integer photoLength,
     String creatorName,
     String artPieceTitle,
@@ -37,7 +36,7 @@ public record DetailPageInfoRes(
                 piece.getArtPiecePhotos()
                         .stream()
                         .map(ArtPiecePhoto::getFilePath)
-                        .collect(Collectors.toSet()),
+                        .toList(),
                 piece.getArtPiecePhotos().size(),
                 piece.getCreator().getName(),
                 piece.getTitle(),

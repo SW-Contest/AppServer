@@ -14,8 +14,14 @@ public class Auction extends AuditingFields {
     @Column(nullable = false, updatable = false)
     private Long startPrice;
 
+    @Column(nullable = false)
+    private Long nowPrice;
+
     @Column(nullable = false, updatable = false)
     private Long finalPrice;
+
+    @Column(nullable = false, name = "auction_like")
+    private Long like;
 
     @Column(nullable = false)
     private Boolean isSold;
@@ -30,9 +36,11 @@ public class Auction extends AuditingFields {
     private ArtPiece artPiece;
 
     @Builder
-    public Auction(Long startPrice, Long finalPrice, Boolean isSold, Member bidder, ArtPiece artPiece) {
+    public Auction(Long startPrice, Long nowPrice, Long finalPrice, Long like, Boolean isSold, Member bidder, ArtPiece artPiece) {
         this.startPrice = startPrice;
+        this.nowPrice = nowPrice;
         this.finalPrice = finalPrice;
+        this.like = like;
         this.isSold = isSold;
         this.bidder = bidder;
         this.artPiece = artPiece;
