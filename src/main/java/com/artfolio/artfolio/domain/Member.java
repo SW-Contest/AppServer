@@ -3,8 +3,8 @@ package com.artfolio.artfolio.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,7 +32,10 @@ public class Member {
     private String content;
 
     @OneToMany(mappedBy = "creator")
-    private final Set<ArtPiece> artPieces = new HashSet<>();
+    private final List<ArtPiece> artPieces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
     public Member(String name, String email, Boolean isCreator, Long like, String profilePhoto, String content) {

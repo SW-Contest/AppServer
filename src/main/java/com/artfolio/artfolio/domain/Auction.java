@@ -4,6 +4,9 @@ import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -34,6 +37,9 @@ public class Auction extends AuditingFields {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
+
+    @OneToMany(mappedBy = "auction")
+    private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
     public Auction(Long startPrice, Long nowPrice, Long finalPrice, Long like, Boolean isSold, Member bidder, ArtPiece artPiece) {
