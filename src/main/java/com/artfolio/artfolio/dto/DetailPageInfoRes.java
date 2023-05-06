@@ -22,7 +22,7 @@ import java.util.List;
 public record DetailPageInfoRes(
     List<String> photoPaths,
     Integer photoLength,
-    String creatorName,
+    String artistName,
     String artPieceTitle,
     String artPieceContent,
     Long artPieceLike,
@@ -38,7 +38,7 @@ public record DetailPageInfoRes(
                         .map(ArtPiecePhoto::getFilePath)
                         .toList(),
                 piece.getArtPiecePhotos().size(),
-                piece.getCreator().getName(),
+                piece.getArtist().getName(),
                 piece.getTitle(),
                 piece.getContent(),
                 piece.getLike(),

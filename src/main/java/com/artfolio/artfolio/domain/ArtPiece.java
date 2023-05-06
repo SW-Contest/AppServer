@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,8 +25,8 @@ public class ArtPiece extends AuditingFields {
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", nullable = false)
-    private Member creator;
+    @JoinColumn(name = "artist_id", nullable = false)
+    private Member artist;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "artPiece")
@@ -38,23 +37,10 @@ public class ArtPiece extends AuditingFields {
     private final List<Auction> auctions = new ArrayList<>();
 
     @Builder
-    public ArtPiece(String title, String content, Long like, Member creator) {
+    public ArtPiece(String title, String content, Long like, Member artist) {
         this.title = title;
         this.content = content;
         this.like = like;
-        this.creator = creator;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ArtPiece artPiece = (ArtPiece) o;
-        return Objects.equals(id, artPiece.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        this.artist = artist;
     }
 }

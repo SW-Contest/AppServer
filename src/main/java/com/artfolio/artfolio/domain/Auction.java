@@ -14,11 +14,13 @@ public class Auction extends AuditingFields {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /* TODO: 나중에 세션 정보에서 빼오도록 리팩터링 (Audit) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "artist_id", nullable = false)
+    private Member artist;
+
     @Column(nullable = false, updatable = false)
     private Long startPrice;
-
-    @Column(nullable = false)
-    private Long nowPrice;
 
     @Column(nullable = false, updatable = false)
     private Long finalPrice;
@@ -42,9 +44,9 @@ public class Auction extends AuditingFields {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
-    public Auction(Long startPrice, Long nowPrice, Long finalPrice, Long like, Boolean isSold, Member bidder, ArtPiece artPiece) {
+    public Auction(Member artist, Long startPrice, Long finalPrice, Long like, Boolean isSold, Member bidder, ArtPiece artPiece) {
+        this.artist = artist;
         this.startPrice = startPrice;
-        this.nowPrice = nowPrice;
         this.finalPrice = finalPrice;
         this.like = like;
         this.isSold = isSold;

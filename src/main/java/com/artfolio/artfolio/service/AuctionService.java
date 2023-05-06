@@ -5,10 +5,9 @@ import com.artfolio.artfolio.domain.Auction;
 import com.artfolio.artfolio.domain.Member;
 import com.artfolio.artfolio.dto.DetailPageInfoRes;
 import com.artfolio.artfolio.dto.PageInfoRes;
-import com.artfolio.artfolio.exception.AuctionAlreadyFinishedException;
-import com.artfolio.artfolio.exception.AuctionNotFoundException;
-import com.artfolio.artfolio.exception.DeleteAuthorityException;
-import com.artfolio.artfolio.exception.MemberNotFoundException;
+import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
+import com.artfolio.artfolio.exception.*;
+import com.artfolio.artfolio.repository.ArtPieceRepository;
 import com.artfolio.artfolio.repository.AuctionRepository;
 import com.artfolio.artfolio.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,85 +27,45 @@ import static java.util.stream.Collectors.groupingBy;
 public class AuctionService {
     private final AuctionRepository auctionRepository;
     private final MemberRepository memberRepository;
+    private final ArtPieceRepository artPieceRepository;
 
-    /* Todo: Auction 테이블 변경 필요 */
-    @Transactional(readOnly = true)
-    public Page<PageInfoRes> getPageInfo(Pageable pageable) {
-        // 1. 전체 옥션 리스트를 가져와서 artPiece id 별로 그룹을 짓는다
-        // 2. 그룹내에서 isSold가 true인 로우가 있으면 이미 낙찰된 경매이므로 해당 그룹 전체를 필터링한다
-        Map<ArtPiece, List<Auction>> map = auctionRepository.findAll(pageable)
-                .stream()
-                .collect(groupingBy(Auction::getArtPiece));
+    /* 종료된 경매 기록 DB에 저장 */
+    public Long saveAuctionInfo(RealTimeAuctionInfo auctionInfo, Boolean isSold) {
+        Long artPieceId = auctionInfo.getArtPieceId();
+        Long bidderId = auctionInfo.getBidderId();
+        Long artistId = auctionInfo.getArtistId();
 
-        Set<ArtPiece> keySet = map.keySet();
-        List<PageInfoRes> result = new ArrayList<>();
+        /* 팔렸는데 낙찰자 ID가 누락된 요청은 비정상 요청이므로 종료 */
+        if (isSold && bidderId == null) return 0L;
 
-        for (ArtPiece artPiece : keySet) {
-            List<Auction> auctions = map.get(artPiece);
-            boolean isSold = false;
+        /* 팔리지 않았는데 낙찰자 ID가 포함된 요청은 비정상 요청이므로 종료 */
+        if (!isSold && bidderId != null) return 0L;
 
-            System.out.println("---------------------------------");
-            System.out.println("artPieceId : " + artPiece.getId());
+        /* 관련 엔티티들을 가져온다 */
+        Member artist = memberRepository.findById(artistId)
+                .orElseThrow(() -> new MemberNotFoundException(artistId));
 
-            for (Auction auction : auctions) {
-                System.out.println(" ---> auctionId : " + auction.getId());
+        Member bidder = !isSold ? null : memberRepository.findById(auctionInfo.getBidderId())
+                .orElseThrow(() -> new MemberNotFoundException(bidderId));
 
-                if (auction.getIsSold() || auction.getBidder() != null) {
-                    System.out.println("---> * 해당 auctionId는 이미 낙찰된 경매건입니다." + auction.getId());
-                    isSold = true;
-                    break;
-                }
-            }
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
 
-            System.out.println("-----------------------------------");
+        /* artPiece에 저장된 id와 artist id가 다르면 예외 상황이므로 종료 */
+        if (!Objects.equals(artPiece.getArtist().getId(), artistId)) return 0L;
 
-            // 3. 리스트의 제일 마지막 경매만 결과에 넣는다. (이전 로우는 유찰된 기록임)
-            if (!isSold) {
-                result.add(PageInfoRes.of(auctions.get(auctions.size() - 1)));
-            }
-        }
+        /* 모든 예외 상황을 통과했으면 DB에 경매 정보 저장 */
+        Auction auction = Auction.builder()
+                .artist(artist)
+                .startPrice(auctionInfo.getAuctionStartPrice())
+                .finalPrice(auctionInfo.getAuctionCurrentPrice())
+                .like(auctionInfo.getLike())
+                .bidder(bidder)
+                .artPiece(artPiece)
+                .isSold(isSold)
+                .build();
 
-        return new PageImpl<>(result);
-    }
-
-    @Transactional(readOnly = true)
-    public DetailPageInfoRes getDetailPageInfo(Long auctionId) {
-        Auction auction = auctionRepository.findAuctionById(auctionId)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionId));
-
-        /* 이미 낙찰된 경매건인지 검사 */
-        if (auction.getIsSold()) {
-            throw new AuctionAlreadyFinishedException(auctionId);
-        }
-
-        return DetailPageInfoRes.of(auction);
-    }
-
-    public Long deleteAuction(Long auctionId, Long memberId) {
-        // 1. memberId로 해당 경매가 이 멤버가 생성한 것인지 검증한다
-        // 2. 맞으면 삭제, 다르면 거부
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-
-        boolean isRight = false;
-
-        /* Todo: member, auction 간 다대다 매핑 후 리팩터링 */
-        for (ArtPiece piece : member.getArtPieces()) {
-            for (Auction auction : piece.getAuctions()) {
-                if (Objects.equals(auction.getId(), auctionId)) {
-                    isRight = true;
-                    break;
-                }
-            }
-
-            if (isRight) break;
-        }
-
-        if (!isRight) {
-            throw new DeleteAuthorityException(memberId);
-        }
-
-        auctionRepository.deleteById(auctionId);
+        auctionRepository.save(auction);
         return 1L;
     }
 }
