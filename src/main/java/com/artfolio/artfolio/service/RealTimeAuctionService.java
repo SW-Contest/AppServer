@@ -46,11 +46,16 @@ public class RealTimeAuctionService {
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
     }
 
-    public List<RealTimeAuctionPreviewRes> getAuctionList(Pageable pageable) {
-        return realTimeAuctionRedisRepository.findAll(pageable)
+    public RealTimeAuctionPreviewRes getAuctionList(Pageable pageable) {
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+
+        List<RealTimeAuctionPreviewRes.PreviewInfo> infos = realTimeAuctionRedisRepository.findAll(pageable)
                 .stream()
-                .map(RealTimeAuctionPreviewRes::of)
+                .map(RealTimeAuctionPreviewRes.PreviewInfo::of)
                 .toList();
+
+        return RealTimeAuctionPreviewRes.of(pageSize, pageNumber, infos);
     }
 
     public Long updatePrice(String auctionKey, Long bidderId, Long price) {

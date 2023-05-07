@@ -1,21 +1,43 @@
 package com.artfolio.artfolio.dto;
 
+import java.util.List;
+
 public record RealTimeAuctionPreviewRes(
-        String auctionId,
-        Long like,
-        Long currentPrice,
-        String auctionTitle,
-        String artPieceTitle,
-        String thumbnailPath
+        Boolean isLast,
+        Integer pageSize,
+        Integer pageNumber,
+        Integer dataSize,
+        List<PreviewInfo> data
 ) {
-    public static RealTimeAuctionPreviewRes of(RealTimeAuctionInfo info) {
+    public static RealTimeAuctionPreviewRes of(Integer pageSize, Integer pageNumber, List<PreviewInfo> infos) {
+        int size = infos.size();
+
         return new RealTimeAuctionPreviewRes(
-                info.getId(),
-                info.getLike(),
-                info.getAuctionCurrentPrice(),
-                info.getAuctionTitle(),
-                info.getArtPieceTitle(),
-                info.getPhotoPaths().get(0) == null ? "null" : info.getPhotoPaths().get(0)
+                size == 0,
+                pageSize,
+                pageNumber,
+                size,
+                infos
         );
+    }
+
+    public record PreviewInfo(
+            String auctionId,
+            Long like,
+            Long currentPrice,
+            String auctionTitle,
+            String artPieceTitle,
+            String thumbnailPath
+    ) {
+        public static PreviewInfo of(RealTimeAuctionInfo info) {
+            return new PreviewInfo(
+                    info.getId(),
+                    info.getLike(),
+                    info.getAuctionCurrentPrice(),
+                    info.getAuctionTitle(),
+                    info.getArtPieceTitle(),
+                    info.getPhotoPaths().size() == 0 ? "null" : info.getPhotoPaths().get(0)
+            );
+        }
     }
 }

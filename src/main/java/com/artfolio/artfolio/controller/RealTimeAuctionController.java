@@ -38,7 +38,7 @@ public class RealTimeAuctionController {
 
     /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
     @GetMapping("/list")
-    public List<RealTimeAuctionPreviewRes> getAuctionList(
+    public RealTimeAuctionPreviewRes getAuctionList(
             @PageableDefault(sort = "createdAt", size = 10, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return redisService.getAuctionList(pageable);
