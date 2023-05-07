@@ -22,17 +22,28 @@ spring:
     cache: false
     prefix: classpath:/templates/
 
-# HTTPs 설정
-server:
-  ssl:
-    key-store: classpath:artfolio.p12
-    key-store-type: PKCS12
-    key-store-password: 123456
-    key-alias: artfolio
-  port: 8443
-  port.http: 8080
+  # redis 설정
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 5
+          max-idle: 5
+          min-idle: 2
+      host: localhost
+      port: 6379
 
-security.require-ssl: true
+# HTTPs 설정
+# server:
+#  ssl:
+#    key-store: classpath:artfolio.p12
+#    key-store-type: PKCS12
+#    key-store-password: 123456
+#    key-alias: artfolio
+#   port: 8443
+#   port.http: 8080
+
+# security.require-ssl: true
 
 # S3 설정
 cloud:

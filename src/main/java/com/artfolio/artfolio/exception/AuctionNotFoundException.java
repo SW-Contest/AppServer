@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class AuctionNotFoundException extends RuntimeException {
-    private final Long auctionId;
+    private final Object auctionId;
 
-    public AuctionNotFoundException(Long auctionId) {
+    public AuctionNotFoundException(Object auctionId) {
         this.auctionId = auctionId;
     }
 }
