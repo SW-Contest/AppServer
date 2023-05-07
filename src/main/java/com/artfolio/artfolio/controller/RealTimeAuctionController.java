@@ -1,11 +1,17 @@
 package com.artfolio.artfolio.controller;
 
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
+import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
 import com.artfolio.artfolio.service.RealTimeAuctionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
@@ -31,7 +37,12 @@ public class RealTimeAuctionController {
     }
 
     /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
-
+    @GetMapping("/list")
+    public List<RealTimeAuctionPreviewRes> getAuctionList(
+            @PageableDefault(sort = "createdAt", size = 10, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return redisService.getAuctionList(pageable);
+    }
 
     /* 경매 삭제 메서드 */
     @DeleteMapping("/{id}")

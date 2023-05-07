@@ -2,6 +2,7 @@ package com.artfolio.artfolio.service;
 
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
+import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.repository.RealTimeAuctionRedisRepository;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -32,6 +34,7 @@ public class RealTimeAuctionService {
         auctionInfo.setLike(0L);
         auctionInfo.setPhotoPaths(artPiecePhotos);
         auctionInfo.setAuctionCurrentPrice(auctionInfo.getAuctionStartPrice());
+        auctionInfo.setCreatedAt(LocalDateTime.now());
 
         RealTimeAuctionInfo save = realTimeAuctionRedisRepository.save(auctionInfo);
 
@@ -43,7 +46,11 @@ public class RealTimeAuctionService {
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
     }
 
-    public void getAuctionList(Long start, Pageable pageable) {
+    public List<RealTimeAuctionPreviewRes> getAuctionList(Pageable pageable) {
+        return realTimeAuctionRedisRepository.findAll(pageable)
+                .stream()
+                .map(RealTimeAuctionPreviewRes::of)
+                .toList();
     }
 
     public Long updatePrice(String auctionKey, Long bidderId, Long price) {
@@ -116,21 +123,4 @@ public class RealTimeAuctionService {
         realTimeAuctionRedisRepository.deleteById(auctionKey);
         return auctionService.saveAuctionInfo(auctionInfo, true);
     }
-
-    /*
-    private Object auctionGetter(Long auctionKey) {
-        ValueOperations<Long, Object> vop = redisTemplate.opsForValue();
-        return vop.get(auctionKey);
-    }
-
-    private Boolean auctionUpdater(Long auctionKey, RealTimeAuctionInfo auctionInfo) {
-        ValueOperations<Long, Object> vop = redisTemplate.opsForValue();
-        return vop.setIfPresent(auctionKey, auctionInfo);
-    }
-
-    private Object auctionRemover(Long auctionKey) {
-        ValueOperations<Long, Object> vop = redisTemplate.opsForValue();
-        return vop.getAndDelete(auctionKey);
-    }
-     */
 }
