@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 /** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
 @RequestMapping("/rt_auction")
@@ -61,11 +60,21 @@ public class RealTimeAuctionController {
 
     /* 경매 현재가 업데이트 메서드 */
     @PatchMapping("/update_price")
-    public ResponseEntity<Long> updateCurrentPrice(
+    public ResponseEntity<Long> updatePrice(
             @RequestParam("auctionKey") Long auctionKey,
             @RequestParam("price") Long price
     ) {
         Long result = redisService.updatePrice(auctionKey, price);
+        return ResponseEntity.ok(result);
+    }
+
+    /* 경매 좋아요 +1 메서드 */
+    @PatchMapping("/update_like")
+    public ResponseEntity<Long> updateLike(
+            @RequestParam("auctionKey") Long auctionKey,
+            @RequestParam("memberId") Long memberId
+    ) {
+        Long result = redisService.updateLike(auctionKey, memberId);
         return ResponseEntity.ok(result);
     }
 }

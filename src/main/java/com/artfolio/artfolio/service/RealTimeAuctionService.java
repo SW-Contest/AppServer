@@ -6,6 +6,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @RequiredArgsConstructor
 @Service
 public class RealTimeAuctionService {
@@ -30,6 +32,17 @@ public class RealTimeAuctionService {
         if (auctionInfo.getAuctionCurrentPrice() >= price) return 0L;
 
         auctionInfo.setAuctionCurrentPrice(price);
+        Boolean result = auctionUpdater(auctionKey, auctionInfo);
+        return result ? 1L : 0L;
+    }
+
+    public Long updateLike(Long auctionKey, Long memberId) {
+        RealTimeAuctionInfo auctionInfo = (RealTimeAuctionInfo) auctionGetter(auctionKey);
+
+        /* 자신이 올린 경매에 좋아요 불가 */
+        if (Objects.equals(auctionInfo.getArtistId(), memberId)) return 0L;
+
+        auctionInfo.setLike(auctionInfo.getLike() + 1);
         Boolean result = auctionUpdater(auctionKey, auctionInfo);
         return result ? 1L : 0L;
     }
