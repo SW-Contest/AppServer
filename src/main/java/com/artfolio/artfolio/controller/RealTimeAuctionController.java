@@ -32,49 +32,32 @@ public class RealTimeAuctionController {
 
     /* 경매 삭제 메서드 */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteAuction(@PathVariable("id") Long auctionKey) {
-        Long res = redisService.deleteAuction(auctionKey);
+    public ResponseEntity<Long> deleteAuction(
+            @PathVariable("id") Long auctionKey,
+            @RequestParam("artistId") Long artistId
+    ) {
+        Long res = redisService.deleteAuction(auctionKey, artistId);
         return ResponseEntity.ok(res);
     }
 
     /* 경매 종료 메서드 */
     @PostMapping("/finish")
     public ResponseEntity<Long> finishAuction(
-            @RequestParam("auctionKey") Long auctionKey,
+            @RequestParam("auctionId") Long auctionKey,
             @RequestParam("isSold") Long isSold
     ) {
         Long result = redisService.finishAuction(auctionKey, isSold == 1);
         return ResponseEntity.ok(result);
     }
 
-    /* 경매 즉시 낙찰 메서드 */
+    /* 경매 낙찰 메서드 */
     @PostMapping("/bid")
     public ResponseEntity<Long> finishAuctionWithBidder(
-            @RequestParam("auctionKey") Long auctionKey,
+            @RequestParam("auctionId") Long auctionKey,
             @RequestParam("bidderId") Long bidderId,
             @RequestParam("finalPrice") Long finalPrice
     ) {
         Long result = redisService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
-        return ResponseEntity.ok(result);
-    }
-
-    /* 경매 현재가 업데이트 메서드 */
-    @PatchMapping("/update_price")
-    public ResponseEntity<Long> updatePrice(
-            @RequestParam("auctionKey") Long auctionKey,
-            @RequestParam("price") Long price
-    ) {
-        Long result = redisService.updatePrice(auctionKey, price);
-        return ResponseEntity.ok(result);
-    }
-
-    /* 경매 좋아요 +1 메서드 */
-    @PatchMapping("/update_like")
-    public ResponseEntity<Long> updateLike(
-            @RequestParam("auctionKey") Long auctionKey,
-            @RequestParam("memberId") Long memberId
-    ) {
-        Long result = redisService.updateLike(auctionKey, memberId);
         return ResponseEntity.ok(result);
     }
 }

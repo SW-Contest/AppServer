@@ -10,6 +10,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*
 @Configuration
 @EnableConfigurationProperties
 public class HttpsConfig {
@@ -44,3 +45,4 @@ public class HttpsConfig {
         return connector;
     }
 }
+*/

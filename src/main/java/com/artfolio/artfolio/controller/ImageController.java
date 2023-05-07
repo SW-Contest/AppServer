@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@RequestMapping(value = "/image")
+@RequestMapping("/image")
 @RequiredArgsConstructor
 @RestController
 public class ImageController {

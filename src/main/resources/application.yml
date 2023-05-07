@@ -34,16 +34,16 @@ spring:
       port: 6379
 
 # HTTPs 설정
-server:
-  ssl:
-    key-store: classpath:artfolio.p12
-    key-store-type: PKCS12
-    key-store-password: 123456
-    key-alias: artfolio
-  port: 8443
-  port.http: 8080
+# server:
+#  ssl:
+#    key-store: classpath:artfolio.p12
+#    key-store-type: PKCS12
+#    key-store-password: 123456
+#    key-alias: artfolio
+#   port: 8443
+#   port.http: 8080
 
-security.require-ssl: true
+# security.require-ssl: true
 
 # S3 설정
 cloud:

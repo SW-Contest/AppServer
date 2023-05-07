@@ -3,23 +3,18 @@ package com.artfolio.artfolio.service;
 import com.artfolio.artfolio.domain.ArtPiece;
 import com.artfolio.artfolio.domain.Auction;
 import com.artfolio.artfolio.domain.Member;
-import com.artfolio.artfolio.dto.DetailPageInfoRes;
-import com.artfolio.artfolio.dto.PageInfoRes;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
 import com.artfolio.artfolio.exception.*;
 import com.artfolio.artfolio.repository.ArtPieceRepository;
 import com.artfolio.artfolio.repository.AuctionRepository;
 import com.artfolio.artfolio.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.groupingBy;
 
 @Transactional
 @RequiredArgsConstructor
@@ -51,7 +46,7 @@ public class AuctionService {
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
                 .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
 
-        /* artPiece에 저장된 id와 artist id가 다르면 예외 상황이므로 종료 */
+        /* artPiece에 저장된 id와 전달받은 artist id가 다르면 예외 상황이므로 종료 */
         if (!Objects.equals(artPiece.getArtist().getId(), artistId)) return 0L;
 
         /* 모든 예외 상황을 통과했으면 DB에 경매 정보 저장 */
