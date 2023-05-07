@@ -19,10 +19,11 @@ public class WebSocketController {
     // 구독 경로 : /sub/channel/{auctionId}
     // 발행 경로 : /pub/price
     @MessageMapping("/price")
-    public void updateAuctionPrice(Map<String, Long> map) {
-        Long auctionKey = map.get("auctionId");
-        Long bidderId = map.get("bidderId");
-        Long price = map.get("price");
+    public void updateAuctionPrice(Map<String, String> map) {
+        String auctionKey = map.get("auctionId");
+        Long bidderId = Long.parseLong(map.get("bidderId"));
+        Long price = Long.parseLong(map.get("price"));
+
         Long result = realTimeAuctionService.updatePrice(auctionKey, bidderId, price);
 
         if (result == 1L) simp.convertAndSend("/sub/channel/" + auctionKey, price);
@@ -31,9 +32,9 @@ public class WebSocketController {
 
     /* 경매 좋아요 +-1 메서드 */
     @MessageMapping("/like")
-    public void updateLike(Map<String, Long> map) {
-        Long auctionKey = map.get("auctionId");
-        Long memberId = map.get("memberId");
+    public void updateLike(Map<String, String> map) {
+        String auctionKey = map.get("auctionId");
+        Long memberId = Long.parseLong(map.get("memberId"));
         Long result = realTimeAuctionService.updateLike(auctionKey, memberId);
 
         simp.convertAndSend("/sub/channel/" + auctionKey, result);

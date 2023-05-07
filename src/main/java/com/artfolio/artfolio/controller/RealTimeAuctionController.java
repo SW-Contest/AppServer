@@ -18,22 +18,25 @@ public class RealTimeAuctionController {
 
     /* 경매 생성 메서드 */
     @PostMapping("/create")
-    public ResponseEntity<Long> createAuction(@RequestBody RealTimeAuctionInfo auctionInfo) {
-        Long key = redisService.createAuction(auctionInfo);
+    public ResponseEntity<String> createAuction(@RequestBody RealTimeAuctionInfo auctionInfo) {
+        String key = redisService.createAuction(auctionInfo);
         return new ResponseEntity<>(key, HttpStatus.CREATED);
     }
 
     /* 단일 경매 정보를 불러오는 메서드 */
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getAuction(@PathVariable("id") Long auctionKey) {
+    public ResponseEntity<Object> getAuction(@PathVariable("id") String auctionKey) {
         Object auctionInfo = redisService.getAuction(auctionKey);
         return ResponseEntity.ok(auctionInfo);
     }
 
+    /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
+
+
     /* 경매 삭제 메서드 */
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAuction(
-            @PathVariable("id") Long auctionKey,
+            @PathVariable("id") String auctionKey,
             @RequestParam("artistId") Long artistId
     ) {
         Long res = redisService.deleteAuction(auctionKey, artistId);
@@ -43,7 +46,7 @@ public class RealTimeAuctionController {
     /* 경매 종료 메서드 */
     @PostMapping("/finish")
     public ResponseEntity<Long> finishAuction(
-            @RequestParam("auctionId") Long auctionKey,
+            @RequestParam("auctionId") String auctionKey,
             @RequestParam("isSold") Long isSold
     ) {
         Long result = redisService.finishAuction(auctionKey, isSold == 1);
@@ -53,7 +56,7 @@ public class RealTimeAuctionController {
     /* 경매 낙찰 메서드 */
     @PostMapping("/bid")
     public ResponseEntity<Long> finishAuctionWithBidder(
-            @RequestParam("auctionId") Long auctionKey,
+            @RequestParam("auctionId") String auctionKey,
             @RequestParam("bidderId") Long bidderId,
             @RequestParam("finalPrice") Long finalPrice
     ) {
