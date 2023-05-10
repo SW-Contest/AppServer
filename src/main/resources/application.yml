@@ -17,11 +17,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
-  # 타임리프 설정
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-
   # redis 설정
   data:
     redis:
@@ -32,18 +27,6 @@ spring:
           min-idle: 2
       host: localhost
       port: 6379
-
-# HTTPs 설정
-# server:
-#  ssl:
-#    key-store: classpath:artfolio.p12
-#    key-store-type: PKCS12
-#    key-store-password: 123456
-#    key-alias: artfolio
-#   port: 8443
-#   port.http: 8080
-
-# security.require-ssl: true
 
 # S3 설정
 cloud:
