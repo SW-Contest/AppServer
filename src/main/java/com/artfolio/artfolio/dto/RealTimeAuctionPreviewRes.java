@@ -28,7 +28,6 @@ public record RealTimeAuctionPreviewRes(
             Long currentPrice,
             String auctionTitle,
             String artPieceTitle,
-            LocalDateTime createdAt,
             String thumbnailPath
     ) {
         public static PreviewInfo of(RealTimeAuctionInfo info) {
@@ -38,7 +37,6 @@ public record RealTimeAuctionPreviewRes(
                     info.getAuctionCurrentPrice(),
                     info.getAuctionTitle(),
                     info.getArtPieceTitle(),
-                    info.getCreatedAt(),
                     info.getPhotoPaths().size() == 0 ? "null" : info.getPhotoPaths().get(0)
             );
         }
