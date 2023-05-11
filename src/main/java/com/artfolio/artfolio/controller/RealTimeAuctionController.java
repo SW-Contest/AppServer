@@ -9,11 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-
 
 /** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
 @RequestMapping("/rt_auction")
@@ -53,6 +49,7 @@ public class RealTimeAuctionController {
         Long res = redisService.deleteAuction(auctionKey, artistId);
         return ResponseEntity.ok(res);
     }
+
 
     /* 경매 종료 메서드 */
     @PostMapping("/finish")
