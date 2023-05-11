@@ -11,10 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        /* TODO
-           개발 편의성을 위해 시큐리티 기본 작동 중단
-        */
-
+        /* TODO: 개발 편의성을 위해 시큐리티 기본 작동 중단 */
         return http
                 .httpBasic().disable()
                 .formLogin().disable()

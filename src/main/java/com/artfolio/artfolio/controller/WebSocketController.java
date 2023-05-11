@@ -2,7 +2,6 @@ package com.artfolio.artfolio.controller;
 
 import com.artfolio.artfolio.service.RealTimeAuctionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
