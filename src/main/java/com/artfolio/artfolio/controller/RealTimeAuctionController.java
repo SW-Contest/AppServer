@@ -11,13 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 /** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
 @RequestMapping("/rt_auction")
 @RequiredArgsConstructor
 @RestController
 public class RealTimeAuctionController {
-
     private final RealTimeAuctionService redisService;
 
     /* 경매 생성 메서드 */
@@ -72,5 +70,15 @@ public class RealTimeAuctionController {
     ) {
         Long result = redisService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
         return ResponseEntity.ok(result);
+    }
+
+    /* 경매 좋아요 +-1 메서드 */
+    @PostMapping("/like")
+    public ResponseEntity<Long> updateLike(
+            @RequestParam("auctionId") String auctionId,
+            @RequestParam("memberId") Long memberId
+    ) {
+        Long likes = redisService.updateLike(auctionId, memberId);
+        return ResponseEntity.ok(likes);
     }
 }

@@ -3,6 +3,7 @@ package com.artfolio.artfolio.dto;
 /* 실시간 경매 정보 DTO */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class RealTimeAuctionInfo {
-    @Id private String id;
+public class RealTimeAuctionInfo { // Data transfer Object
+    @Id @JsonProperty("auctionId")
+    private String id;
     private Long artistId;                           // 작가 ID
     private Long artPieceId;                         // 예술품 ID
     private String artPieceTitle;                    // 예술품 제목
@@ -34,4 +36,5 @@ public class RealTimeAuctionInfo {
     private LocalDateTime createdAt;                 // 경매 생성일시
     private Set<Long> likeMembers = new HashSet<>();       // 좋아요 누른 멤버 ID 목록
     private List<String> photoPaths = new ArrayList<>();   // 사진 경로
+
 }
