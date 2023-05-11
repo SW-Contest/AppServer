@@ -29,14 +29,4 @@ public class WebSocketController {
         if (result == 1L) simp.convertAndSend("/sub/channel/" + auctionKey, price);
         else simp.convertAndSend("/sub/channel/" + auctionKey, -1);
     }
-
-    /* 경매 좋아요 +-1 메서드 */
-    @MessageMapping("/like")
-    public void updateLike(Map<String, String> map) {
-        String auctionKey = map.get("auctionId");
-        Long memberId = Long.parseLong(map.get("memberId"));
-        Long result = realTimeAuctionService.updateLike(auctionKey, memberId);
-
-        simp.convertAndSend("/sub/channel/" + auctionKey, result);
-    }
 }

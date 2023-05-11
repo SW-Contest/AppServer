@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class RealTimeAuctionInfo {
+public class RealTimeAuctionInfo { // Data transfer Object
     @Id private String id;
     private Long artistId;                           // 작가 ID
     private Long artPieceId;                         // 예술품 ID
@@ -34,4 +34,5 @@ public class RealTimeAuctionInfo {
     private LocalDateTime createdAt;                 // 경매 생성일시
     private Set<Long> likeMembers = new HashSet<>();       // 좋아요 누른 멤버 ID 목록
     private List<String> photoPaths = new ArrayList<>();   // 사진 경로
+
 }

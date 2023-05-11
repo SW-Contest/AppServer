@@ -15,7 +15,7 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<Long> uploadArtPiecePhoto(
-            @RequestParam("artpieceId") Long artPieceId,
+            @RequestParam("artPieceId") Long artPieceId,
             @RequestParam("files") MultipartFile[] files
     ) {
         Long result = imageService.uploadImage(artPieceId, files);

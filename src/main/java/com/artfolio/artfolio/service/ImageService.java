@@ -29,6 +29,7 @@ public class ImageService {
             + "/src/main/resources/images";
 
     public Long uploadImage(Long artPieceId, MultipartFile[] files) {
+
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
                 .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
 
@@ -69,6 +70,7 @@ public class ImageService {
     private boolean saveImageOnLocal(MultipartFile[] files, File imgDir) {
         if (!imgDir.exists()) imgDir.mkdirs();
 
+        boolean isFirst = true;
         for (MultipartFile img : files) {
             if (img.isEmpty()) continue;
 
@@ -81,7 +83,10 @@ public class ImageService {
 
             try {
                 img.transferTo(imgFile);
-                ImageUtil.imageResize(DEFAULT_IMAGE_DIR, fileName, ext);
+                if (isFirst) {
+                    ImageUtil.imageResize(DEFAULT_IMAGE_DIR, fileName, ext);
+                    isFirst = false;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
