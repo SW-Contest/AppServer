@@ -10,10 +10,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -22,7 +20,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 public class RealTimeAuctionController {
-    private final SimpMessageSendingOperations simp;
     private final RealTimeAuctionService redisService;
 
     /* 경매 생성 메서드 */
@@ -79,12 +76,12 @@ public class RealTimeAuctionController {
     }
 
     /* 경매 좋아요 +-1 메서드 */
-    @MessageMapping("/like")
-    public void updateLike(Map<String, String> map) {
-        String auctionKey = map.get("auctionId");
-        Long memberId = Long.parseLong(map.get("memberId"));
-        Long result = redisService.updateLike(auctionKey, memberId);
-
-        simp.convertAndSend("/sub/channel/" + auctionKey, result);
+    @PostMapping("/like")
+    public ResponseEntity<Long> updateLike(
+            @RequestParam("auctionId") String auctionId,
+            @RequestParam("memberId") Long memberId
+    ) {
+        Long likes = redisService.updateLike(auctionId, memberId);
+        return ResponseEntity.ok(likes);
     }
 }

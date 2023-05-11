@@ -1,6 +1,5 @@
 package com.artfolio.artfolio.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record RealTimeAuctionPreviewRes(
