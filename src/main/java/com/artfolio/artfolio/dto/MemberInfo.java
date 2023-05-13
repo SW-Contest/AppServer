@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.dto;
 
+import com.artfolio.artfolio.domain.Member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,8 @@ public class MemberInfo {
     private Long like;
     private String profilePhoto;
     private String content;
+
+    public Member toEntity(Member member){
+        return member;
+    }
 }
