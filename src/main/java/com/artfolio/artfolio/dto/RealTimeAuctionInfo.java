@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class RealTimeAuctionInfo { // Data transfer Object
     @Id @JsonProperty("auctionId")
     private String id;
     private Long artistId;                           // 작가 ID
-    private Long artPieceId;                         // 예술품 ID
+    @Indexed private Long artPieceId;                         // 예술품 ID
     private String artPieceTitle;                    // 예술품 제목
     private String auctionTitle;                     // 경매 제목
     private String auctionContent;                   // 경매 설명글
@@ -37,4 +38,7 @@ public class RealTimeAuctionInfo { // Data transfer Object
     private Set<Long> likeMembers = new HashSet<>();       // 좋아요 누른 멤버 ID 목록
     private List<String> photoPaths = new ArrayList<>();   // 사진 경로
 
+    public void updateAuctionPhoto(String photoPath) {
+        this.photoPaths.add(photoPath);
+    }
 }

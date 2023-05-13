@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.error;
 
+import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
 import com.artfolio.artfolio.exception.AuctionAlreadyFinishedException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,13 @@ public class AuctionErrorHandlingController {
     protected ErrorResponse handleAuctionAlreadyFinishedException(AuctionAlreadyFinishedException e) {
         log.error("이미 종료된 경매 건입니다. auction ID : " + e.getAuctionId());
         return buildError(ErrorCode.AUCTION_ALREADY_FINISHED);
+    }
+
+    /* 예술품에 대해 진행중인 경매가 이미 있는데 동일한 예술품 ID로 새 경매를 생성하는 경우 예외 처리 */
+    @ExceptionHandler(AuctionAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleAuctionAlreadyExistsException(AuctionAlreadyExistsException e) {
+        log.error("해당 예술품에 이미 진행중인 경매가 존재합니다. artPiece ID : " + e.getArtPieceId());
+        return buildError(ErrorCode.AUCTION_ALREADY_EXISTS);
     }
 }

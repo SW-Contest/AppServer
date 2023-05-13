@@ -22,14 +22,15 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Service
 public class ImageService {
-    private final ArtPiecePhotoRepository artPiecePhotoRepository;
-    private final ArtPieceRepository artPieceRepository;
-    private final S3Uploader s3Uploader;
     private static final String DEFAULT_IMAGE_DIR = System.getProperty("user.dir")
             + "/src/main/resources/images";
+    private final ArtPiecePhotoRepository artPiecePhotoRepository;
+    private final ArtPieceRepository artPieceRepository;
+    private final RealTimeAuctionService realTimeAuctionService;
+    private final S3Uploader s3Uploader;
+    private String thumbnailFileName;
 
     public Long uploadImage(Long artPieceId, MultipartFile[] files) {
-
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
                 .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
 
@@ -53,16 +54,23 @@ public class ImageService {
                         .filePath(s3Path)
                         .fileExtension(ext)
                         .size(img.length())
+                        .isThumbnail(fileName.equals(thumbnailFileName))
                         .artPiece(artPiece)
                         .build();
 
                 photos.add(entity);
             }
 
+            realTimeAuctionService.updateImage(artPieceId, s3Path);
+        }
+
+        // 로컬 경로 내 모든 사진 삭제
+        for (File img : Objects.requireNonNull(imgDir.listFiles())) {
             img.delete();
         }
 
         artPiecePhotoRepository.saveAll(photos);
+
         return 1L;
     }
 
@@ -86,6 +94,7 @@ public class ImageService {
                 if (isFirst) {
                     ImageUtil.imageResize(DEFAULT_IMAGE_DIR, fileName, ext);
                     isFirst = false;
+                    thumbnailFileName = fileName;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -3,6 +3,7 @@ package com.artfolio.artfolio.service;
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
 import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
+import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.repository.RealTimeAuctionRedisRepository;
@@ -11,9 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -25,8 +24,17 @@ public class RealTimeAuctionService {
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
 
     public String createAuction(RealTimeAuctionInfo auctionInfo) {
+        Long artPieceId = auctionInfo.getArtPieceId();
+
+        Optional<RealTimeAuctionInfo> byArtPieceId = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId);
+
+        // 이미 경매가 진행중인 예술품인 경우 예외처리
+        if (byArtPieceId.isPresent()) {
+            throw new AuctionAlreadyExistsException(artPieceId);
+        }
+
         List<String> artPiecePhotos = artPiecePhotoRepository
-                .getArtPiecePhotoByArtPiece_Id(auctionInfo.getArtPieceId())
+                .getArtPiecePhotoByArtPiece_Id(artPieceId)
                 .stream()
                 .map(ArtPiecePhoto::getFilePath)
                 .collect(Collectors.toList());
@@ -41,21 +49,53 @@ public class RealTimeAuctionService {
         return save.getId();
     }
 
-    public Object getAuction(String auctionKey) {
-        return realTimeAuctionRedisRepository.findById(auctionKey)
+    public RealTimeAuctionInfo getAuction(String auctionKey) {
+        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+        List<String> photoPaths = auctionInfo.getPhotoPaths();
+
+        for (String path : photoPaths) {
+            if (path.contains("_compressed")) {
+                photoPaths.remove(path);
+                break;
+            }
+        }
+
+        auctionInfo.setPhotoPaths(photoPaths);
+
+        return auctionInfo;
     }
 
     public RealTimeAuctionPreviewRes getAuctionList(Pageable pageable) {
         int pageNumber = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
 
-        List<RealTimeAuctionPreviewRes.PreviewInfo> infos = realTimeAuctionRedisRepository.findAll(pageable)
-                .stream()
-                .map(RealTimeAuctionPreviewRes.PreviewInfo::of)
-                .toList();
+        List<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
+        List<RealTimeAuctionPreviewRes.PreviewInfo> data = new ArrayList<>();
 
-        return RealTimeAuctionPreviewRes.of(pageSize, pageNumber, infos);
+        /* 각 실시간 경매에 대한 썸네일 경로를 추출한다 */
+        for (RealTimeAuctionInfo info : infos) {
+            Long artPieceId = info.getArtPieceId();
+            List<ArtPiecePhoto> thumbnailPhoto = artPiecePhotoRepository.getArtPiecePhotoByArtPiece_Id(artPieceId)
+                    .stream()
+                    .filter(ArtPiecePhoto::getIsThumbnail)
+                    .toList();
+
+            String thumbnailPath = thumbnailPhoto.isEmpty() ? "null" : thumbnailPhoto.get(0).getFilePath();
+
+            if (!thumbnailPath.equals("null")) {
+                int lastDotIdx = thumbnailPath.lastIndexOf(".");
+
+                String thumbnailFullPath = thumbnailPath.substring(0, lastDotIdx);
+                String thumbnailExt = thumbnailPath.substring(lastDotIdx);
+                thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
+            }
+
+            data.add(RealTimeAuctionPreviewRes.PreviewInfo.of(info, thumbnailPath));
+        }
+
+        return RealTimeAuctionPreviewRes.of(pageSize, pageNumber, data);
     }
 
     public Long updatePrice(String auctionKey, Long bidderId, Long price) {
@@ -70,6 +110,14 @@ public class RealTimeAuctionService {
         realTimeAuctionRedisRepository.save(auctionInfo);
 
         return 1L;
+    }
+
+    public void updateImage(Long artPieceId, String s3Path) {
+        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId)
+                .orElseThrow(() -> new AuctionNotFoundException(artPieceId));
+
+        auctionInfo.getPhotoPaths().add(s3Path);
+        realTimeAuctionRedisRepository.save(auctionInfo);
     }
 
     public Long updateLike(String auctionKey, Long memberId) {
