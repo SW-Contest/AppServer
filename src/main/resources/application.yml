@@ -9,7 +9,7 @@ spring:
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: update
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
