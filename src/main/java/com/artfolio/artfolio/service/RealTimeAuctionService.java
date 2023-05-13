@@ -3,6 +3,7 @@ package com.artfolio.artfolio.service;
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
 import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
+import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.repository.RealTimeAuctionRedisRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,8 +27,17 @@ public class RealTimeAuctionService {
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
 
     public String createAuction(RealTimeAuctionInfo auctionInfo) {
+        Long artPieceId = auctionInfo.getArtPieceId();
+
+        Optional<RealTimeAuctionInfo> byArtPieceId = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId);
+
+        // 이미 경매가 진행중인 예술품인 경우 예외처리
+        if (byArtPieceId.isPresent()) {
+            throw new AuctionAlreadyExistsException(artPieceId);
+        }
+
         List<String> artPiecePhotos = artPiecePhotoRepository
-                .getArtPiecePhotoByArtPiece_Id(auctionInfo.getArtPieceId())
+                .getArtPiecePhotoByArtPiece_Id(artPieceId)
                 .stream()
                 .map(ArtPiecePhoto::getFilePath)
                 .collect(Collectors.toList());
@@ -70,6 +81,14 @@ public class RealTimeAuctionService {
         realTimeAuctionRedisRepository.save(auctionInfo);
 
         return 1L;
+    }
+
+    public void updateThumbnailImage(Long artPieceId, String s3Path) {
+        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId)
+                .orElseThrow(() -> new AuctionNotFoundException(artPieceId));
+
+        auctionInfo.setPhotoPaths(List.of(s3Path));
+        realTimeAuctionRedisRepository.save(auctionInfo);
     }
 
     public Long updateLike(String auctionKey, Long memberId) {
