@@ -59,9 +59,9 @@ public class ImageService {
                         .build();
 
                 photos.add(entity);
-            } else {
-                realTimeAuctionService.updateThumbnailImage(artPieceId, s3Path);
             }
+
+            realTimeAuctionService.updateImage(artPieceId, s3Path);
         }
 
         // 로컬 경로 내 모든 사진 삭제

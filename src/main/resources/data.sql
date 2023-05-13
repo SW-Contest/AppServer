@@ -32,4 +32,4 @@ insert into art_piece values(26, now(), 'seungsu', '게시글 26번', 37, '상�
 insert into art_piece values(27, now(), 'seungsu', '게시글 27번', 27, '상세글 27번', 1);
 insert into art_piece values(28, now(), 'seungsu', '게시글 28번', 17, '상세글 28번', 2);
 insert into art_piece values(29, now(), 'seungsu', '게시글 29번', 10, '상세글 29번', 1);
-insert into art_piece values(30, now(), 'seungsu', '게시글 39번', 1, '상세글 30번', 2);
+insert into art_piece values(30, now(), 'seungsu', '게시글 30번', 1, '상세글 30번', 2);

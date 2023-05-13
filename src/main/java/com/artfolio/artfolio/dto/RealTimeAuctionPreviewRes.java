@@ -9,15 +9,15 @@ public record RealTimeAuctionPreviewRes(
         Integer dataSize,
         List<PreviewInfo> data
 ) {
-    public static RealTimeAuctionPreviewRes of(Integer pageSize, Integer pageNumber, List<PreviewInfo> infos) {
-        int size = infos.size();
+    public static RealTimeAuctionPreviewRes of(Integer pageSize, Integer pageNumber, List<PreviewInfo> data) {
+        int size = data.size();
 
         return new RealTimeAuctionPreviewRes(
                 size == 0,
                 pageSize,
                 pageNumber,
                 size,
-                infos
+                data
         );
     }
 
@@ -29,14 +29,14 @@ public record RealTimeAuctionPreviewRes(
             String artPieceTitle,
             String thumbnailPath
     ) {
-        public static PreviewInfo of(RealTimeAuctionInfo info) {
+        public static PreviewInfo of(RealTimeAuctionInfo info, String thumbnailPath) {
             return new PreviewInfo(
                     info.getId(),
                     info.getLike(),
                     info.getAuctionCurrentPrice(),
                     info.getAuctionTitle(),
                     info.getArtPieceTitle(),
-                    info.getPhotoPaths().size() == 0 ? "null" : info.getPhotoPaths().get(0)
+                    thumbnailPath
             );
         }
     }
