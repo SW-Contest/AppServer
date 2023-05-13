@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.config;
 
+import com.artfolio.artfolio.handler.CustomHandShakeHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -11,12 +12,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/sock").setAllowedOrigins("*");
+        registry.addEndpoint("/sock")
+                .setAllowedOrigins("*")
+                .setHandshakeHandler(new CustomHandShakeHandler());
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/sub");
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.enableSimpleBroker("/topic", "/queue");
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
     }
 }

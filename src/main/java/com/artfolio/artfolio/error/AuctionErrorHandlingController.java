@@ -3,8 +3,10 @@ package com.artfolio.artfolio.error;
 import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
 import com.artfolio.artfolio.exception.AuctionAlreadyFinishedException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,12 +19,15 @@ import static com.artfolio.artfolio.util.ErrorBuildFactory.*;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class AuctionErrorHandlingController {
+    private final SimpMessageSendingOperations simp;
+
     /* validation 검증 실패시 발생하는 예외 핸들링 메서드 */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("프론트로부터 잘못된 요청 값이 전달됨");
+        log.error("잘못된 요청 값이 전달되었습니다.");
         List<ErrorResponse.FieldError> fieldErrors = getFieldErrors(e.getBindingResult());
         return buildFieldErrors(ErrorCode.INPUT_VALUE_INVALID, fieldErrors);
     }
@@ -31,7 +36,7 @@ public class AuctionErrorHandlingController {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.error("프론트로부터 타입이 맞지 않는 요청 값이 전달됨");
+        log.error("타입이 맞지 않는 요청 값입니다.");
         ErrorResponse.FieldError fieldError = new ErrorResponse.FieldError(e.getPropertyName(), (String) e.getValue(), e.getMessage());
         return buildFieldErrors(ErrorCode.INPUT_VALUE_INVALID, List.of(fieldError));
     }
@@ -40,7 +45,8 @@ public class AuctionErrorHandlingController {
     @ExceptionHandler(AuctionNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleAuctionNotFoundException(AuctionNotFoundException e) {
-        log.error("프론트로부터 잘못된 경매 번호가 전달되었습니다. auction ID : " + e.getAuctionId());
+        log.error("해당 경매 번호가 존재하지 않습니다.");
+        log.error("auction ID : " + e.getAuctionId());
         return buildError(ErrorCode.AUCTION_NOT_FOUND);
     }
 
@@ -48,7 +54,8 @@ public class AuctionErrorHandlingController {
     @ExceptionHandler(AuctionAlreadyFinishedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleAuctionAlreadyFinishedException(AuctionAlreadyFinishedException e) {
-        log.error("이미 종료된 경매 건입니다. auction ID : " + e.getAuctionId());
+        log.error("이미 종료된 경매 건입니다.");
+        log.error("auction ID : " + e.getAuctionId());
         return buildError(ErrorCode.AUCTION_ALREADY_FINISHED);
     }
 
@@ -56,7 +63,8 @@ public class AuctionErrorHandlingController {
     @ExceptionHandler(AuctionAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleAuctionAlreadyExistsException(AuctionAlreadyExistsException e) {
-        log.error("해당 예술품에 이미 진행중인 경매가 존재합니다. artPiece ID : " + e.getArtPieceId());
+        log.error("해당 예술품은 이미 경매가 진행되고 있습니다.");
+        log.error("art piece ID : " + e.getArtPieceId());
         return buildError(ErrorCode.AUCTION_ALREADY_EXISTS);
     }
 }

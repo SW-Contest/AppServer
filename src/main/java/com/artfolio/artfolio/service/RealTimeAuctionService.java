@@ -1,27 +1,36 @@
 package com.artfolio.artfolio.service;
 
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.domain.Member;
+import com.artfolio.artfolio.dto.AuctionBidInfoRes;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
 import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
 import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
 import com.artfolio.artfolio.exception.AuctionNotFoundException;
+import com.artfolio.artfolio.exception.InvalidBidPriceException;
+import com.artfolio.artfolio.exception.MemberNotFoundException;
 import com.artfolio.artfolio.repository.ArtPiecePhotoRepository;
+import com.artfolio.artfolio.repository.MemberRepository;
 import com.artfolio.artfolio.repository.RealTimeAuctionRedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RealTimeAuctionService {
     private final AuctionService auctionService;
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
+    private final MemberRepository memberRepository;
 
     public String createAuction(RealTimeAuctionInfo auctionInfo) {
         Long artPieceId = auctionInfo.getArtPieceId();
@@ -98,18 +107,36 @@ public class RealTimeAuctionService {
         return RealTimeAuctionPreviewRes.of(pageSize, pageNumber, data);
     }
 
-    public Long updatePrice(String auctionKey, Long bidderId, Long price) {
+    public AuctionBidInfoRes updatePrice(Principal principal, String auctionKey, Long bidderId, Long price) {
+        /* 실시간 경매 정보를 가져온다 */
         RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        /* 현재가보다 낮은 경우 예외 처리 */
-        if (auctionInfo.getAuctionCurrentPrice() >= price) return 0L;
+        Long currentPrice = auctionInfo.getAuctionCurrentPrice();
+        log.info("current price : " + currentPrice);
+        log.info("bid price : " + price);
 
+        /* 현재가보다 낮은 경우 예외 처리 */
+        if (currentPrice >= price) {
+            throw new InvalidBidPriceException(principal, currentPrice, price, auctionKey);
+        }
+
+        /* 실시간 경매 정보를 업데이트 하고 */
         auctionInfo.setBidderId(bidderId);
         auctionInfo.setAuctionCurrentPrice(price);
         realTimeAuctionRedisRepository.save(auctionInfo);
 
-        return 1L;
+        /* 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성 후 반환 */
+        Member bidder = memberRepository.findById(bidderId)
+                .orElseThrow(() -> new MemberNotFoundException(bidderId));
+
+        AuctionBidInfoRes.BidderInfo bidderInfo = AuctionBidInfoRes.BidderInfo.of(bidder);
+
+        return AuctionBidInfoRes.builder()
+                .bidPrice(price)
+                .bidderInfo(bidderInfo)
+                .bidDate(LocalDateTime.now())
+                .build();
     }
 
     public void updateImage(Long artPieceId, String s3Path) {
@@ -172,8 +199,8 @@ public class RealTimeAuctionService {
         /* 레디스에서 삭제 후 DB에 경매 기록 저장 */
         auctionInfo.setBidderId(bidderId);
         auctionInfo.setAuctionCurrentPrice(finalPrice);
-
         realTimeAuctionRedisRepository.deleteById(auctionKey);
+
         return auctionService.saveAuctionInfo(auctionInfo, true);
     }
 }

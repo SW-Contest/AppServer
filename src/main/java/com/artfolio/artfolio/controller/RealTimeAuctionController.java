@@ -55,9 +55,9 @@ public class RealTimeAuctionController {
     @PostMapping("/finish")
     public ResponseEntity<Long> finishAuction(
             @RequestParam("auctionId") String auctionKey,
-            @RequestParam("isSold") Long isSold
+            @RequestParam("isSold") Boolean isSold
     ) {
-        Long result = redisService.finishAuction(auctionKey, isSold == 1);
+        Long result = redisService.finishAuction(auctionKey, isSold);
         return ResponseEntity.ok(result);
     }
 

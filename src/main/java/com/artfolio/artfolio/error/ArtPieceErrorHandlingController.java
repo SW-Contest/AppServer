@@ -1,7 +1,6 @@
 package com.artfolio.artfolio.error;
 
 import com.artfolio.artfolio.exception.ArtPieceNotFoundException;
-import com.artfolio.artfolio.util.ErrorBuildFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +16,8 @@ public class ArtPieceErrorHandlingController {
     @ExceptionHandler(ArtPieceNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleArtPieceNotFoundException(ArtPieceNotFoundException e) {
-        log.error("프론트로부터 잘못된 예술품 번호가 넘어옴. artPieceId : " + e.getArtPieceId());
+        log.error("해당 예술품 번호가 존재하지 않습니다.");
+        log.error("art piece ID : " + e.getArtPieceId());
         return buildError(ErrorCode.ARTPIECE_NOT_FOUND);
     }
 }

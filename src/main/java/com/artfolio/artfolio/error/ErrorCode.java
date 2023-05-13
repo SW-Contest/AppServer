@@ -11,6 +11,7 @@ public enum ErrorCode {
     ARTPIECE_NOT_FOUND("ARTPIECE_NOT_FOUND", "해당 예술품을 찾을 수 없습니다.", 400),
     MEMBER_NOT_FOUND("MEMBER_NOT_FOUND", "해당 예술가를 찾을 수 없습니다.", 400),
     NO_DELETE_AUTHORITY("NO_DELETE_AUTHORITY", "삭제 권한이 없습니다.", 400),
+    INVALID_BID_PRICE("INVALID_BID_PRICE", "현재가보다 낮은 입찰가입니다.", 400)
     ;
 
     private final String code;
