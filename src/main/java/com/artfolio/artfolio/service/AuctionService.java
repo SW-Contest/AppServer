@@ -24,11 +24,12 @@ public class AuctionService {
     private final MemberRepository memberRepository;
     private final ArtPieceRepository artPieceRepository;
 
+    /*
     /* 종료된 경매 기록 DB에 저장 */
     public Long saveAuctionInfo(RealTimeAuctionInfo auctionInfo, Boolean isSold) {
         Long artPieceId = auctionInfo.getArtPieceId();
         Long bidderId = auctionInfo.getBidderId();
-        Long artistId = auctionInfo.getArtistId();
+        Long artistId = auctionInfo.getArtistInfo().getMemberId();
 
         /* 팔렸는데 낙찰자 ID가 누락된 요청은 비정상 요청이므로 종료 */
         if (isSold && bidderId == null) return 0L;

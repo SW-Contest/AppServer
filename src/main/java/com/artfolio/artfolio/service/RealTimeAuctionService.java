@@ -3,18 +3,18 @@ package com.artfolio.artfolio.service;
 import com.artfolio.artfolio.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.domain.Member;
 import com.artfolio.artfolio.dto.AuctionBidInfoRes;
+import com.artfolio.artfolio.dto.MemberInfo;
 import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
 import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
-import com.artfolio.artfolio.exception.AuctionAlreadyExistsException;
-import com.artfolio.artfolio.exception.AuctionNotFoundException;
-import com.artfolio.artfolio.exception.InvalidBidPriceException;
-import com.artfolio.artfolio.exception.MemberNotFoundException;
+import com.artfolio.artfolio.exception.*;
 import com.artfolio.artfolio.repository.ArtPiecePhotoRepository;
+import com.artfolio.artfolio.repository.ArtPieceRepository;
 import com.artfolio.artfolio.repository.MemberRepository;
 import com.artfolio.artfolio.repository.RealTimeAuctionRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class RealTimeAuctionService {
     private final AuctionService auctionService;
+    private final ArtPieceRepository artPieceRepository;
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
     private final MemberRepository memberRepository;
@@ -48,10 +49,16 @@ public class RealTimeAuctionService {
                 .map(ArtPiecePhoto::getFilePath)
                 .collect(Collectors.toList());
 
+        Long artistId = auctionInfo.getArtistId();
+
+        Member artist = memberRepository.findById(artistId)
+                        .orElseThrow(() -> new MemberNotFoundException(artistId));
+
         auctionInfo.setLike(0L);
         auctionInfo.setPhotoPaths(artPiecePhotos);
         auctionInfo.setAuctionCurrentPrice(auctionInfo.getAuctionStartPrice());
         auctionInfo.setCreatedAt(LocalDateTime.now());
+        auctionInfo.setArtistInfo(MemberInfo.of(artist));
 
         RealTimeAuctionInfo save = realTimeAuctionRedisRepository.save(auctionInfo);
 
@@ -77,10 +84,7 @@ public class RealTimeAuctionService {
     }
 
     public RealTimeAuctionPreviewRes getAuctionList(Pageable pageable) {
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-
-        List<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
+        Slice<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
         List<RealTimeAuctionPreviewRes.PreviewInfo> data = new ArrayList<>();
 
         /* 각 실시간 경매에 대한 썸네일 경로를 추출한다 */
@@ -101,10 +105,15 @@ public class RealTimeAuctionService {
                 thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
             }
 
-            data.add(RealTimeAuctionPreviewRes.PreviewInfo.of(info, thumbnailPath));
+            Member artist = artPieceRepository.findArtPieceById(artPieceId)
+                    .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId))
+                    .getArtist();
+
+            MemberInfo artistInfo = MemberInfo.of(artist);
+            data.add(RealTimeAuctionPreviewRes.PreviewInfo.of(artistInfo, info, thumbnailPath));
         }
 
-        return RealTimeAuctionPreviewRes.of(pageSize, pageNumber, data);
+        return RealTimeAuctionPreviewRes.of(infos, data);
     }
 
     public AuctionBidInfoRes updatePrice(Principal principal, String auctionKey, Long bidderId, Long price) {
@@ -130,7 +139,7 @@ public class RealTimeAuctionService {
         Member bidder = memberRepository.findById(bidderId)
                 .orElseThrow(() -> new MemberNotFoundException(bidderId));
 
-        AuctionBidInfoRes.BidderInfo bidderInfo = AuctionBidInfoRes.BidderInfo.of(bidder);
+        MemberInfo bidderInfo = MemberInfo.of(bidder);
 
         return AuctionBidInfoRes.builder()
                 .bidPrice(price)
@@ -173,7 +182,7 @@ public class RealTimeAuctionService {
         RealTimeAuctionInfo info = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        if (Objects.equals(info.getArtistId(), artistId)) {
+        if (Objects.equals(info.getArtistInfo().getMemberId(), artistId)) {
             realTimeAuctionRedisRepository.deleteById(auctionKey);
             return 1L;
         }

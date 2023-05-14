@@ -1,27 +1,32 @@
 package com.artfolio.artfolio.dto;
 
+import org.springframework.data.domain.Slice;
+
 import java.util.List;
 
 public record RealTimeAuctionPreviewRes(
+        Boolean hasNext,
         Boolean isLast,
         Integer pageSize,
         Integer pageNumber,
         Integer dataSize,
         List<PreviewInfo> data
 ) {
-    public static RealTimeAuctionPreviewRes of(Integer pageSize, Integer pageNumber, List<PreviewInfo> data) {
+    public static RealTimeAuctionPreviewRes of(Slice<RealTimeAuctionInfo> infos, List<PreviewInfo> data) {
         int size = data.size();
 
         return new RealTimeAuctionPreviewRes(
-                size == 0,
-                pageSize,
-                pageNumber,
+                infos.hasNext(),
+                infos.isLast(),
+                infos.getSize(),
+                infos.getNumber(),
                 size,
                 data
         );
     }
 
     public record PreviewInfo(
+            MemberInfo artistInfo,
             String auctionId,
             Long like,
             Long currentPrice,
@@ -29,8 +34,9 @@ public record RealTimeAuctionPreviewRes(
             String artPieceTitle,
             String thumbnailPath
     ) {
-        public static PreviewInfo of(RealTimeAuctionInfo info, String thumbnailPath) {
+        public static PreviewInfo of(MemberInfo artistInfo, RealTimeAuctionInfo info, String thumbnailPath) {
             return new PreviewInfo(
+                    artistInfo,
                     info.getId(),
                     info.getLike(),
                     info.getAuctionCurrentPrice(),
