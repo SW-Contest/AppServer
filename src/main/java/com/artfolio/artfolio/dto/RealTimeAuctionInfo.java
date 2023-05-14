@@ -35,12 +35,13 @@ public class RealTimeAuctionInfo { // Data transfer Object
     private Long auctionStartPrice;                         // 경매 시작가
     private Long auctionCurrentPrice;                       // 경매 현재가
     @JsonIgnore private Long bidderId;                      // 낙찰자 ID (nullable)
-    private Long like;                                      // 경매 좋아요 개수
+    private Long auctionLike;                                      // 경매 좋아요 개수
     private LocalDateTime createdAt;                        // 경매 생성일시
     private Set<Long> likeMembers = new HashSet<>();        // 좋아요 누른 멤버 ID 목록
     private List<String> photoPaths = new ArrayList<>();    // 사진 경로
+    private List<AuctionBidInfoRes> bidInfos = new ArrayList<>();
 
-    public void updateAuctionPhoto(String photoPath) {
-        this.photoPaths.add(photoPath);
+    public void updateBidInfo(AuctionBidInfoRes bidInfo) {
+        bidInfos.add(bidInfo);
     }
 }

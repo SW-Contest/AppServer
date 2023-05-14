@@ -54,7 +54,7 @@ public class RealTimeAuctionService {
         Member artist = memberRepository.findById(artistId)
                         .orElseThrow(() -> new MemberNotFoundException(artistId));
 
-        auctionInfo.setLike(0L);
+        auctionInfo.setAuctionLike(0L);
         auctionInfo.setPhotoPaths(artPiecePhotos);
         auctionInfo.setAuctionCurrentPrice(auctionInfo.getAuctionStartPrice());
         auctionInfo.setCreatedAt(LocalDateTime.now());
@@ -130,22 +130,25 @@ public class RealTimeAuctionService {
             throw new InvalidBidPriceException(principal, currentPrice, price, auctionKey);
         }
 
-        /* 실시간 경매 정보를 업데이트 하고 */
-        auctionInfo.setBidderId(bidderId);
-        auctionInfo.setAuctionCurrentPrice(price);
-        realTimeAuctionRedisRepository.save(auctionInfo);
-
-        /* 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성 후 반환 */
+        /* 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성 */
         Member bidder = memberRepository.findById(bidderId)
                 .orElseThrow(() -> new MemberNotFoundException(bidderId));
 
         MemberInfo bidderInfo = MemberInfo.of(bidder);
 
-        return AuctionBidInfoRes.builder()
+        AuctionBidInfoRes bidInfo = AuctionBidInfoRes.builder()
                 .bidPrice(price)
                 .bidderInfo(bidderInfo)
                 .bidDate(LocalDateTime.now())
                 .build();
+
+        /* 실시간 경매 정보를 업데이트 하고 입찰 기록을 맵에 저장 */
+        auctionInfo.setBidderId(bidderId);
+        auctionInfo.setAuctionCurrentPrice(price);
+        auctionInfo.updateBidInfo(bidInfo);
+        realTimeAuctionRedisRepository.save(auctionInfo);
+
+        return bidInfo;
     }
 
     public void updateImage(Long artPieceId, String s3Path) {
@@ -162,7 +165,7 @@ public class RealTimeAuctionService {
 
         /* 이미 좋아요가 눌린 상태에서 다시 누르면 취소, 아니면 + 1 */
         Set<Long> likeMembers = auctionInfo.getLikeMembers();
-        Long likes = auctionInfo.getLike();
+        Long likes = auctionInfo.getAuctionLike();
 
         if (likeMembers.contains(memberId)) {
             likes--;
@@ -172,7 +175,7 @@ public class RealTimeAuctionService {
             likeMembers.add(memberId);
         }
 
-        auctionInfo.setLike(likes);
+        auctionInfo.setAuctionLike(likes);
         realTimeAuctionRedisRepository.save(auctionInfo);
 
         return likes;
