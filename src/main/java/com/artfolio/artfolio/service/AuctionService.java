@@ -55,7 +55,7 @@ public class AuctionService {
                 .artist(artist)
                 .startPrice(auctionInfo.getAuctionStartPrice())
                 .finalPrice(auctionInfo.getAuctionCurrentPrice())
-                .like(auctionInfo.getLike())
+                .like(auctionInfo.getAuctionLike())
                 .bidder(bidder)
                 .artPiece(artPiece)
                 .isSold(isSold)

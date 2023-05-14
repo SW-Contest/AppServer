@@ -38,7 +38,7 @@ public record RealTimeAuctionPreviewRes(
             return new PreviewInfo(
                     artistInfo,
                     info.getId(),
-                    info.getLike(),
+                    info.getAuctionLike(),
                     info.getAuctionCurrentPrice(),
                     info.getAuctionTitle(),
                     info.getArtPieceTitle(),
