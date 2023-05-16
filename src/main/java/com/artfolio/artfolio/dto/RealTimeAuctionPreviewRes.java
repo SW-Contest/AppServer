@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.dto;
 
+import com.artfolio.artfolio.domain.redis.RealTimeAuctionInfo;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;

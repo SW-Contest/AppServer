@@ -1,11 +1,10 @@
 package com.artfolio.artfolio.repository;
 
-import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
+import com.artfolio.artfolio.domain.redis.RealTimeAuctionInfo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 

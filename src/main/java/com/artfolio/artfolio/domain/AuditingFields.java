@@ -1,4 +1,4 @@
-package com.artfolio.artfolio.domain.audit;
+package com.artfolio.artfolio.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

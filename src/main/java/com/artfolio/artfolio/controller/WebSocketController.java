@@ -1,6 +1,6 @@
 package com.artfolio.artfolio.controller;
 
-import com.artfolio.artfolio.dto.AuctionBidInfoRes;
+import com.artfolio.artfolio.dto.AuctionBid;
 import com.artfolio.artfolio.error.ErrorCode;
 import com.artfolio.artfolio.error.ErrorResponse;
 import com.artfolio.artfolio.exception.InvalidBidPriceException;
@@ -31,13 +31,9 @@ public class WebSocketController {
     // 구독 경로 : /sub/channel/{auctionId}
     // 발행 경로 : /pub/price
     @MessageMapping("/price")
-    public void updateAuctionPrice(Principal principal, @Payload Map<String, String> map) {
-        String auctionKey = map.get("auctionId");
-        Long bidderId = Long.parseLong(map.get("bidderId"));
-        Long price = Long.parseLong(map.get("price"));
-
-        AuctionBidInfoRes auctionBidInfoRes = realTimeAuctionService.updatePrice(principal, auctionKey, bidderId, price);
-        simp.convertAndSend("/topic/channel/" + auctionKey, auctionBidInfoRes);
+    public void updateAuctionPrice(Principal principal, @Payload AuctionBid.Req req) {
+        AuctionBid.Res res = realTimeAuctionService.updatePrice(principal, req);
+        simp.convertAndSend("/topic/channel/" + req.getAuctionId(), res);
     }
 
     /* 현재가보다 낮은 입찰가가 들어온 경우 예외 처리 */

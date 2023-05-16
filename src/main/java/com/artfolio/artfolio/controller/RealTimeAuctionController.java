@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.controller;
 
-import com.artfolio.artfolio.dto.RealTimeAuctionInfo;
+import com.artfolio.artfolio.dto.AuctionDetails;
+import com.artfolio.artfolio.dto.CreateAuction;
 import com.artfolio.artfolio.dto.RealTimeAuctionPreviewRes;
 import com.artfolio.artfolio.service.RealTimeAuctionService;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +21,16 @@ public class RealTimeAuctionController {
 
     /* 경매 생성 메서드 */
     @PostMapping("/create")
-    public ResponseEntity<String> createAuction(@RequestBody RealTimeAuctionInfo auctionInfo) {
-        String key = redisService.createAuction(auctionInfo);
-        return new ResponseEntity<>(key, HttpStatus.CREATED);
+    public ResponseEntity<CreateAuction.Res> createAuction(@RequestBody CreateAuction.Req req) {
+        CreateAuction.Res res = redisService.createAuction(req);
+        return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     /* 단일 경매 정보를 불러오는 메서드 */
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getAuction(@PathVariable("id") String auctionKey) {
-        Object auctionInfo = redisService.getAuction(auctionKey);
-        return ResponseEntity.ok(auctionInfo);
+    public ResponseEntity<AuctionDetails.Res> getAuction(@PathVariable("id") String auctionKey) {
+        AuctionDetails.Res res = redisService.getAuction(auctionKey);
+        return ResponseEntity.ok(res);
     }
 
     /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
@@ -62,7 +63,7 @@ public class RealTimeAuctionController {
     }
 
     /* 경매 낙찰 메서드 */
-    @PostMapping("/bid")
+    /*@PostMapping("/bid")
     public ResponseEntity<Long> finishAuctionWithBidder(
             @RequestParam("auctionId") String auctionKey,
             @RequestParam("bidderId") Long bidderId,
@@ -71,14 +72,14 @@ public class RealTimeAuctionController {
         Long result = redisService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
         return ResponseEntity.ok(result);
     }
-
+*/
     /* 경매 좋아요 +-1 메서드 */
-    @PostMapping("/like")
+    /*@PostMapping("/like")
     public ResponseEntity<Long> updateLike(
             @RequestParam("auctionId") String auctionId,
             @RequestParam("memberId") Long memberId
     ) {
         Long likes = redisService.updateLike(auctionId, memberId);
         return ResponseEntity.ok(likes);
-    }
+    }*/
 }

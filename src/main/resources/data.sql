@@ -1,5 +1,5 @@
-insert into member values (1, '작가 황승수입니다.', 'aaa@aa.com', true, 111, '황승수', 'null');
-insert into member values (2, '작가 이지영입니다.', 'bbb@bb.com', true, 222, '이지영', 'null');
+insert into member values (1, '작가 황승수입니다.', 'aaa@aa.com', true, 111, '황승수', 'aa@naver.com');
+insert into member values (2, '작가 이지영입니다.', 'bbb@bb.com', true, 222, '이지영', 'bb@google.com');
 
 insert into art_piece values(1, now(), 'seungsu', '게시글 1번', 10, '상세글 1번', 1);
 insert into art_piece values(2, now(), 'seungsu', '게시글 2번', 20, '상세글 2번', 2);
@@ -33,3 +33,5 @@ insert into art_piece values(27, now(), 'seungsu', '게시글 27번', 27, '상�
 insert into art_piece values(28, now(), 'seungsu', '게시글 28번', 17, '상세글 28번', 2);
 insert into art_piece values(29, now(), 'seungsu', '게시글 29번', 10, '상세글 29번', 1);
 insert into art_piece values(30, now(), 'seungsu', '게시글 30번', 1, '상세글 30번', 2);
+
+insert into art_piece_photo values(1, 'jpg', 'test', 'test', true, 123, 6);

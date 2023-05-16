@@ -1,6 +1,5 @@
 package com.artfolio.artfolio.domain;
 
-import com.artfolio.artfolio.domain.audit.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 
