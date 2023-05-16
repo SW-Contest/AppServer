@@ -18,7 +18,6 @@ public class AuctionDetails {
     public static class Res {
         private ArtistInfo artistInfo;
         private AuctionInfo auctionInfo;
-        private List<String> photoPaths;
         private List<BidderInfo> bidderInfos;
 
         public static Res of(RealTimeAuctionInfo realTimeAuctionInfo, List<AuctionBidInfo> bidInfo, List<ArtPiecePhoto> paths, Member artist) {
@@ -30,6 +29,10 @@ public class AuctionDetails {
                     .photoPath(artist.getProfilePhoto())
                     .build();
 
+            List<String> photoPaths = paths.stream()
+                    .map(ArtPiecePhoto::getFilePath)
+                    .toList();
+
             AuctionInfo auctionInfo = AuctionInfo.builder()
                     .id(realTimeAuctionInfo.getId())
                     .title(realTimeAuctionInfo.getAuctionTitle())
@@ -38,6 +41,7 @@ public class AuctionDetails {
                     .currentPrice(realTimeAuctionInfo.getAuctionCurrentPrice())
                     .like(realTimeAuctionInfo.getAuctionLike())
                     .createdAt(realTimeAuctionInfo.getCreatedAt())
+                    .photoPaths(photoPaths)
                     .build();
 
             List<BidderInfo> bidderInfos = bidInfo.stream()
@@ -45,14 +49,9 @@ public class AuctionDetails {
                     .sorted((o1, o2) -> o2.getBidDate().compareTo(o1.getBidDate()))
                     .toList();
 
-            List<String> photoPaths = paths.stream()
-                    .map(ArtPiecePhoto::getFilePath)
-                    .toList();
-
             return Res.builder()
                     .artistInfo(artistInfo)
                     .auctionInfo(auctionInfo)
-                    .photoPaths(photoPaths)
                     .bidderInfos(bidderInfos)
                     .build();
         }
@@ -78,6 +77,7 @@ public class AuctionDetails {
         private Long currentPrice;
         private Long like;
         private LocalDateTime createdAt;
+        private List<String> photoPaths;
     }
 
     @Builder @Getter

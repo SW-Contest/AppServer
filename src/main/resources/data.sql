@@ -34,4 +34,4 @@ insert into art_piece values(28, now(), 'seungsu', '게시글 28번', 17, '상�
 insert into art_piece values(29, now(), 'seungsu', '게시글 29번', 10, '상세글 29번', 1);
 insert into art_piece values(30, now(), 'seungsu', '게시글 30번', 1, '상세글 30번', 2);
 
-insert into art_piece_photo values(1, 'jpg', 'test', 'test', true, 123, 6);
+insert into art_piece_photo values(1, 'jpg', 'test', 'test.com', true, 123, 6);
