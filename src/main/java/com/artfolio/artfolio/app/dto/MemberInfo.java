@@ -1,4 +1,4 @@
-package com.artfolio.artfolio.dto;
+package com.artfolio.artfolio.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
@@ -20,7 +20,6 @@ public class MemberInfo {
     private String password;
     private String name;
     private String email;
-    @JsonProperty("likeAuctions")
     private Set<Long> likeAuctions = new HashSet<>();              // 좋아요 누른 경매 불러오기
     private String profilePhoto;
     private String content;

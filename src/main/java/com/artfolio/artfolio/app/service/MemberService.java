@@ -2,7 +2,7 @@ package com.artfolio.artfolio.app.service;
 
 import com.artfolio.artfolio.app.domain.Member;
 import com.artfolio.artfolio.app.repository.MemberRepository;
-import com.artfolio.artfolio.dto.MemberInfo;
+import com.artfolio.artfolio.app.dto.MemberInfo;
 import com.artfolio.artfolio.global.exception.DuplicateIdException;
 import com.artfolio.artfolio.global.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;

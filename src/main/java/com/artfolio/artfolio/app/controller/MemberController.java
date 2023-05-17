@@ -1,7 +1,7 @@
 package com.artfolio.artfolio.app.controller;
 
 import com.artfolio.artfolio.app.service.MemberService;
-import com.artfolio.artfolio.dto.MemberInfo;
+import com.artfolio.artfolio.app.dto.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
