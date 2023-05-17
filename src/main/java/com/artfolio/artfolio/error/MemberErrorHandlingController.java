@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.error;
 
 import com.artfolio.artfolio.exception.DeleteAuthorityException;
+import com.artfolio.artfolio.exception.DuplicateIdException;
 import com.artfolio.artfolio.exception.MemberNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,12 @@ public class MemberErrorHandlingController {
     public ErrorResponse handleMemberNotAuthorityException() {
         log.error("해당 예술가가 등록한 경매가 아니여서 경매를 삭제할 수 없습니다.");
         return buildError(ErrorCode.NO_DELETE_AUTHORITY);
+    }
+
+    @ExceptionHandler(DuplicateIdException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDuplicateIdException () {
+        log.error("해당 예술가가 등록한 경매가 아니여서 경매를 삭제할 수 없습니다.");
+        return buildError(ErrorCode.DUPLICATE_ID);
     }
 }

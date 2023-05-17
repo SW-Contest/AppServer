@@ -14,19 +14,25 @@ public class MemberController {
 
     @PostMapping("/save")
     public ResponseEntity<Long> saveMember(@RequestBody MemberInfo memberInfo){
-        Long result = memberService.saveMemberInfo(memberInfo);
+        Long result = memberService.saveMember(memberInfo);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getMemberById(@PathVariable("id") Long memberId){
         Object memberInfo = memberService.getMemberById(memberId);
         return ResponseEntity.ok(memberInfo);
     }
 
-    @DeleteMapping("/id")
-    public ResponseEntity<Long> deleteMember(@PathVariable("id") Long memberId) {
-        memberService.deleteMember(memberId);
-        return ResponseEntity.ok(1L);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getMemberByName(@PathVariable("id") String memberName){
+        Object memberInfo = memberService.getMemberByName(memberName);
+        return ResponseEntity.ok(memberInfo);
+    }
+
+    @PutMapping("/{id}/deactive")
+    public ResponseEntity<Long> deactivateMember(@PathVariable("id") Long memberId) {
+        Long status = memberService.deactivateMember(memberId);
+        return ResponseEntity.ok(status);
     }
 }

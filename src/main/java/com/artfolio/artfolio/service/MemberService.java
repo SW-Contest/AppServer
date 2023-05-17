@@ -2,9 +2,11 @@ package com.artfolio.artfolio.service;
 
 import com.artfolio.artfolio.domain.Member;
 import com.artfolio.artfolio.dto.MemberInfo;
+import com.artfolio.artfolio.exception.DuplicateIdException;
 import com.artfolio.artfolio.exception.MemberNotFoundException;
 import com.artfolio.artfolio.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,41 +15,60 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
-    public Long saveMemberInfo(MemberInfo memberInfo) {
+    public Long saveMember(MemberInfo memberInfo) {
+        String username = memberInfo.getUsername();
+        String password = memberInfo.getPassword();
 
-        // 예외처리 추가..
+        if (memberRepository.existsByUsername((username)))
+            throw new DuplicateIdException(username);
 
         Member member = Member.builder()
+                .username(username)
+                .password(password)
                 .name(memberInfo.getName())
                 .email(memberInfo.getEmail())
-                .like(0L)
+                .like(null)
                 .content(memberInfo.getContent())
                 // 이미지 업로드 로직 필요
                 //.profilePhoto()
+                .active(true)
                 .build();
 
         memberRepository.save(member);
-        return 1L;
+        return member.getId();
     }
 
-    public Object getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(()-> new MemberNotFoundException(memberId));
-    }
-
-//    // name으로 찾는거 추가하고 싶었는데 exception 수정해야 할듯..
-//    public Object getMemberByName(String name) {
-//        return memberRepository.findByName(name)
-//                .orElseThrow(() -> new MemberNotFoundException(name));
-//    }
-
-    public void deleteMember(Long memberId) {
+    public Member getMemberById(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        // MemberNotFound 말고 처리해야 할 예외가 더 있을까?
-        // 근데 Member 지우면 DB에 쌓인 정보들은 어떻게 처리됨?
-        // delete말고 비활성화(deactive)로 해야하나?
-        memberRepository.delete(member);
+        // member가 active 상태인지 확인
+        if (!member.isActive())
+            throw new MemberNotFoundException(memberId);
+
+        return member;
+    }
+
+    public Member getMemberByName(String memberName) {
+        Member member = memberRepository.findByName(memberName)
+                .orElseThrow(() -> new MemberNotFoundException(memberName));
+
+        // member가 active 상태인지 확인
+        if (!member.isActive())
+            throw new MemberNotFoundException(memberName);
+
+        return member;
+    }
+
+    public Long deactivateMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        if (member.isActive()) {
+            member.setActive(false);
+            memberRepository.save(member);
+            return 1L;
+        }
+        return 0L;
     }
 }

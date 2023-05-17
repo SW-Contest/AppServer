@@ -12,6 +12,10 @@ import java.util.List;
 public class Member {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
+    private String username;
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false)
     private String name;
@@ -31,6 +35,10 @@ public class Member {
     @Column(length = 1500, nullable = false)
     private String content;
 
+    @Setter
+    @Column(nullable = false)
+    private boolean active;
+
     @OneToMany(mappedBy = "artist")
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
@@ -38,12 +46,15 @@ public class Member {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
-    public Member(String name, String email, Boolean isArtist, Long like, String profilePhoto, String content) {
+    public Member(String username, String password, String name, String email, Boolean isArtist, Long like, String profilePhoto, String content, Boolean active) {
+        this.username = username;
+        this.password = password;
         this.name = name;
         this.email = email;
         this.isArtist = isArtist;
         this.like = like;
         this.profilePhoto = profilePhoto;
         this.content = content;
+        this.active = active;
     }
 }
