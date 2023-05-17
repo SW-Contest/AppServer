@@ -98,6 +98,14 @@ public class RealTimeAuctionService {
 
             String thumbnailPath = thumbnailPaths.isEmpty() ? "null" : thumbnailPaths.get(0);
 
+            if (!thumbnailPath.equals("null")) {
+                int lastDotIdx = thumbnailPath.lastIndexOf(".");
+
+                String thumbnailFullPath = thumbnailPath.substring(0, lastDotIdx);
+                String thumbnailExt = thumbnailPath.substring(lastDotIdx);
+                thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
+            }
+
             RealTimeAuctionPreview.PreviewInfo preview = RealTimeAuctionPreview.PreviewInfo.of(info, artist, thumbnailPath);
             data.add(preview);
         }
