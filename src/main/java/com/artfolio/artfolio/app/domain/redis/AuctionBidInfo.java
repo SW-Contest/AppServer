@@ -50,7 +50,6 @@ public class AuctionBidInfo {
                 .bidderId(member.getId())
                 .like(member.getLike())
                 .bidPrice(bidPrice)
-                .name(member.getName())
                 .email(member.getEmail())
                 .profilePhotoPath(member.getProfilePhoto())
                 .bidDate(LocalDateTime.now())

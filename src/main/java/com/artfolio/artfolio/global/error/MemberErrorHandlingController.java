@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.global.error;
 
 import com.artfolio.artfolio.global.exception.DeleteAuthorityException;
+import com.artfolio.artfolio.global.exception.DuplicateIdException;
 import com.artfolio.artfolio.global.exception.MemberNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,5 +34,12 @@ public class MemberErrorHandlingController {
     protected ErrorResponse handleMemberNotAuthorityException() {
         log.error("해당 예술가가 등록한 경매가 아니여서 경매를 삭제할 수 없습니다.");
         return buildError(ErrorCode.NO_DELETE_AUTHORITY);
+    }
+
+    @ExceptionHandler(DuplicateIdException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleDuplicateIdException () {
+        log.error("이미 존재하는 회원입니다.");
+        return buildError(ErrorCode.DUPLICATE_ID);
     }
 }

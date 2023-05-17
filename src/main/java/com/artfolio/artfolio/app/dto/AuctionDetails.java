@@ -25,7 +25,7 @@ public class AuctionDetails {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
                     .like(artist.getLike())
-                    .name(artist.getName())
+                    .name(artist.getUsername())
                     .email(artist.getEmail())
                     .photoPath(artist.getProfilePhoto())
                     .build();

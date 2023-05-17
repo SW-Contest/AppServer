@@ -44,7 +44,7 @@ public class RealTimeAuctionPreview {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
                     .email(artist.getEmail())
-                    .name(artist.getName())
+                    .name(artist.getUsername())
                     .like(artist.getLike())
                     .profilePath(artist.getProfilePhoto())
                     .build();
@@ -53,7 +53,7 @@ public class RealTimeAuctionPreview {
                     .id(info.getId())
                     .like(info.getAuctionLike())
                     .currentPrice(info.getAuctionCurrentPrice())
-                    .auctionTitle(info.getAuctionTitle())
+                    .title(info.getAuctionTitle())
                     .artPieceTitle(info.getArtPieceTitle())
                     .thumbnailPath(thumbnailPath)
                     .build();
@@ -68,7 +68,7 @@ public class RealTimeAuctionPreview {
         private String id;
         private Integer like;
         private Long currentPrice;
-        private String auctionTitle;
+        private String title;
         private String artPieceTitle;
         private String thumbnailPath;
     }

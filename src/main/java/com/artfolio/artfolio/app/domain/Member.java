@@ -14,7 +14,10 @@ public class Member {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(unique = true, nullable = false, updatable = false)
     private String email;
@@ -31,6 +34,10 @@ public class Member {
     @Column(length = 1500, nullable = false)
     private String content;
 
+    @Setter
+    @Column(nullable = false)
+    private boolean active;
+
     @OneToMany(mappedBy = "artist")
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
@@ -38,12 +45,14 @@ public class Member {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
-    public Member(String name, String email, Boolean isArtist, Integer like, String profilePhoto, String content) {
-        this.name = name;
+    public Member(String username, String password, String email, Boolean isArtist, Integer like, String profilePhoto, String content, Boolean active) {
+        this.username = username;
+        this.password = password;
         this.email = email;
         this.isArtist = isArtist;
         this.like = like;
         this.profilePhoto = profilePhoto;
         this.content = content;
+        this.active = active;
     }
 }

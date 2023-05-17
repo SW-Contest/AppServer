@@ -44,7 +44,7 @@ public class WebSocketController {
         log.error("bid price : " + e.getBidPrice());
 
         /* 예외시 브로드캐스팅이 아닌 입찰한 유저에게만 응답을 전송해야 한다. */
-        ErrorResponse errorResponse = buildError(ErrorCode.INVALID_BID_PRICE);
+        ErrorResponse errorResponse = buildError(ErrorCode.INPUT_VALUE_INVALID);
         simp.convertAndSendToUser(e.getPrincipal().getName(), "/queue/errors", errorResponse);
     }
 }
