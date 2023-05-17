@@ -1,6 +1,5 @@
 package com.artfolio.artfolio.dto;
 
-import com.artfolio.artfolio.domain.Member;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
