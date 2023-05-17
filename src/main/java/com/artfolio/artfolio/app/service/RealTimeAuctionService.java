@@ -7,10 +7,14 @@ import com.artfolio.artfolio.app.domain.redis.RealTimeAuctionInfo;
 import com.artfolio.artfolio.app.dto.*;
 import com.artfolio.artfolio.app.repository.*;
 import com.artfolio.artfolio.global.exception.*;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +33,7 @@ public class RealTimeAuctionService {
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
     private final BidRedisRepository bidderRedisRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(readOnly = true)
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -80,6 +85,7 @@ public class RealTimeAuctionService {
         return AuctionDetails.Res.of(realTimeAuctionInfo, bidInfos, artPiecePhotos, artist);
     }
 
+    @Transactional(readOnly = true)
     public AuctionPreviewList.Res getAuctionList(Pageable pageable) {
         Slice<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
         List<AuctionPreviewList.PreviewInfo> data = new ArrayList<>();
@@ -205,7 +211,6 @@ public class RealTimeAuctionService {
         return auctionService.saveAuctionInfo(auctionInfo, isSold, 1L);
     }
 
-    /*
     public Long finishAuctionWithBidder(String auctionKey, Long bidderId, Long finalPrice) {
         RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
@@ -214,10 +219,9 @@ public class RealTimeAuctionService {
         if (auctionInfo.getAuctionCurrentPrice() > finalPrice) return 0L;
 
         // 레디스에서 삭제 후 DB에 경매 기록 저장
-        auctionInfo.setAuctionCurrentPrice(finalPrice);
+        auctionInfo.updateCurrentPrice(finalPrice);
         realTimeAuctionRedisRepository.deleteById(auctionKey);
 
-        return auctionService.saveAuctionInfo(auctionInfo, true, 1L);
+        return auctionService.saveAuctionInfo(auctionInfo, true, bidderId);
     }
-     */
 }

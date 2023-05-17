@@ -63,7 +63,7 @@ public class RealTimeAuctionController {
     }
 
     /* 경매 낙찰 메서드 */
-    /*@PostMapping("/bid")
+    @PostMapping("/bid")
     public ResponseEntity<Long> finishAuctionWithBidder(
             @RequestParam("auctionId") String auctionKey,
             @RequestParam("bidderId") Long bidderId,
@@ -72,7 +72,7 @@ public class RealTimeAuctionController {
         Long result = redisService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
         return ResponseEntity.ok(result);
     }
-*/
+
     /* 경매 좋아요 +-1 메서드 */
     @PostMapping("/like")
     public ResponseEntity<Integer> updateLike(
