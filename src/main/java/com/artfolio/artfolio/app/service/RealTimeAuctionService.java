@@ -80,9 +80,9 @@ public class RealTimeAuctionService {
         return AuctionDetails.Res.of(realTimeAuctionInfo, bidInfos, artPiecePhotos, artist);
     }
 
-    public RealTimeAuctionPreview.Res getAuctionList(Pageable pageable) {
+    public AuctionPreviewList.Res getAuctionList(Pageable pageable) {
         Slice<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
-        List<RealTimeAuctionPreview.PreviewInfo> data = new ArrayList<>();
+        List<AuctionPreviewList.PreviewInfo> data = new ArrayList<>();
 
         for (RealTimeAuctionInfo info : infos) {
             Long artistId = info.getArtistId();
@@ -106,11 +106,11 @@ public class RealTimeAuctionService {
                 thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
             }
 
-            RealTimeAuctionPreview.PreviewInfo preview = RealTimeAuctionPreview.PreviewInfo.of(info, artist, thumbnailPath);
+            AuctionPreviewList.PreviewInfo preview = AuctionPreviewList.PreviewInfo.of(info, artist, thumbnailPath);
             data.add(preview);
         }
 
-        return RealTimeAuctionPreview.Res.of(infos, data);
+        return AuctionPreviewList.Res.of(infos, data);
     }
 
     @Transactional(readOnly = true)

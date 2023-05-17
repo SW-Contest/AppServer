@@ -18,25 +18,36 @@ public class AuctionBid {
     @Builder @Getter
     @AllArgsConstructor
     public static class Res {
-        private Long id;
-        private String name;
-        private String email;
-        private String photoPath;
-        private Integer like;
-        private Long price;
+        private BidderInfo bidderInfo;
+        private Long bidPrice;
         private LocalDateTime bidDate;
 
         public static Res of(AuctionBidInfo info) {
-            return Res.builder()
+            BidderInfo bidderInfo = BidderInfo.builder()
                     .id(info.getBidderId())
+                    .username(info.getUsername())
                     .name(info.getName())
                     .email(info.getEmail())
                     .photoPath(info.getProfilePhotoPath())
                     .like(info.getLike())
-                    .price(info.getBidPrice())
+                    .build();
+
+            return Res.builder()
+                    .bidderInfo(bidderInfo)
+                    .bidPrice(info.getBidPrice())
                     .bidDate(info.getBidDate())
                     .build();
         }
     }
-}
 
+    @Getter @Builder
+    @AllArgsConstructor
+    private static class BidderInfo {
+        private Long id;
+        private String username;
+        private String name;
+        private String email;
+        private String photoPath;
+        private Integer like;
+    }
+}

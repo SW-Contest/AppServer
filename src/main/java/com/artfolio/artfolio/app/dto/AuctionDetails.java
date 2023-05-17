@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ public class AuctionDetails {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
                     .like(artist.getLike())
+                    .username(artist.getUsername())
                     .name(artist.getName())
                     .email(artist.getEmail())
                     .photoPath(artist.getProfilePhoto())
@@ -48,7 +50,7 @@ public class AuctionDetails {
 
             List<BidderInfo> bidderInfos = bidInfo.stream()
                     .map(BidderInfo::of)
-                    .sorted((o1, o2) -> o2.getBidDate().compareTo(o1.getBidDate()))
+                    .sorted(Comparator.comparing(BidderInfo::getBidDate))
                     .toList();
 
             return Res.builder()
@@ -64,6 +66,7 @@ public class AuctionDetails {
     private static class ArtistInfo {
         private Long id;
         private Integer like;
+        private String username;
         private String name;
         private String email;
         private String photoPath;

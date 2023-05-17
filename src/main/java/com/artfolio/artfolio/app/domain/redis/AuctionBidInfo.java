@@ -18,6 +18,7 @@ public class AuctionBidInfo {
     private Long bidPrice;
     private Integer like;
     private String name;
+    private String username;
     private String email;
     private String profilePhotoPath;
     private LocalDateTime bidDate;
@@ -29,6 +30,7 @@ public class AuctionBidInfo {
             Long bidPrice,
             Integer like,
             String name,
+            String username,
             String email,
             String profilePhotoPath,
             LocalDateTime bidDate
@@ -38,6 +40,7 @@ public class AuctionBidInfo {
         this.bidPrice = bidPrice;
         this.like = like;
         this.name = name;
+        this.username = username;
         this.email = email;
         this.profilePhotoPath = profilePhotoPath;
         this.bidDate = bidDate;
@@ -48,9 +51,10 @@ public class AuctionBidInfo {
         return AuctionBidInfo.builder()
                 .auctionKey(auctionKey)
                 .bidderId(member.getId())
-                .like(member.getLike())
                 .bidPrice(bidPrice)
+                .like(member.getLike())
                 .name(member.getName())
+                .username(member.getUsername())
                 .email(member.getEmail())
                 .profilePhotoPath(member.getProfilePhoto())
                 .bidDate(LocalDateTime.now())

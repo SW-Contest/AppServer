@@ -9,7 +9,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
-public class RealTimeAuctionPreview {
+public class AuctionPreviewList {
     @Getter
     @AllArgsConstructor
     public static class Res {
@@ -44,6 +44,7 @@ public class RealTimeAuctionPreview {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
                     .email(artist.getEmail())
+                    .username(artist.getUsername())
                     .name(artist.getName())
                     .like(artist.getLike())
                     .profilePath(artist.getProfilePhoto())
@@ -53,7 +54,7 @@ public class RealTimeAuctionPreview {
                     .id(info.getId())
                     .like(info.getAuctionLike())
                     .currentPrice(info.getAuctionCurrentPrice())
-                    .auctionTitle(info.getAuctionTitle())
+                    .title(info.getAuctionTitle())
                     .artPieceTitle(info.getArtPieceTitle())
                     .thumbnailPath(thumbnailPath)
                     .build();
@@ -68,7 +69,7 @@ public class RealTimeAuctionPreview {
         private String id;
         private Integer like;
         private Long currentPrice;
-        private String auctionTitle;
+        private String title;
         private String artPieceTitle;
         private String thumbnailPath;
     }
@@ -77,6 +78,7 @@ public class RealTimeAuctionPreview {
     @AllArgsConstructor
     private static class ArtistInfo {
         private Long id;
+        private String username;
         private String name;
         private String email;
         private String profilePath;
