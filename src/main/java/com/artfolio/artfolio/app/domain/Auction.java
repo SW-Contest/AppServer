@@ -25,7 +25,7 @@ public class Auction extends AuditingFields {
     private Long finalPrice;
 
     @Column(nullable = false, name = "auction_like")
-    private Long like;
+    private Integer like;
 
     @Column(nullable = false)
     private Boolean isSold;
@@ -43,7 +43,7 @@ public class Auction extends AuditingFields {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
-    public Auction(Member artist, Long startPrice, Long finalPrice, Long like, Boolean isSold, Member bidder, ArtPiece artPiece) {
+    public Auction(Member artist, Long startPrice, Long finalPrice, Integer like, Boolean isSold, Member bidder, ArtPiece artPiece) {
         this.artist = artist;
         this.startPrice = startPrice;
         this.finalPrice = finalPrice;

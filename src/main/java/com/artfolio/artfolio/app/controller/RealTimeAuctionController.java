@@ -2,7 +2,7 @@ package com.artfolio.artfolio.app.controller;
 
 import com.artfolio.artfolio.app.dto.AuctionDetails;
 import com.artfolio.artfolio.app.dto.CreateAuction;
-import com.artfolio.artfolio.app.dto.RealTimeAuctionPreviewRes;
+import com.artfolio.artfolio.app.dto.RealTimeAuctionPreview;
 import com.artfolio.artfolio.app.service.RealTimeAuctionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +35,7 @@ public class RealTimeAuctionController {
 
     /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
     @GetMapping("/list")
-    public RealTimeAuctionPreviewRes getAuctionList(
+    public RealTimeAuctionPreview.Res getAuctionList(
             @PageableDefault(sort = "createdAt", size = 10, direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return redisService.getAuctionList(pageable);
@@ -74,12 +74,12 @@ public class RealTimeAuctionController {
     }
 */
     /* 경매 좋아요 +-1 메서드 */
-    /*@PostMapping("/like")
-    public ResponseEntity<Long> updateLike(
+    @PostMapping("/like")
+    public ResponseEntity<Integer> updateLike(
             @RequestParam("auctionId") String auctionId,
             @RequestParam("memberId") Long memberId
     ) {
-        Long likes = redisService.updateLike(auctionId, memberId);
+        Integer likes = redisService.updateLike(auctionId, memberId);
         return ResponseEntity.ok(likes);
-    }*/
+    }
 }

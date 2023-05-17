@@ -23,7 +23,7 @@ public class Member {
     private Boolean isArtist;
 
     @Column(name = "member_like", nullable = false)
-    private Long like;
+    private Integer like;
 
     @Column(nullable = false)
     private String profilePhoto;
@@ -38,7 +38,7 @@ public class Member {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Builder
-    public Member(String name, String email, Boolean isArtist, Long like, String profilePhoto, String content) {
+    public Member(String name, String email, Boolean isArtist, Integer like, String profilePhoto, String content) {
         this.name = name;
         this.email = email;
         this.isArtist = isArtist;

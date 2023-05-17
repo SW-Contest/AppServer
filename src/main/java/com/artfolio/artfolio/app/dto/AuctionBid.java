@@ -22,7 +22,7 @@ public class AuctionBid {
         private String name;
         private String email;
         private String photoPath;
-        private Long like;
+        private Integer like;
         private Long price;
         private LocalDateTime bidDate;
 

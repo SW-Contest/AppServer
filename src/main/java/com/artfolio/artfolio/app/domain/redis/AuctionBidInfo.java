@@ -15,8 +15,8 @@ public class AuctionBidInfo {
     @Id private String id;
     @Indexed private String auctionKey;
     private Long bidderId;
-    private Long like;
     private Long bidPrice;
+    private Integer like;
     private String name;
     private String email;
     private String profilePhotoPath;
@@ -26,8 +26,8 @@ public class AuctionBidInfo {
     public AuctionBidInfo(
             String auctionKey,
             Long bidderId,
-            Long like,
             Long bidPrice,
+            Integer like,
             String name,
             String email,
             String profilePhotoPath,
@@ -35,8 +35,8 @@ public class AuctionBidInfo {
     ) {
         this.auctionKey = auctionKey;
         this.bidderId = bidderId;
-        this.like = like;
         this.bidPrice = bidPrice;
+        this.like = like;
         this.name = name;
         this.email = email;
         this.profilePhotoPath = profilePhotoPath;

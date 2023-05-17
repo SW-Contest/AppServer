@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class MemberNotFoundException extends RuntimeException {
-    private final Long memberId;
+    private final Object memberId;
 
-    public MemberNotFoundException(Long memberId) {
+    public MemberNotFoundException(Object memberId) {
         this.memberId = memberId;
     }
 }

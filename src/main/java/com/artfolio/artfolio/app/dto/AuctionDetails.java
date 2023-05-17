@@ -10,6 +10,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class AuctionDetails {
     @Getter
@@ -41,6 +42,7 @@ public class AuctionDetails {
                     .currentPrice(realTimeAuctionInfo.getAuctionCurrentPrice())
                     .like(realTimeAuctionInfo.getAuctionLike())
                     .createdAt(realTimeAuctionInfo.getCreatedAt())
+                    .likeMembers(realTimeAuctionInfo.getLikeMembers())
                     .photoPaths(photoPaths)
                     .build();
 
@@ -61,7 +63,7 @@ public class AuctionDetails {
     @AllArgsConstructor
     private static class ArtistInfo {
         private Long id;
-        private Long like;
+        private Integer like;
         private String name;
         private String email;
         private String photoPath;
@@ -75,8 +77,9 @@ public class AuctionDetails {
         private String content;
         private Long startPrice;
         private Long currentPrice;
-        private Long like;
+        private Integer like;
         private LocalDateTime createdAt;
+        private Set<Long> likeMembers;
         private List<String> photoPaths;
     }
 
@@ -87,7 +90,7 @@ public class AuctionDetails {
         private String name;
         private String email;
         private String photoPath;
-        private Long like;
+        private Integer like;
         private Long bidPrice;
         private LocalDateTime bidDate;
 

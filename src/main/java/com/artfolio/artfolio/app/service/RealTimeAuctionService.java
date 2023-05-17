@@ -42,7 +42,9 @@ public class RealTimeAuctionService {
 
         // artist 존재하지 않는 경우 예외 처리 (ref 체크 -> EntityNotFoundException, 추후 테스트 단계 지나면 제거)
         Long artistId = req.getArtistId();
-        memberRepository.getReferenceById(artistId);
+
+        memberRepository.findById(artistId)
+                .orElseThrow(() -> new MemberNotFoundException(artistId));
 
         // 해당 예술품에 대한 사진 목록 가져오기
         List<String> photoPaths = artPiecePhotoRepository
@@ -78,37 +80,29 @@ public class RealTimeAuctionService {
         return AuctionDetails.Res.of(realTimeAuctionInfo, bidInfos, artPiecePhotos, artist);
     }
 
-    public RealTimeAuctionPreviewRes getAuctionList(Pageable pageable) {
+    public RealTimeAuctionPreview.Res getAuctionList(Pageable pageable) {
         Slice<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
-        List<RealTimeAuctionPreviewRes.PreviewInfo> data = new ArrayList<>();
+        List<RealTimeAuctionPreview.PreviewInfo> data = new ArrayList<>();
 
-        // 각 실시간 경매에 대한 썸네일 경로를 추출한다
         for (RealTimeAuctionInfo info : infos) {
-            Long artPieceId = info.getArtPieceId();
-            List<ArtPiecePhoto> thumbnailPhoto = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(artPieceId)
+            Long artistId = info.getArtistId();
+
+            Member artist = memberRepository.findById(artistId)
+                    .orElseThrow(() -> new MemberNotFoundException(artistId));
+
+            List<String> thumbnailPaths = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(info.getArtPieceId())
                     .stream()
                     .filter(ArtPiecePhoto::getIsThumbnail)
+                    .map(ArtPiecePhoto::getFilePath)
                     .toList();
 
-            String thumbnailPath = thumbnailPhoto.isEmpty() ? "null" : thumbnailPhoto.get(0).getFilePath();
+            String thumbnailPath = thumbnailPaths.isEmpty() ? "null" : thumbnailPaths.get(0);
 
-            if (!thumbnailPath.equals("null")) {
-                int lastDotIdx = thumbnailPath.lastIndexOf(".");
-
-                String thumbnailFullPath = thumbnailPath.substring(0, lastDotIdx);
-                String thumbnailExt = thumbnailPath.substring(lastDotIdx);
-                thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
-            }
-
-            Member artist = artPieceRepository.findArtPieceById(artPieceId)
-                    .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId))
-                    .getArtist();
-
-            MemberInfo artistInfo = MemberInfo.of(artist);
-            data.add(RealTimeAuctionPreviewRes.PreviewInfo.of(artistInfo, info, thumbnailPath));
+            RealTimeAuctionPreview.PreviewInfo preview = RealTimeAuctionPreview.PreviewInfo.of(info, artist, thumbnailPath);
+            data.add(preview);
         }
 
-        return RealTimeAuctionPreviewRes.of(infos, data);
+        return RealTimeAuctionPreview.Res.of(infos, data);
     }
 
     @Transactional(readOnly = true)
@@ -150,29 +144,32 @@ public class RealTimeAuctionService {
         realTimeAuctionRedisRepository.save(auctionInfo);
     }
 
-    /*
-    public Long updateLike(String auctionKey, Long memberId) {
+    public Integer updateLike(String auctionKey, Long memberId) {
         RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
+        // 멤버 정보 찾기
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
         // 이미 좋아요가 눌린 상태에서 다시 누르면 취소, 아니면 + 1
-        List<Long> likeMembers = auctionInfo.getLikeMembers();
-        Long likes = auctionInfo.getAuctionLike();
+        Set<Long> likeMembers = auctionInfo.getLikeMembers();
+        Integer like = likeMembers.size();
 
         if (likeMembers.contains(memberId)) {
-            likes--;
             likeMembers.remove(memberId);
-        } else {
-            likes++;
+            like--;
+        }
+        else {
             likeMembers.add(memberId);
+            like++;
         }
 
-        auctionInfo.setAuctionLike(likes);
+        auctionInfo.updateLike(like);
         realTimeAuctionRedisRepository.save(auctionInfo);
 
-        return likes;
+        return like;
     }
-     */
 
     public Long deleteAuction(String auctionKey, Long artistId) {
         RealTimeAuctionInfo info = realTimeAuctionRedisRepository.findById(auctionKey)
