@@ -125,13 +125,18 @@ public class RealTimeAuctionService {
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
 
-        // 실시간 경매 정보를 가져온다
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+        RealTimeAuctionInfo auctionInfo;
 
-        // 현재가보다 낮은 경우 예외 처리
-        if (auctionInfo.getAuctionCurrentPrice() >= price) {
-            throw new InvalidBidPriceException(principal, auctionInfo.getAuctionCurrentPrice(), price, auctionKey);
+        // 임계구역 스레드 동기화 처리
+        synchronized (this) {
+            // 실시간 경매 정보를 가져온다
+            auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
+                    .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+            // 현재가보다 낮은 경우 예외 처리
+            if (auctionInfo.getAuctionCurrentPrice() >= price) {
+                throw new InvalidBidPriceException(principal, auctionInfo.getAuctionCurrentPrice(), price, auctionKey);
+            }
         }
 
         // 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성
