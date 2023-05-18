@@ -44,6 +44,7 @@ public class AuctionDetails {
                     .currentPrice(realTimeAuctionInfo.getAuctionCurrentPrice())
                     .like(realTimeAuctionInfo.getAuctionLike())
                     .createdAt(realTimeAuctionInfo.getCreatedAt())
+                    .finishedAt(realTimeAuctionInfo.getCreatedAt().plusDays(7))
                     .likeMembers(realTimeAuctionInfo.getLikeMembers())
                     .photoPaths(photoPaths)
                     .build();
@@ -82,6 +83,7 @@ public class AuctionDetails {
         private Long currentPrice;
         private Integer like;
         private LocalDateTime createdAt;
+        private LocalDateTime finishedAt;
         private Set<Long> likeMembers;
         private List<String> photoPaths;
     }
