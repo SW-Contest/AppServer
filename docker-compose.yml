@@ -1,41 +1,47 @@
-version: '3.0'
+version: '3.7'
 
 services:
-  art-folio:
-    container_name: art-folio   # 컨테이너 이름 설정
+  db:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: artfolio
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
 
-    image: amazoncorretto:17-alpine-jdk
-
-    build:
-      dockerfile: Dockerfile    # 이미지 빌드 도커파일 설정
+    restart: always
 
     ports:
-      - "8080:8080"             # 포트 포워딩 설정
+      - 5432:5432
 
-    command: ["./gradlew", "bootRun"]
-
-    depends_on:
-      - db
-      - redis
-
-    restart: "no"     # 컨테이너 비정상 종료시 재시작 여부
-
-  db:
-    container_name: db
-    image: postgre-server
     volumes:
-      - ./docker
-    environment:
-      - POSTGRES_DB=artfolio
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1111
+      - ~/Desktop/postgres/5432/data:/var/lib/postgresql/data
 
   redis:
+    container_name: redis
     image: redis:alpine
     command: redis-server --port 6379
-    container_name: redis-server
     labels:
       - "name=redis"
       - "mode=standalone"
     ports:
       - 6379:6379
+    volumes:
+      - ~/Desktop/redis/6379:/data
+
+  application:
+    container_name: artfolio
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/artfolio
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1111
+
+    depends_on:
+      - redis
+      - db
