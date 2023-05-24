@@ -1,0 +1,41 @@
+version: '3.0'
+
+services:
+  art-folio:
+    container_name: art-folio   # 컨테이너 이름 설정
+
+    image: amazoncorretto:17-alpine-jdk
+
+    build:
+      dockerfile: Dockerfile    # 이미지 빌드 도커파일 설정
+
+    ports:
+      - "8080:8080"             # 포트 포워딩 설정
+
+    command: ["./gradlew", "bootRun"]
+
+    depends_on:
+      - db
+      - redis
+
+    restart: "no"     # 컨테이너 비정상 종료시 재시작 여부
+
+  db:
+    container_name: db
+    image: postgre-server
+    volumes:
+      - ./docker
+    environment:
+      - POSTGRES_DB=artfolio
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1111
+
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis-server
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
