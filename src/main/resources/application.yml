@@ -25,7 +25,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: localhost
+      host: redis6379
       port: 6379
 
 # S3 설정

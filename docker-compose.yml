@@ -17,7 +17,7 @@ services:
     volumes:
       - ~/Desktop/postgres/5432/data:/var/lib/postgresql/data
 
-  redis:
+  redis6379:
     container_name: redis
     image: redis:alpine
     command: redis-server --port 6379
@@ -43,5 +43,5 @@ services:
       SPRING_DATASOURCE_PASSWORD: 1111
 
     depends_on:
-      - redis
+      - redis6379
       - db
