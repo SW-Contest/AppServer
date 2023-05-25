@@ -7,14 +7,10 @@ import com.artfolio.artfolio.app.domain.redis.RealTimeAuctionInfo;
 import com.artfolio.artfolio.app.dto.*;
 import com.artfolio.artfolio.app.repository.*;
 import com.artfolio.artfolio.global.exception.*;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +25,9 @@ import java.util.stream.Collectors;
 public class RealTimeAuctionService {
     private final MemberRepository memberRepository;
     private final AuctionService auctionService;
-    private final ArtPieceRepository artPieceRepository;
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
     private final BidRedisRepository bidderRedisRepository;
-    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(readOnly = true)
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -125,13 +119,18 @@ public class RealTimeAuctionService {
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
 
-        // 실시간 경매 정보를 가져온다
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+        RealTimeAuctionInfo auctionInfo;
 
-        // 현재가보다 낮은 경우 예외 처리
-        if (auctionInfo.getAuctionCurrentPrice() >= price) {
-            throw new InvalidBidPriceException(principal, auctionInfo.getAuctionCurrentPrice(), price, auctionKey);
+        // 임계구역 스레드 동기화 처리
+        synchronized (this) {
+            // 실시간 경매 정보를 가져온다
+            auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
+                    .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+            // 현재가보다 낮은 경우 예외 처리
+            if (auctionInfo.getAuctionCurrentPrice() >= price) {
+                throw new InvalidBidPriceException(principal, auctionInfo.getAuctionCurrentPrice(), price, auctionKey);
+            }
         }
 
         // 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성
