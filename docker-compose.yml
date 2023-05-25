@@ -5,9 +5,11 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "8081:8081"
+      - "80:80"
     depends_on:
       - application
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
 
   application:
     container_name: artfolio
@@ -16,8 +18,8 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    ports:
-      - "8080:8080"
+    expose:
+      - 8080
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/artfolio
