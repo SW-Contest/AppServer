@@ -16,6 +16,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .csrf().disable()
+                .cors().disable()
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .build();
     }
