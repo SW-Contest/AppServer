@@ -4,6 +4,7 @@ import com.artfolio.artfolio.app.dto.AuctionDetails;
 import com.artfolio.artfolio.app.dto.CreateAuction;
 import com.artfolio.artfolio.app.dto.AuctionPreviewList;
 import com.artfolio.artfolio.app.service.RealTimeAuctionService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -77,9 +78,11 @@ public class RealTimeAuctionController {
     @PostMapping("/like")
     public ResponseEntity<Integer> updateLike(
             @RequestParam("auctionId") String auctionId,
-            @RequestParam("memberId") Long memberId
+            @RequestParam("memberId") Long memberId,
+            HttpServletRequest request
     ) {
         Integer likes = redisService.updateLike(auctionId, memberId);
+        System.out.println(request.toString());
         return ResponseEntity.ok(likes);
     }
 }

@@ -1,3 +1,7 @@
+data/
+redis/
+
+
 HELP.md
 .gradle
 build/
