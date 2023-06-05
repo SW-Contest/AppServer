@@ -11,6 +11,9 @@ services:
     depends_on:
       - application
 
+    environment:
+      - TZ=Asia/Seoul
+
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./self_cert_ssl_files:/etc/nginx/self_cert_ssl_files
@@ -29,6 +32,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/artfolio
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1111
+      TZ: "Asia/Seoul"
 
     links:
       - redis6379
