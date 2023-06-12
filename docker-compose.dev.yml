@@ -1,23 +1,6 @@
 version: '3.7'
 
 services:
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    ports:
-      - "8081:8081"     # dev: 8080, prod: 80
-      - "8443:8443"     # dev: 8443, prod: 443
-
-    depends_on:
-      - application
-
-    environment:
-      - TZ=Asia/Seoul
-
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./self_cert_ssl_files:/etc/nginx/self_cert_ssl_files
-
   application:
     container_name: artfolio
 
@@ -25,8 +8,8 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    expose:
-      - 8080
+    ports:
+      - "8080:8080"
 
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/artfolio
