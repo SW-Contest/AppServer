@@ -19,30 +19,4 @@ public class UserController {
         userService.signUp(userSignUpDto);
         return 1L;
     }
-
-    /* 닉네임 변경 */
-    @PostMapping("/nickname")
-    public Long changeNickname(@RequestBody Map<String, Object> map) {
-        Object nickname = map.get("nickname");
-
-        if (!(nickname instanceof String)) {
-            return 0L;
-        }
-
-        userService.changeNickname(nickname);
-        return 1L;
-    }
-
-    /* 소개글 변경 */
-    @PostMapping("/content")
-    public Long changeContent(@RequestBody Map<String, Object> map) {
-        Object content = map.get("content");
-
-        if (!(content instanceof String)) {
-            return 0L;
-        }
-
-        userService.changeContent(content);
-        return 1L;
-    }
 }
