@@ -35,4 +35,12 @@ public class UserService {
         user.passwordEncode(passwordEncoder);
         userRepository.save(user);
     }
+
+    public void changeNickname(String nickname) {
+
+    }
+
+    public void changeContent(String content) {
+
+    }
 }

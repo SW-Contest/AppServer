@@ -51,7 +51,7 @@ public class SecurityConfig {
 
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/oauth2/sign-up")
+                        auth.requestMatchers("/", "/login/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
