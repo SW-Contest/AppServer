@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static com.artfolio.artfolio.global.util.ErrorBuildFactory.*;
 
@@ -41,5 +42,12 @@ public class UserErrorHandlingController {
     protected ErrorResponse handleDuplicateIdException () {
         log.error("이미 존재하는 회원입니다.");
         return buildError(ErrorCode.DUPLICATE_ID);
+    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleWebClientResponseException() {
+        log.error("OpenAI 크레딧 부족");
+        return buildError(ErrorCode.OPENAI_NOT_AVAILABLE);
     }
 }
