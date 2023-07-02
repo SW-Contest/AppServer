@@ -1,9 +1,6 @@
 package com.artfolio.artfolio.business.service;
 
-import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
-import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.SearchType;
+import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
 import com.artfolio.artfolio.business.domain.redis.RealTimeAuctionInfo;
@@ -21,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.artfolio.artfolio.business.domain.SearchType.CURRENT_PRICE;
 
 
 @Slf4j
@@ -78,49 +77,38 @@ public class RealTimeAuctionService {
         return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece);
     }
 
-    /*
     @Transactional(readOnly = true)
-    public AuctionPreviewList.Res getAuctionList(SearchType searchType, Pageable pageable) {
-        log.info("getAuctionList() 실행! searchType : {}", searchType);
+    public AuctionDto.PreviewInfoRes getAuctionList(SearchType searchType, OrderType orderType, Pageable pageable) {
+        log.info("getAuctionList() 실행! searchType : {}, orderType : {}", searchType, orderType);
 
-        Slice<RealTimeAuctionInfo> realTimeAuctionInfos = switch (searchType) {
-            case CURRENT_PRICE -> realTimeAuctionRedisRepository.findAllOrderByAuctionCurrentPrice(pageable);
-            case CREATED_AT -> realTimeAuctionRedisRepository.findAllOrderByCreatedAt(pageable);
-            case LIKE -> realTimeAuctionRedisRepository.findAllOrderByLike(pageable);
-        };
+        Slice<Auction> auctions;
 
-        for (RealTimeAuctionInfo info : realTimeAuctionInfos) {
-            System.out.println(info.getAuctionContent());
-        }
-
-        List<AuctionPreviewList.PreviewInfo> data = new ArrayList<>();
-
-        for (RealTimeAuctionInfo info : realTimeAuctionInfos) {
-            Long artistId = info.getArtistId();
-            User artist = userRepository.findById(artistId).orElseThrow(() -> new UserNotFoundException(artistId));
-            List<String> thumbnail = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(info.getArtPieceId())
-                    .stream()
-                    .filter(ArtPiecePhoto::getIsThumbnail)
-                    .map(ArtPiecePhoto::getFilePath)
-                    .toList();
-
-            String path = thumbnail.isEmpty() ? "null" : thumbnail.get(0);
-
-            if (!path.equals("null")) {
-                int lastDotIdx = path.lastIndexOf(".");
-
-                String thumbnailFullPath = path.substring(0, lastDotIdx);
-                String thumbnailExt = path.substring(lastDotIdx);
-                path = thumbnailFullPath + "_compressed" + thumbnailExt;
+        switch (searchType) {
+            case CURRENT_PRICE: {
+                if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByCurrentPriceAsc(pageable);
+                else auctions = auctionRepository.findAllByIsFinishFalseOrderByCurrentPriceDesc(pageable);
+                break;
             }
 
-            AuctionPreviewList.PreviewInfo previewInfo = AuctionPreviewList.PreviewInfo.of(info, artist, path);
-            data.add(previewInfo);
+            case LIKE: {
+                if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeAsc(pageable);
+                else auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeDesc(pageable);
+                break;
+            }
+
+            case CREATED_AT: {
+                if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByCreatedAtAsc(pageable);
+                else auctions = auctionRepository.findAllByIsFinishFalseOrderByCreatedAtDesc(pageable);
+                break;
+            }
+
+            default: {
+                auctions = auctionRepository.findAll(pageable);
+            }
         }
 
-        return AuctionPreviewList.Res.of(realTimeAuctionInfos, data);
+        return AuctionDto.PreviewInfoRes.of(auctions);
     }
-    */
 
     /*
     @Transactional(readOnly = true)

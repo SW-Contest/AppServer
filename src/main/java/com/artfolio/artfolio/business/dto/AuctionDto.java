@@ -6,15 +6,90 @@ import com.artfolio.artfolio.business.domain.Auction;
 import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
 import com.artfolio.artfolio.business.domain.redis.RealTimeAuctionInfo;
 import com.artfolio.artfolio.user.entity.User;
+import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.*;
+import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AuctionDto {
-    private static Integer DEFAULT_AUCTION_FINISH_DAYS = 7;
+    @Getter @Setter @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PreviewInfoRes {
+        private Boolean hasNext;
+        private Boolean isLast;
+        private Integer pageSize;
+        private Integer pageNumber;
+        private Integer dataSize;
+        private List<PreviewInfo> data;
+
+        public static AuctionDto.PreviewInfoRes of(Slice<Auction> auctions) {
+            List<PreviewInfo> previewInfos = new ArrayList<>();
+
+            for (Auction auction : auctions) {
+                User artist = auction.getArtist();
+                List<ArtPiecePhoto> artPiecePhotos = auction.getArtPiece().getArtPiecePhotos()
+                        .stream()
+                        .filter(ArtPiecePhoto::getIsThumbnail)
+                        .toList();
+
+                String path = "null";
+                if (!artPiecePhotos.isEmpty()) path = artPiecePhotos.get(0).getFilePath();
+
+                previewInfos.add(PreviewInfo.of(auction, artist, path));
+            }
+
+            return new PreviewInfoRes(
+                    auctions.hasNext(),
+                    auctions.isLast(),
+                    auctions.getSize(),
+                    auctions.getNumber(),
+                    previewInfos.size(),
+                    previewInfos
+            );
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class PreviewInfo {
+        private ArtistInfo artistInfo;
+        private AuctionInfo auctionInfo;
+
+        public static PreviewInfo of(Auction auction, User artist, String thumbnailPath) {
+            ArtistInfo artistInfo = ArtistInfo.builder()
+                    .id(artist.getId())
+                    .email(artist.getEmail())
+                    .username(artist.getEmail())
+                    .name(artist.getNickname())
+                    .like(artist.getLike())
+                    .photoPath(artist.getProfilePhoto())
+                    .build();
+
+            AuctionInfo auctionInfo = AuctionInfo.builder()
+                    .id(auction.getAuctionUuId())
+                    .title(auction.getTitle())
+                    .content(auction.getContent())
+                    .startPrice(auction.getStartPrice())
+                    .currentPrice(auction.getCurrentPrice())
+                    .like(auction.getLike())
+                    .createdAt(auction.getCreatedAt())
+                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
+                    .photoPaths(List.of(thumbnailPath))
+                    .build();
+
+            return new PreviewInfo(artistInfo, auctionInfo);
+        }
+    }
+
+
+    private static final Integer DEFAULT_AUCTION_FINISH_DAYS = 7;
 
     @Getter @Setter @ToString
     @Builder
@@ -53,6 +128,7 @@ public class AuctionDto {
                     .build();
 
             ArtPieceInfo artPieceInfo = ArtPieceInfo.builder()
+                    .id(artPiece.getId())
                     .title(artPiece.getTitle())
                     .content(artPiece.getContent())
                     .like(artPiece.getLike())
@@ -75,6 +151,7 @@ public class AuctionDto {
     @Builder @Getter
     @AllArgsConstructor
     private static class ArtPieceInfo {
+        private Long id;
         private String title;
         private String content;
         private Long like;

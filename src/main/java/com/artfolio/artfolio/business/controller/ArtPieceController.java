@@ -3,6 +3,7 @@ package com.artfolio.artfolio.business.controller;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,6 @@ public class ArtPieceController {
 
     @PostMapping
     public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req) {
-        return ResponseEntity.ok(artPieceService.createArtPiece(req));
+        return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 }
