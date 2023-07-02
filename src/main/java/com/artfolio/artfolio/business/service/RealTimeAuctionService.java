@@ -84,25 +84,19 @@ public class RealTimeAuctionService {
         Slice<Auction> auctions;
 
         switch (searchType) {
-            case CURRENT_PRICE: {
+            case CURRENT_PRICE -> {
                 if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByCurrentPriceAsc(pageable);
                 else auctions = auctionRepository.findAllByIsFinishFalseOrderByCurrentPriceDesc(pageable);
-                break;
             }
-
-            case LIKE: {
+            case LIKE -> {
                 if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeAsc(pageable);
                 else auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeDesc(pageable);
-                break;
             }
-
-            case CREATED_AT: {
+            case CREATED_AT -> {
                 if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByCreatedAtAsc(pageable);
                 else auctions = auctionRepository.findAllByIsFinishFalseOrderByCreatedAtDesc(pageable);
-                break;
             }
-
-            default: {
+            default -> {
                 auctions = auctionRepository.findAll(pageable);
             }
         }
