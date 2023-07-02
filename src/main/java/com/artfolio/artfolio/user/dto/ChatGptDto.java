@@ -1,9 +1,9 @@
 package com.artfolio.artfolio.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ChatGptDto {
@@ -14,10 +14,15 @@ public class ChatGptDto {
     @NoArgsConstructor
     public static class Req implements Serializable {
         private String model;
-        private String prompt;
-        private Integer maxTokens;
-        private Double temperature;
-        private Double topP;
+        private List<Message> messages;
+    }
+
+    @Getter @Setter @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Message implements Serializable {
+        private String role;
+        private String content;
     }
 
     @Builder
@@ -27,7 +32,7 @@ public class ChatGptDto {
     public static class Res implements Serializable {
         private String id;
         private String object;
-        private LocalDateTime createdAt;
+        private Long created;
         private String model;
         private List<Choice> choices;
     }
@@ -44,8 +49,9 @@ public class ChatGptDto {
     @NoArgsConstructor
     @Getter @Setter
     private static class Choice implements Serializable {
-        private String text;
+        private Message message;
         private Integer index;
+        @JsonProperty("finish_reason")
         private String finishReason;
     }
 }

@@ -1,9 +1,19 @@
 spring:
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/artfolio
-    username: postgres
-    password: 1111
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
+
+  #datasource:
+  #  url: jdbc:postgresql://db:5432/artfolio
+  #  username: postgres
+  #  password: 1111
+  #  driver-class-name: org.postgresql.Driver
 
   sql.init.mode: always
 
@@ -66,7 +76,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
 
-
 # S3 설정
 cloud:
   aws:
@@ -93,4 +102,4 @@ jwt:
     header: Authorization-refresh
 
 chatgpt:
-  api-key: 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
+  api-key: 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

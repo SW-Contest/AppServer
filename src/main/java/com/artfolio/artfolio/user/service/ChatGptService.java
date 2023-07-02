@@ -2,43 +2,40 @@ package com.artfolio.artfolio.user.service;
 
 import com.artfolio.artfolio.global.config.ChatGptConfig;
 import com.artfolio.artfolio.user.dto.ChatGptDto;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.List;
+
+@Slf4j
 @Service
 public class ChatGptService {
-    private static final RestTemplate restTemplate = new RestTemplate();
-
-    private HttpEntity<ChatGptDto.Req> buildHttpEntity(ChatGptDto.Req req) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(ChatGptConfig.MEDIA_TYPE));
-        headers.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + ChatGptConfig.API_KEY);
-        return new HttpEntity<>(req, headers);
-    }
-
-    private ChatGptDto.Res getResponse(HttpEntity<ChatGptDto.Req> req) {
-        ResponseEntity<ChatGptDto.Res> res = restTemplate.postForEntity(
-                ChatGptConfig.URL,
-                req,
-                ChatGptDto.Res.class
-        );
-
-        return res.getBody();
-    }
-
     public ChatGptDto.Res ask(ChatGptDto.QuestionReq questionReq) {
-        ChatGptDto.Req dto = new ChatGptDto.Req(
-                ChatGptConfig.MODEL,
-                questionReq.getQuestion(),
-                ChatGptConfig.MAX_TOKEN,
-                ChatGptConfig.Temperature,
-                ChatGptConfig.TOP_P
-        );
+        return createWebClient(questionReq);
+    }
 
-        return getResponse(buildHttpEntity(dto));
+    private ChatGptDto.Res createWebClient(ChatGptDto.QuestionReq questionReq) {
+        ChatGptDto.Message message = new ChatGptDto.Message("user", questionReq.getQuestion());
+
+        ChatGptDto.Req req = ChatGptDto.Req.builder()
+                .model(ChatGptConfig.MODEL)
+                .messages(List.of(message))
+                .build();
+
+        return WebClient.create()
+                .post()
+                .uri(ChatGptConfig.URL)
+                .headers(h -> {
+                    h.add(ChatGptConfig.AUTHORIZATION, ChatGptConfig.BEARER + ChatGptConfig.API_KEY);
+                    h.add("Content-Type", "application/json");
+                })
+                .bodyValue(req)
+                .retrieve()
+                .bodyToMono(ChatGptDto.Res.class)
+                .block();
     }
 }
