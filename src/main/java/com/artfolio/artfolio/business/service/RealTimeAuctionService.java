@@ -1,6 +1,9 @@
 package com.artfolio.artfolio.business.service;
 
+import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.business.domain.Auction;
+import com.artfolio.artfolio.business.domain.SearchType;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
 import com.artfolio.artfolio.business.domain.redis.RealTimeAuctionInfo;
@@ -21,99 +24,105 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class RealTimeAuctionService {
-    private final UserRepository memberRepository;
-    private final AuctionService auctionService;
+    private final UserRepository userRepository;
+    private final AuctionRepository auctionRepository;
+    private final ArtPieceRepository artPieceRepository;
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
-    private final RealTimeAuctionRedisRepository realTimeAuctionRedisRepository;
     private final BidRedisRepository bidderRedisRepository;
 
-    @Transactional(readOnly = true)
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
-        // 이미 경매가 진행중인 예술품인 경우 예외처리
+        // 1. 아티스트 엔티티와 아트피스 엔티티를 찾아온다.
         Long artPieceId = req.getArtPieceId();
-        Optional<RealTimeAuctionInfo> byArtPieceId = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId);
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
 
-        if (byArtPieceId.isPresent()) {
-            throw new AuctionAlreadyExistsException(artPieceId);
-        }
-
-        // artist 존재하지 않는 경우 예외 처리 (ref 체크 -> EntityNotFoundException, 추후 테스트 단계 지나면 제거)
         Long artistId = req.getArtistId();
-
-        memberRepository.findById(artistId)
+        User artist = userRepository.findById(artistId)
                 .orElseThrow(() -> new UserNotFoundException(artistId));
 
-        // 해당 예술품에 대한 사진 목록 가져오기
-        List<String> photoPaths = artPiecePhotoRepository
-                .findArtPiecePhotoByArtPiece_Id(artPieceId)
-                .stream()
-                .map(ArtPiecePhoto::getFilePath)
-                .collect(Collectors.toList());
+        Auction auction = Auction.builder()
+                .artist(artist)
+                .artPiece(artPiece)
+                .title(req.getAuctionTitle())
+                .content(req.getAuctionContent())
+                .startPrice(req.getAuctionStartPrice())
+                .currentPrice(req.getAuctionStartPrice())
+                .like(0)
+                .build();
 
-        // redis 저장 후 ID 반환
-        RealTimeAuctionInfo auctionInfo = RealTimeAuctionInfo.of(req, photoPaths);
-        String auctionId = realTimeAuctionRedisRepository.save(auctionInfo).getId();
-
-        return CreateAuction.Res.of(auctionId);
+        String uuid = auctionRepository.save(auction).getAuctionUuId();
+        return CreateAuction.Res.of(uuid);
     }
 
     @Transactional(readOnly = true)
-    public AuctionDetails.Res getAuction(String auctionKey) {
-        // 실시간 경매 정보 찾아오기
-        RealTimeAuctionInfo realTimeAuctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
+    public AuctionDto.DetailInfoRes getAuction(String auctionKey) {
+        // 경매 정보 찾아오기
+        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        // 작가 정보를 DB에서 가져온다
-        User artist = memberRepository.findById(realTimeAuctionInfo.getArtistId())
-                .orElseThrow(() -> new UserNotFoundException(realTimeAuctionInfo.getArtistId()));
+        // 작가 정보 찾아오기
+        User artist = auction.getArtist();
 
-        // 예술품 사진 정보를 DB에서 가져온다
-        List<ArtPiecePhoto> artPiecePhotos = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(realTimeAuctionInfo.getArtPieceId());
+        // 예술품 정보 찾아오기
+        ArtPiece artPiece = auction.getArtPiece();
+        List<ArtPiecePhoto> artPiecePhotos = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(artPiece.getId());
 
-        // 입찰자 목록을 가져온다
-        List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(realTimeAuctionInfo.getId());
+        // 입찰자 목록 가져오기
+        List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(auctionKey);
 
-        // 응답 DTO 만들어서 반환
-        return AuctionDetails.Res.of(realTimeAuctionInfo, bidInfos, artPiecePhotos, artist);
+        // 응답 dto 만들어서 반환하기
+        return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece);
     }
 
+    /*
     @Transactional(readOnly = true)
-    public AuctionPreviewList.Res getAuctionList(Pageable pageable) {
-        Slice<RealTimeAuctionInfo> infos = realTimeAuctionRedisRepository.findAll(pageable);
+    public AuctionPreviewList.Res getAuctionList(SearchType searchType, Pageable pageable) {
+        log.info("getAuctionList() 실행! searchType : {}", searchType);
+
+        Slice<RealTimeAuctionInfo> realTimeAuctionInfos = switch (searchType) {
+            case CURRENT_PRICE -> realTimeAuctionRedisRepository.findAllOrderByAuctionCurrentPrice(pageable);
+            case CREATED_AT -> realTimeAuctionRedisRepository.findAllOrderByCreatedAt(pageable);
+            case LIKE -> realTimeAuctionRedisRepository.findAllOrderByLike(pageable);
+        };
+
+        for (RealTimeAuctionInfo info : realTimeAuctionInfos) {
+            System.out.println(info.getAuctionContent());
+        }
+
         List<AuctionPreviewList.PreviewInfo> data = new ArrayList<>();
 
-        for (RealTimeAuctionInfo info : infos) {
+        for (RealTimeAuctionInfo info : realTimeAuctionInfos) {
             Long artistId = info.getArtistId();
-
-            User artist = memberRepository.findById(artistId)
-                    .orElseThrow(() -> new UserNotFoundException(artistId));
-
-            List<String> thumbnailPaths = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(info.getArtPieceId())
+            User artist = userRepository.findById(artistId).orElseThrow(() -> new UserNotFoundException(artistId));
+            List<String> thumbnail = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(info.getArtPieceId())
                     .stream()
                     .filter(ArtPiecePhoto::getIsThumbnail)
                     .map(ArtPiecePhoto::getFilePath)
                     .toList();
 
-            String thumbnailPath = thumbnailPaths.isEmpty() ? "null" : thumbnailPaths.get(0);
+            String path = thumbnail.isEmpty() ? "null" : thumbnail.get(0);
 
-            if (!thumbnailPath.equals("null")) {
-                int lastDotIdx = thumbnailPath.lastIndexOf(".");
+            if (!path.equals("null")) {
+                int lastDotIdx = path.lastIndexOf(".");
 
-                String thumbnailFullPath = thumbnailPath.substring(0, lastDotIdx);
-                String thumbnailExt = thumbnailPath.substring(lastDotIdx);
-                thumbnailPath = thumbnailFullPath + "_compressed" + thumbnailExt;
+                String thumbnailFullPath = path.substring(0, lastDotIdx);
+                String thumbnailExt = path.substring(lastDotIdx);
+                path = thumbnailFullPath + "_compressed" + thumbnailExt;
             }
 
-            AuctionPreviewList.PreviewInfo preview = AuctionPreviewList.PreviewInfo.of(info, artist, thumbnailPath);
-            data.add(preview);
+            AuctionPreviewList.PreviewInfo previewInfo = AuctionPreviewList.PreviewInfo.of(info, artist, path);
+            data.add(previewInfo);
         }
 
-        return AuctionPreviewList.Res.of(infos, data);
+        return AuctionPreviewList.Res.of(realTimeAuctionInfos, data);
     }
+    */
 
+    /*
     @Transactional(readOnly = true)
     public AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
         String auctionKey = req.getAuctionId();
@@ -135,7 +144,7 @@ public class RealTimeAuctionService {
         }
 
         // 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성
-        User bidder = memberRepository.findById(bidderId)
+        User bidder = userRepository.findById(bidderId)
                 .orElseThrow(() -> new UserNotFoundException(bidderId));
 
         // redis 입찰 기록 저장
@@ -149,7 +158,9 @@ public class RealTimeAuctionService {
         // 응답 객체를 만들어 반환
         return AuctionBid.Res.of(bidInfo);
     }
+     */
 
+    /*
     public void updateImage(Long artPieceId, String s3Path) {
         RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId)
                 .orElseThrow(() -> new AuctionNotFoundException(artPieceId));
@@ -158,24 +169,24 @@ public class RealTimeAuctionService {
         realTimeAuctionRedisRepository.save(auctionInfo);
     }
 
-    public Integer updateLike(String auctionKey, Long memberId) {
+    public Integer updateLike(String auctionKey, Long userId) {
         RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
         // 멤버 정보 찾기
-        memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException(memberId));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         // 이미 좋아요가 눌린 상태에서 다시 누르면 취소, 아니면 + 1
         Set<Long> likeMembers = auctionInfo.getLikeMembers();
         Integer like = likeMembers.size();
 
-        if (likeMembers.contains(memberId)) {
-            likeMembers.remove(memberId);
+        if (likeMembers.contains(userId)) {
+            likeMembers.remove(userId);
             like--;
         }
         else {
-            likeMembers.add(memberId);
+            likeMembers.add(userId);
             like++;
         }
 
@@ -224,4 +235,6 @@ public class RealTimeAuctionService {
 
         return auctionService.saveAuctionInfo(auctionInfo, true, bidderId);
     }
+
+     */
 }

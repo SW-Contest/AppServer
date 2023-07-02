@@ -30,6 +30,7 @@ public class ImageService {
     private final S3Uploader s3Uploader;
     private String thumbnailFileName;
 
+    /*
     public Long uploadImage(Long artPieceId, MultipartFile[] files) {
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
                 .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
@@ -73,6 +74,7 @@ public class ImageService {
 
         return 1L;
     }
+    */
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */
     private boolean saveImageOnLocal(MultipartFile[] files, File imgDir) {

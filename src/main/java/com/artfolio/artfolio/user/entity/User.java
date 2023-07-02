@@ -53,7 +53,7 @@ public class User implements UserDetails {
 
     private String refreshToken;
 
-    @OneToMany(mappedBy = "artist")
+    @OneToMany(mappedBy = "artist", fetch = FetchType.EAGER)
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
@@ -71,6 +71,12 @@ public class User implements UserDetails {
         this.like = like;
         this.content = content;
         this.refreshToken = refreshToken;
+    }
+
+    /* 연관관계 편의 메서드 (유저 - 예술품) */
+    public void addArtPiece(ArtPiece artPiece) {
+        this.artPieces.add(artPiece);
+        artPiece.setArtist(this);
     }
 
     /* 유저 권한 설정 메서드 */

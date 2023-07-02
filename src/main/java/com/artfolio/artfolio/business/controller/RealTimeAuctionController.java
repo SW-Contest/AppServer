@@ -1,8 +1,8 @@
 package com.artfolio.artfolio.business.controller;
 
-import com.artfolio.artfolio.business.dto.AuctionDetails;
+import com.artfolio.artfolio.business.domain.SearchType;
+import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.CreateAuction;
-import com.artfolio.artfolio.business.dto.AuctionPreviewList;
 import com.artfolio.artfolio.business.service.RealTimeAuctionService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,71 +18,86 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class RealTimeAuctionController {
-    private final RealTimeAuctionService redisService;
+    private final RealTimeAuctionService auctionService;
 
     /* 경매 생성 메서드 */
     @PostMapping("/create")
     public ResponseEntity<CreateAuction.Res> createAuction(@RequestBody CreateAuction.Req req) {
-        CreateAuction.Res res = redisService.createAuction(req);
+        CreateAuction.Res res = auctionService.createAuction(req);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     /* 단일 경매 정보를 불러오는 메서드 */
     @GetMapping("/{id}")
-    public ResponseEntity<AuctionDetails.Res> getAuction(@PathVariable("id") String auctionKey) {
-        AuctionDetails.Res res = redisService.getAuction(auctionKey);
+    public ResponseEntity<AuctionDto.DetailInfoRes> getAuction(@PathVariable("id") String auctionKey) {
+        AuctionDto.DetailInfoRes res = auctionService.getAuction(auctionKey);
         return ResponseEntity.ok(res);
     }
 
     /* 진행중인 경매 리스트를 페이징 처리 후 내보내는 메서드 */
-    @GetMapping("/list")
+    /*
+    @GetMapping("/list/{searchType}")
     public ResponseEntity<AuctionPreviewList.Res> getAuctionList(
+            @PathVariable(value = "searchType", required = false) SearchType searchType,
             @PageableDefault(sort = "createdAt", size = 10, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        AuctionPreviewList.Res res = redisService.getAuctionList(pageable);
+        AuctionPreviewList.Res res = auctionService.getAuctionList(searchType, pageable);
         return ResponseEntity.ok(res);
     }
 
+     */
+
     /* 경매 삭제 메서드 */
+    /*
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAuction(
             @PathVariable("id") String auctionKey,
             @RequestParam("artistId") Long artistId
     ) {
-        Long res = redisService.deleteAuction(auctionKey, artistId);
+        Long res = auctionService.deleteAuction(auctionKey, artistId);
         return ResponseEntity.ok(res);
     }
 
+     */
+
     /* 경매 종료 메서드 */
+    /*
     @PostMapping("/finish")
     public ResponseEntity<Long> finishAuction(
             @RequestParam("auctionId") String auctionKey,
             @RequestParam("isSold") Boolean isSold
     ) {
-        Long result = redisService.finishAuction(auctionKey, isSold);
+        Long result = auctionService.finishAuction(auctionKey, isSold);
         return ResponseEntity.ok(result);
     }
 
+     */
+
     /* 경매 낙찰 메서드 */
+    /*
     @PostMapping("/bid")
     public ResponseEntity<Long> finishAuctionWithBidder(
             @RequestParam("auctionId") String auctionKey,
             @RequestParam("bidderId") Long bidderId,
             @RequestParam("finalPrice") Long finalPrice
     ) {
-        Long result = redisService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
+        Long result = auctionService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
         return ResponseEntity.ok(result);
     }
 
+     */
+
     /* 경매 좋아요 +-1 메서드 */
+    /*
     @PostMapping("/like")
     public ResponseEntity<Integer> updateLike(
             @RequestParam("auctionId") String auctionId,
             @RequestParam("memberId") Long memberId,
             HttpServletRequest request
     ) {
-        Integer likes = redisService.updateLike(auctionId, memberId);
+        Integer likes = auctionService.updateLike(auctionId, memberId);
         System.out.println(request.toString());
         return ResponseEntity.ok(likes);
     }
+     */
 }

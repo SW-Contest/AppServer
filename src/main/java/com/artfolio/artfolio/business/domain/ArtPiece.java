@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.business.domain;
 
+import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,5 +43,14 @@ public class ArtPiece extends AuditingFields {
         this.content = content;
         this.like = like;
         this.artist = artist;
+    }
+
+    public static ArtPiece of(ArtPieceDto.CreationReq req, User artist) {
+        return ArtPiece.builder()
+                .title(req.getTitle())
+                .content(req.getContent())
+                .like(0L)
+                .artist(artist)
+                .build();
     }
 }

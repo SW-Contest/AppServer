@@ -9,6 +9,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
+/*
 public class AuctionPreviewList {
     @Getter
     @AllArgsConstructor
@@ -85,3 +86,4 @@ public class AuctionPreviewList {
         private Integer like;
     }
 }
+*/

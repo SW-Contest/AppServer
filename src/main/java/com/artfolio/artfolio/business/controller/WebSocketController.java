@@ -29,13 +29,17 @@ public class WebSocketController {
     /* 가격 실시간 갱신 */
     // 구독 경로 : /sub/channel/{auctionId}
     // 발행 경로 : /pub/price
+    /*
     @MessageMapping("/price")
     public void updateAuctionPrice(Principal principal, @Payload AuctionBid.Req req) {
         AuctionBid.Res res = realTimeAuctionService.updatePrice(principal, req);
         simp.convertAndSend("/topic/channel/" + req.getAuctionId(), res);
     }
 
+     */
+
     /* 현재가보다 낮은 입찰가가 들어온 경우 예외 처리 */
+
     @MessageExceptionHandler(InvalidBidPriceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected void handleInvalidBidPriceException(InvalidBidPriceException e) {

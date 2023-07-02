@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageController {
     private final ImageService imageService;
 
+    /*
     @PostMapping("/upload")
     public ResponseEntity<Long> uploadArtPiecePhoto(
             @RequestParam("artPieceId") Long artPieceId,
@@ -21,4 +22,6 @@ public class ImageController {
         Long result = imageService.uploadImage(artPieceId, files);
         return ResponseEntity.ok(result);
     }
+
+     */
 }

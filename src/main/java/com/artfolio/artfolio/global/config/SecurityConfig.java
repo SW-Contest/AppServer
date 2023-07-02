@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .headers().frameOptions().disable();
 
-                /*
+        /*
                 .and()
 
                 // 세션 사용X
@@ -113,5 +113,5 @@ public class SecurityConfig {
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
         return new JwtAuthenticationProcessingFilter(jwtService, userRepository);
     }
-     */
+    */
 }
