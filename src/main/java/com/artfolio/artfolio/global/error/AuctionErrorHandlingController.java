@@ -6,7 +6,6 @@ import com.artfolio.artfolio.global.exception.AuctionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,8 +20,6 @@ import static com.artfolio.artfolio.global.util.ErrorBuildFactory.*;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class AuctionErrorHandlingController {
-    private final SimpMessageSendingOperations simp;
-
     /* validation 검증 실패시 발생하는 예외 핸들링 메서드 */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
