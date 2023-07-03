@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Table(name = "users")
-@Getter
+@Getter @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class User implements UserDetails {

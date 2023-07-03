@@ -105,4 +105,11 @@ public class ErrorHandlingController {
         log.error("art piece ID : " + e.getArtPieceId());
         return buildError(ErrorCode.AUCTION_ALREADY_EXISTS);
     }
+
+    /* 엑세스 토큰 만료 예외 처리 */
+    @ExceptionHandler(AccessTokenInvalidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleAccessTokenInvalidException(AccessTokenInvalidException e) {
+        return buildError(ErrorCode.ACCESS_TOKEN_INVALID);
+    }
 }

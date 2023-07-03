@@ -1,25 +1,25 @@
 spring:
-  h2:
-    console:
-      path: /h2-console
-      enabled: true
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
-    password:
-
+  #h2:
+  #  console:
+  #    path: /h2-console
+  #    enabled: true
   #datasource:
-  #  url: jdbc:postgresql://db:5432/artfolio
-  #  username: postgres
-  #  password: 1111
-  #  driver-class-name: org.postgresql.Driver
+  #  driver-class-name: org.h2.Driver
+  #  url: jdbc:h2:tcp://localhost/~/test
+  #  username: sa
+  #  password:
+
+  datasource:
+    url: jdbc:postgresql://db:5432/artfolio
+    username: postgres
+    password: 1111
+    driver-class-name: org.postgresql.Driver
 
   sql.init.mode: always
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
@@ -35,7 +35,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: 127.0.0.1
+      host: redis6379
       port: 6379
 
   security:
@@ -101,5 +101,6 @@ jwt:
     expiration: 1209600000
     header: Authorization-refresh
 
+# GPT 설정
 chatgpt:
   api-key: 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

@@ -73,4 +73,8 @@ public class Auction extends AuditingFields {
     public void updateBidder(User bidder) {
         this.bidder = bidder;
     }
+
+    public void updateCurrentPrice(Long price) {
+        this.currentPrice = price;
+    }
 }

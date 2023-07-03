@@ -3,7 +3,6 @@ package com.artfolio.artfolio.business.service;
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
-import com.artfolio.artfolio.business.domain.redis.RealTimeAuctionInfo;
 import com.artfolio.artfolio.business.dto.*;
 import com.artfolio.artfolio.business.repository.*;
 import com.artfolio.artfolio.global.exception.*;
@@ -17,13 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static com.artfolio.artfolio.business.domain.SearchType.CURRENT_PRICE;
 
 
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class RealTimeAuctionService {
@@ -33,6 +29,7 @@ public class RealTimeAuctionService {
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final BidRedisRepository bidderRedisRepository;
 
+    @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
         // 1. 아티스트 엔티티와 아트피스 엔티티를 찾아온다.
         Long artPieceId = req.getArtPieceId();
@@ -104,43 +101,41 @@ public class RealTimeAuctionService {
         return AuctionDto.PreviewInfoRes.of(auctions);
     }
 
-    /*
-    @Transactional(readOnly = true)
     public AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
 
-        RealTimeAuctionInfo auctionInfo;
+        Auction auction;
 
         // 임계구역 스레드 동기화 처리
         synchronized (this) {
             // 실시간 경매 정보를 가져온다
-            auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
+            auction = auctionRepository.findByAuctionUuId(auctionKey)
                     .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
             // 현재가보다 낮은 경우 예외 처리
-            if (auctionInfo.getAuctionCurrentPrice() >= price) {
-                throw new InvalidBidPriceException(principal, auctionInfo.getAuctionCurrentPrice(), price, auctionKey);
+            if (auction.getCurrentPrice() >= price) {
+                throw new InvalidBidPriceException(principal, auction.getCurrentPrice(), price, auctionKey);
             }
         }
 
         // 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성
         User bidder = userRepository.findById(bidderId)
-                .orElseThrow(() -> new UserNotFoundException(bidderId));
+                .orElseThrow(() -> new UserNotFoundException(bidderId, principal));
 
         // redis 입찰 기록 저장
         AuctionBidInfo bidInfo = AuctionBidInfo.of(bidder, auctionKey, price);
         bidderRedisRepository.save(bidInfo);
 
         // redis 경매 정보 업데이트
-        auctionInfo.updateCurrentPrice(price);
-        realTimeAuctionRedisRepository.save(auctionInfo);
+        auction.updateBidder(bidder);
+        auction.updateCurrentPrice(price);
+        auctionRepository.saveAndFlush(auction);
 
         // 응답 객체를 만들어 반환
         return AuctionBid.Res.of(bidInfo);
     }
-     */
 
     /*
     public void updateImage(Long artPieceId, String s3Path) {
