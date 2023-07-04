@@ -81,10 +81,10 @@ public class RealTimeAuctionController {
     /* 경매 좋아요 +-1 메서드 */
     @PostMapping("/like")
     public ResponseEntity<Integer> updateLike(
-            @RequestParam("auctionId") String auctionId,
+            @RequestParam("auctionId") String auctionKey,
             @RequestParam("userId") Long userId
     ) {
-        Integer likes = auctionService.updateLike(auctionId, userId);
+        Integer likes = auctionService.updateLike(auctionKey, userId);
         return ResponseEntity.ok(likes);
     }
 }

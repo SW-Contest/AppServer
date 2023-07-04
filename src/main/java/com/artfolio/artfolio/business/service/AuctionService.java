@@ -106,23 +106,17 @@ public class AuctionService {
     }
 
     @Transactional
-    public AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
+    public synchronized AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
 
-        Auction auction;
+        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
+                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        // 임계구역 스레드 동기화 처리
-        synchronized (this) {
-            // 실시간 경매 정보를 가져온다
-            auction = auctionRepository.findByAuctionUuId(auctionKey)
-                    .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
-
-            // 현재가보다 낮은 경우 예외 처리
-            if (auction.getCurrentPrice() >= price) {
-                throw new InvalidBidPriceException(principal, auction.getCurrentPrice(), price, auctionKey);
-            }
+        // 현재가보다 낮은 경우 예외 처리
+        if (auction.getCurrentPrice() >= price) {
+            throw new InvalidBidPriceException(principal, auction.getCurrentPrice(), price, auctionKey);
         }
 
         // 입찰자 정보를 DB에서 찾아온 뒤 DTO 생성
@@ -161,7 +155,7 @@ public class AuctionService {
         Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        auction.updateLike(userId);
+        auction.updateLike(user.getId());
 
         return auctionRepository.saveAndFlush(auction).getLike();
     }

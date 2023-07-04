@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.business.controller;
 
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
+import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import com.artfolio.artfolio.business.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,17 @@ public class ArtPieceController {
 
     @PostMapping("/image")
     public ResponseEntity<Long> uploadArtPiecePhoto(
+            @RequestParam("artistId") Long artistId,
             @RequestParam("artPieceId") Long artPieceId,
             @RequestParam("files") MultipartFile[] files
     ) {
-        Long result = imageService.uploadImage(artPieceId, files);
+        Long result = imageService.uploadImage(artistId, artPieceId, files);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<Long> deleteArtPiecePhoto(@RequestBody ImageDto.DeleteReq req) {
+        Long result = imageService.deleteFile(req);
         return ResponseEntity.ok(result);
     }
 }

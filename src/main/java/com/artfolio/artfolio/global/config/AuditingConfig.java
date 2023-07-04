@@ -1,10 +1,11 @@
 package com.artfolio.artfolio.global.config;
 
+import com.artfolio.artfolio.user.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
@@ -14,17 +15,15 @@ import java.util.Optional;
 public class AuditingConfig {
     @Bean
     public AuditorAware<String> auditorAware() {
-        if (SecurityContextHolder
+        Authentication authentication = SecurityContextHolder
                 .getContext()
-                .getAuthentication() == null) {
-            return () -> Optional.of("null");
+                .getAuthentication();
+
+        if (authentication == null) {
+            return () -> Optional.of("authentication is null");
         }
 
-        return () -> Optional.of(
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName()
-        );
+        User user = (User) authentication.getPrincipal();
+        return () -> Optional.of(user.getNickname());
     }
 }

@@ -47,17 +47,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         else {
             // 로그인에 성공한 경우: access, refresh 토큰 생성
-            loginSuccess(response, oAuth2User);
+            User findUser = userRepository.findByEmail(oAuth2User.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException(oAuth2User.getEmail()));
+
+            loginSuccess(response, oAuth2User, findUser);
         }
 
     }
 
-    private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
+    private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User, User findUser) throws IOException {
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
 
         response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
         response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
+        response.addHeader("UserId", String.valueOf(findUser.getId()));
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);

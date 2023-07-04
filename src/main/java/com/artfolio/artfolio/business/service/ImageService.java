@@ -1,13 +1,18 @@
 package com.artfolio.artfolio.business.service;
 
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.global.exception.ArtPieceNotFoundException;
+import com.artfolio.artfolio.global.exception.UserNotFoundException;
 import com.artfolio.artfolio.global.util.ImageUtil;
-import com.artfolio.artfolio.global.util.S3Uploader;
+import com.artfolio.artfolio.global.util.S3Manager;
+import com.artfolio.artfolio.user.entity.User;
+import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Transactional
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ImageService {
@@ -26,13 +31,21 @@ public class ImageService {
             + "/src/main/resources/images";
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final ArtPieceRepository artPieceRepository;
-    private final AuctionService realTimeAuctionService;
-    private final S3Uploader s3Uploader;
+    private final UserRepository userRepository;
+    private final S3Manager s3Manager;
     private String thumbnailFileName;
 
-    public Long uploadImage(Long artPieceId, MultipartFile[] files) {
+    @Transactional
+    public Long uploadImage(Long artistId, Long artPieceId, MultipartFile[] files) {
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
                 .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
+
+        User user = userRepository.findById(artistId)
+                .orElseThrow(() -> new UserNotFoundException(artistId));
+
+        if (!Objects.equals(user.getId(), artPiece.getArtist().getId())) {
+            return 0L;
+        }
 
         File imgDir = new File(DEFAULT_IMAGE_DIR);
 
@@ -43,7 +56,7 @@ public class ImageService {
         List<ArtPiecePhoto> photos = new ArrayList<>();
 
         for (File img : Objects.requireNonNull(imgDir.listFiles())) {
-            String s3Path = s3Uploader.upload(artPieceId, img);
+            String s3Path = s3Manager.upload(artPieceId, img);
             String fileFullName = img.getName();
             String fileName = fileFullName.substring(0, fileFullName.indexOf("."));
             String ext = fileFullName.substring(fileFullName.indexOf(".") + 1);
@@ -71,6 +84,49 @@ public class ImageService {
         artPiecePhotoRepository.saveAll(photos);
 
         return 1L;
+    }
+
+    @Transactional
+    public Long deleteFile(ImageDto.DeleteReq req) {
+        Long artistId = req.getArtistId();
+        Long artPieceId = req.getArtPieceId();
+        String fileName = req.getFileName();
+
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
+
+        User user = userRepository.findById(artistId)
+                .orElseThrow(() -> new UserNotFoundException(artistId));
+
+        if (!Objects.equals(user.getId(), artPiece.getArtist().getId())) {
+            return 0L;
+        }
+
+        System.out.println("---------------- 1 --------------------");
+
+        List<ArtPiecePhoto> artPiecePhotos = artPiece.getArtPiecePhotos();
+
+        for (ArtPiecePhoto artPiecePhoto : artPiecePhotos) {
+            String s3Filename = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
+
+            if (s3Filename.equals(fileName)) {
+                String path = "static/" + artistId + "/" + fileName;
+
+                try {
+                    boolean isExist = s3Manager.doesObjectExist(path);
+
+                    if (isExist) {
+                        s3Manager.deleteObject(path);
+                        artPiecePhotoRepository.deleteById(artPiecePhoto.getId());
+                        return 1L;
+                    }
+                } catch (Exception e) {
+                    log.debug("S3 Delete Failed", e);
+                }
+            }
+        }
+
+        return 0L;
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */

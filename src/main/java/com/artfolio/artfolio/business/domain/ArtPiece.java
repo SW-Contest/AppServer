@@ -30,11 +30,11 @@ public class ArtPiece extends AuditingFields {
     private User artist;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "artPiece")
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<ArtPiecePhoto> artPiecePhotos = new ArrayList<>();
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<Auction> auctions = new ArrayList<>();
 
     @Builder

@@ -13,7 +13,7 @@ import java.io.File;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class S3Uploader {
+public class S3Manager {
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -24,6 +24,17 @@ public class S3Uploader {
         String DEFAULT_DIR = "static/" + artPieceId;
         String fileName = DEFAULT_DIR + "/" + uploadFile.getName();
         return putS3(uploadFile, fileName);
+    }
+
+    /* 파일 확인 메서드 */
+    public boolean doesObjectExist(String fullName) {
+        return amazonS3Client.doesObjectExist(bucket, fullName);
+    }
+
+    /* 파일 삭제 메서드 */
+    public void deleteObject(String fullName) {
+        log.info("s3 파일 삭제! 파일 이름 : {}", fullName);
+        amazonS3Client.deleteObject(bucket, fullName);
     }
 
     private String putS3(File uploadFile, String fileName) {
