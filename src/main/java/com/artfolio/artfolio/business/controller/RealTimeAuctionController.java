@@ -4,7 +4,7 @@ import com.artfolio.artfolio.business.domain.OrderType;
 import com.artfolio.artfolio.business.domain.SearchType;
 import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.CreateAuction;
-import com.artfolio.artfolio.business.service.RealTimeAuctionService;
+import com.artfolio.artfolio.business.service.AuctionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 public class RealTimeAuctionController {
-    private final RealTimeAuctionService auctionService;
+    private final AuctionService auctionService;
 
     /* 경매 생성 메서드 */
     @PostMapping("/create")

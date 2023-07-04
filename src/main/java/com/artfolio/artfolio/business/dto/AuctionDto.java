@@ -4,9 +4,7 @@ import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.Auction;
 import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
-import com.artfolio.artfolio.business.domain.redis.RealTimeAuctionInfo;
 import com.artfolio.artfolio.user.entity.User;
-import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.*;
 import org.springframework.data.domain.Slice;
 
@@ -14,8 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class AuctionDto {
     @Getter @Setter @ToString

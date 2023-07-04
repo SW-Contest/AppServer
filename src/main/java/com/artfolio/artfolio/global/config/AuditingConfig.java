@@ -14,9 +14,10 @@ public class AuditingConfig {
     @Bean
     public AuditorAware<String> auditorAware() {
         return () -> Optional.of(
-                (String) SecurityContextHolder
+                SecurityContextHolder
                         .getContext()
                         .getAuthentication()
-                        .getPrincipal());
+                        .getName()
+        );
     }
 }
