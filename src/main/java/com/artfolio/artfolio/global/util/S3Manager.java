@@ -27,14 +27,14 @@ public class S3Manager {
     }
 
     /* 파일 확인 메서드 */
-    public boolean doesObjectExist(String fullName) {
-        return amazonS3Client.doesObjectExist(bucket, fullName);
+    public boolean doesObjectExist(String fileKey) {
+        return amazonS3Client.doesObjectExist(bucket, fileKey);
     }
 
     /* 파일 삭제 메서드 */
-    public void deleteObject(String fullName) {
-        log.info("s3 파일 삭제! 파일 이름 : {}", fullName);
-        amazonS3Client.deleteObject(bucket, fullName);
+    public void deleteObject(String fileKey) {
+        log.info("s3 파일 삭제! 파일 이름 : {}", fileKey);
+        amazonS3Client.deleteObject(bucket, fileKey);
     }
 
     private String putS3(File uploadFile, String fileName) {

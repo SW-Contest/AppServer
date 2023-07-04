@@ -129,21 +129,14 @@ public class AuctionService {
         // 경매 정보 업데이트
         auction.updateLastBidder(bidder);
         auction.updateCurrentPrice(price);
-        auctionRepository.saveAndFlush(auction);
+        auctionRepository.save(auction);
+        auctionRepository.flush();
+
+        System.out.println("----- auction price updated -----");
 
         // 응답 객체를 만들어 반환
         return AuctionBid.Res.of(bidInfo);
     }
-
-    /*
-    public void updateImage(Long artPieceId, String s3Path) {
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findByArtPieceId(artPieceId)
-                .orElseThrow(() -> new AuctionNotFoundException(artPieceId));
-
-        auctionInfo.getPhotoPaths().add(s3Path);
-        realTimeAuctionRedisRepository.save(auctionInfo);
-    }
-    */
 
     @Transactional
     public Integer updateLike(String auctionKey, Long userId) {

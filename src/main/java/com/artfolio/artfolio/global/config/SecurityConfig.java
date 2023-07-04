@@ -62,8 +62,7 @@ public class SecurityConfig {
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler)
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+                .userInfoEndpoint().userService(customOAuth2UserService);
 
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);

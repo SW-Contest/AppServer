@@ -110,14 +110,15 @@ public class ImageService {
             String s3Filename = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
 
             if (s3Filename.equals(fileName)) {
-                String path = "static/" + artistId + "/" + fileName;
+                String fileKey = "static/" + artistId + "/" + fileName;
 
                 try {
-                    boolean isExist = s3Manager.doesObjectExist(path);
+                    boolean isExist = s3Manager.doesObjectExist(fileKey);
 
                     if (isExist) {
-                        s3Manager.deleteObject(path);
+                        s3Manager.deleteObject(fileKey);
                         artPiecePhotoRepository.deleteById(artPiecePhoto.getId());
+                        artPiecePhotoRepository.flush();
                         return 1L;
                     }
                 } catch (Exception e) {

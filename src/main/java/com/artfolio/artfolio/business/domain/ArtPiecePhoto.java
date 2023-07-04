@@ -17,7 +17,7 @@ public class ArtPiecePhoto {
     @Column(nullable = false)
     private String fileExtension;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String filePath;
 
     @Column(nullable = false)
