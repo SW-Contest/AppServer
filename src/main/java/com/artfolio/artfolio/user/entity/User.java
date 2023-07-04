@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "users")
 @Getter @ToString
@@ -74,30 +75,30 @@ public class User implements UserDetails {
     }
 
     /* 연관관계 편의 메서드 (유저 - 예술품) */
+
     public void addArtPiece(ArtPiece artPiece) {
         this.artPieces.add(artPiece);
         artPiece.setArtist(this);
     }
-
     /* 유저 권한 설정 메서드 */
+
     public void authorizeUser() {
         this.role = Role.USER;
     }
-
     public void authorizeArtist() {
         this.role = Role.ARTIST;
     }
 
     /* 비밀번호 암호화 메서드 */
+
     public void passwordEncode(PasswordEncoder encoder) {
         this.password = encoder.encode(this.password);
     }
-
     /* refresh-token 업데이트 메서드 */
+
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

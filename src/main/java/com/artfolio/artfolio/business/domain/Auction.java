@@ -4,9 +4,7 @@ import com.artfolio.artfolio.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,6 +50,9 @@ public class Auction extends AuditingFields {
     @OneToMany(mappedBy = "auction")
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
+    @Transient
+    private final Set<Long> likeUsersId = new HashSet<>();
+
     @Builder
     public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice, Integer like, Boolean isFinish, User bidder) {
         this.auctionUuId = UUID.randomUUID().toString();
@@ -61,7 +62,7 @@ public class Auction extends AuditingFields {
         this.artPiece = artPiece;
         this.startPrice = startPrice;
         this.currentPrice = currentPrice;
-        this.like = like;
+        this.like = 0;
         this.isFinish = false;
         this.bidder = null;
     }
@@ -70,11 +71,17 @@ public class Auction extends AuditingFields {
         this.isFinish = true;
     }
 
-    public void updateBidder(User bidder) {
+    public void updateLastBidder(User bidder) {
         this.bidder = bidder;
     }
 
     public void updateCurrentPrice(Long price) {
         this.currentPrice = price;
+    }
+
+    public void updateLike(Long userId) {
+        if (likeUsersId.contains(userId)) likeUsersId.remove(userId);
+        else likeUsersId.add(userId);
+        this.like = likeUsersId.size();
     }
 }

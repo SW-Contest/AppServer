@@ -43,7 +43,6 @@ public class RealTimeAuctionController {
     }
 
     /* 경매 삭제 메서드 */
-    /*
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteAuction(
             @PathVariable("id") String auctionKey,
@@ -52,8 +51,6 @@ public class RealTimeAuctionController {
         Long res = auctionService.deleteAuction(auctionKey, artistId);
         return ResponseEntity.ok(res);
     }
-
-     */
 
     /* 경매 종료 메서드 */
     /*
@@ -65,7 +62,6 @@ public class RealTimeAuctionController {
         Long result = auctionService.finishAuction(auctionKey, isSold);
         return ResponseEntity.ok(result);
     }
-
      */
 
     /* 경매 낙찰 메서드 */
@@ -83,16 +79,12 @@ public class RealTimeAuctionController {
      */
 
     /* 경매 좋아요 +-1 메서드 */
-    /*
     @PostMapping("/like")
     public ResponseEntity<Integer> updateLike(
             @RequestParam("auctionId") String auctionId,
-            @RequestParam("memberId") Long memberId,
-            HttpServletRequest request
+            @RequestParam("userId") Long userId
     ) {
-        Integer likes = auctionService.updateLike(auctionId, memberId);
-        System.out.println(request.toString());
+        Integer likes = auctionService.updateLike(auctionId, userId);
         return ResponseEntity.ok(likes);
     }
-     */
 }

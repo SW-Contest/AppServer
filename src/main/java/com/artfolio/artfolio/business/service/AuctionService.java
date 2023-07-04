@@ -105,6 +105,7 @@ public class AuctionService {
         return AuctionDto.PreviewInfoRes.of(auctions);
     }
 
+    @Transactional
     public AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
@@ -129,11 +130,10 @@ public class AuctionService {
                 .orElseThrow(() -> new UserNotFoundException(bidderId, principal));
 
         // redis 입찰 기록 저장
-        AuctionBidInfo bidInfo = AuctionBidInfo.of(bidder, auctionKey, price);
-        bidderRedisRepository.save(bidInfo);
+        AuctionBidInfo bidInfo = bidderRedisRepository.save(AuctionBidInfo.of(bidder, auctionKey, price));
 
-        // redis 경매 정보 업데이트
-        auction.updateBidder(bidder);
+        // 경매 정보 업데이트
+        auction.updateLastBidder(bidder);
         auction.updateCurrentPrice(price);
         auctionRepository.saveAndFlush(auction);
 
@@ -149,73 +149,43 @@ public class AuctionService {
         auctionInfo.getPhotoPaths().add(s3Path);
         realTimeAuctionRedisRepository.save(auctionInfo);
     }
+    */
 
+    @Transactional
     public Integer updateLike(String auctionKey, Long userId) {
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
-
         // 멤버 정보 찾기
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        // 이미 좋아요가 눌린 상태에서 다시 누르면 취소, 아니면 + 1
-        Set<Long> likeMembers = auctionInfo.getLikeMembers();
-        Integer like = likeMembers.size();
-
-        if (likeMembers.contains(userId)) {
-            likeMembers.remove(userId);
-            like--;
-        }
-        else {
-            likeMembers.add(userId);
-            like++;
-        }
-
-        auctionInfo.updateLike(like);
-        realTimeAuctionRedisRepository.save(auctionInfo);
-
-        return like;
-    }
-
-    public Long deleteAuction(String auctionKey, Long artistId) {
-        RealTimeAuctionInfo info = realTimeAuctionRedisRepository.findById(auctionKey)
+        // 경매 정보 찾기
+        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        // 레디스에서 관련 경매 정보와 연관된 입찰 정보를 모두 삭제한다
-        if (Objects.equals(info.getArtistId(), artistId)) {
-            realTimeAuctionRedisRepository.deleteById(auctionKey);
+        auction.updateLike(userId);
+
+        return auctionRepository.saveAndFlush(auction).getLike();
+    }
+
+    @Transactional
+    public Long deleteAuction(String auctionKey, Long artistId) {
+        User user = userRepository.findById(artistId)
+                .orElseThrow(() -> new UserNotFoundException(artistId));
+
+        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
+                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+        if (Objects.equals(auction.getArtist().getId(), user.getId())) {
             List<String> bidIDs = bidderRedisRepository.findByAuctionKey(auctionKey)
                             .stream()
                             .map(AuctionBidInfo::getId)
                             .toList();
+
             bidderRedisRepository.deleteAllById(bidIDs);
+            auctionRepository.delete(auction);
+
             return 1L;
         }
 
         return 0L;
     }
-
-    public Long finishAuction(String auctionKey, Boolean isSold) {
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
-
-        realTimeAuctionRedisRepository.deleteById(auctionKey);
-        return auctionService.saveAuctionInfo(auctionInfo, isSold, 1L);
-    }
-
-    public Long finishAuctionWithBidder(String auctionKey, Long bidderId, Long finalPrice) {
-        RealTimeAuctionInfo auctionInfo = realTimeAuctionRedisRepository.findById(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
-
-        // 현재가보다 낮은 최종가가 들어온 경우 예외 처리
-        if (auctionInfo.getAuctionCurrentPrice() > finalPrice) return 0L;
-
-        // 레디스에서 삭제 후 DB에 경매 기록 저장
-        auctionInfo.updateCurrentPrice(finalPrice);
-        realTimeAuctionRedisRepository.deleteById(auctionKey);
-
-        return auctionService.saveAuctionInfo(auctionInfo, true, bidderId);
-    }
-
-     */
 }

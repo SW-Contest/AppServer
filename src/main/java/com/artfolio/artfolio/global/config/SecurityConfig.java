@@ -52,7 +52,7 @@ public class SecurityConfig {
 
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/login/**")
+                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
