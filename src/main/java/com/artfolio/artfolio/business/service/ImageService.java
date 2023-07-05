@@ -117,7 +117,7 @@ public class ImageService {
 
                     if (isExist) {
                         s3Manager.deleteObject(fileKey);
-                        artPiecePhotoRepository.deleteById(artPiecePhoto.getId());
+                        artPiecePhotoRepository.delete(artPiecePhoto);
                         artPiecePhotoRepository.flush();
                         return 1L;
                     }

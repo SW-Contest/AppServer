@@ -33,7 +33,7 @@ public class Auction extends AuditingFields {
     @Column(nullable = false, updatable = false)
     private Long startPrice;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     private Long currentPrice;
 
     @Column(nullable = false, name = "auction_like")
@@ -51,7 +51,7 @@ public class Auction extends AuditingFields {
     private final List<MemberAuction> memberAuctions = new ArrayList<>();
 
     @Transient
-    private final Set<Long> likeUsersId = new HashSet<>();
+    private Set<User> likeUsers = new HashSet<>();
 
     @Builder
     public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice, Integer like, Boolean isFinish, User bidder) {
@@ -67,8 +67,17 @@ public class Auction extends AuditingFields {
         this.bidder = null;
     }
 
-    public void finishAuction() {
-        this.isFinish = true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Auction auction = (Auction) o;
+        return Objects.equals(auctionUuId, auction.auctionUuId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(auctionUuId);
     }
 
     public void updateLastBidder(User bidder) {
@@ -79,9 +88,9 @@ public class Auction extends AuditingFields {
         this.currentPrice = price;
     }
 
-    public void updateLike(Long userId) {
-        if (likeUsersId.contains(userId)) likeUsersId.remove(userId);
-        else likeUsersId.add(userId);
-        this.like = likeUsersId.size();
+    public void updateLike(User user) {
+        if (likeUsers.contains(user)) likeUsers.remove(user);
+        else likeUsers.add(user);
+        this.like = likeUsers.size();
     }
 }

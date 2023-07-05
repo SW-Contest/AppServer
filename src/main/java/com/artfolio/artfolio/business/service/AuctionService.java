@@ -130,9 +130,6 @@ public class AuctionService {
         auction.updateLastBidder(bidder);
         auction.updateCurrentPrice(price);
         auctionRepository.save(auction);
-        auctionRepository.flush();
-
-        System.out.println("----- auction price updated -----");
 
         // 응답 객체를 만들어 반환
         return AuctionBid.Res.of(bidInfo);
@@ -148,7 +145,7 @@ public class AuctionService {
         Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        auction.updateLike(user.getId());
+        auction.updateLike(user);
 
         return auctionRepository.saveAndFlush(auction).getLike();
     }

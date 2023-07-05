@@ -128,4 +128,15 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User o1)) return false;
+        return Objects.equals(this.email, o1.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
 }

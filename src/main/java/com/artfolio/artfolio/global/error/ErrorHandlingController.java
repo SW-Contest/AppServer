@@ -110,6 +110,7 @@ public class ErrorHandlingController {
     @ExceptionHandler(AccessTokenInvalidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleAccessTokenInvalidException(AccessTokenInvalidException e) {
+        log.error("accessToken invalid : {}", e.getMessage());
         return buildError(ErrorCode.ACCESS_TOKEN_INVALID);
     }
 }
