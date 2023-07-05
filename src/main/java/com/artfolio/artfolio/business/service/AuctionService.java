@@ -28,6 +28,7 @@ public class AuctionService {
     private final ArtPieceRepository artPieceRepository;
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final BidRedisRepository bidderRedisRepository;
+    private final UserAuctionRepository userAuctionRepository;
 
     @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -51,7 +52,6 @@ public class AuctionService {
                 .content(req.getAuctionContent())
                 .startPrice(req.getAuctionStartPrice())
                 .currentPrice(req.getAuctionStartPrice())
-                .like(0)
                 .build();
 
         String uuid = auctionRepository.save(auction).getAuctionUuId();
@@ -90,8 +90,8 @@ public class AuctionService {
                 else auctions = auctionRepository.findAllByIsFinishFalseOrderByCurrentPriceDesc(pageable);
             }
             case LIKE -> {
-                if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeAsc(pageable);
-                else auctions = auctionRepository.findAllByIsFinishFalseOrderByLikeDesc(pageable);
+                if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByLikesAsc(pageable);
+                else auctions = auctionRepository.findAllByIsFinishFalseOrderByLikesDesc(pageable);
             }
             case CREATED_AT -> {
                 if (orderType == OrderType.ASC) auctions = auctionRepository.findAllByIsFinishFalseOrderByCreatedAtAsc(pageable);
@@ -145,9 +145,20 @@ public class AuctionService {
         Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        auction.updateLike(user);
+        Optional<UserAuction> userAuction = userAuctionRepository.findByUserAndAuction(user, auction);
 
-        return auctionRepository.saveAndFlush(auction).getLike();
+        if (userAuction.isPresent()) {
+            UserAuction ua = userAuction.get();
+            if (ua.getIsLiked()) auction.decreaseLike(ua);
+            else auction.increaseLike(ua);
+        } else {
+            UserAuction ua = new UserAuction(user, auction);
+            userAuctionRepository.save(ua);
+            auction.updateUserAuction(ua);
+            auction.increaseLike(ua);
+        }
+
+        return auctionRepository.saveAndFlush(auction).getLikes();
     }
 
     @Transactional

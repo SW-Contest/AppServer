@@ -1,7 +1,7 @@
 package com.artfolio.artfolio.user.entity;
 
 import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.MemberAuction;
+import com.artfolio.artfolio.business.domain.UserAuction;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
 import jakarta.persistence.*;
@@ -57,8 +57,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "artist", fetch = FetchType.EAGER)
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private final List<MemberAuction> memberAuctions = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private final List<UserAuction> userAuctions = new ArrayList<>();
+
 
     @Builder
     public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, Integer like, String content, String refreshToken) {

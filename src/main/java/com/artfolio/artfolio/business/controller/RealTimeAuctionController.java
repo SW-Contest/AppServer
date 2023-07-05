@@ -79,7 +79,7 @@ public class RealTimeAuctionController {
      */
 
     /* 경매 좋아요 +-1 메서드 */
-    @PostMapping("/like")
+    @PatchMapping("/like")
     public ResponseEntity<Integer> updateLike(
             @RequestParam("auctionId") String auctionKey,
             @RequestParam("userId") Long userId

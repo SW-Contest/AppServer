@@ -10,7 +10,8 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Auction extends AuditingFields {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -36,9 +37,6 @@ public class Auction extends AuditingFields {
     @Column(nullable = false)
     private Long currentPrice;
 
-    @Column(nullable = false, name = "auction_like")
-    private Integer like;
-
     @Column(nullable = false)
     private Boolean isFinish;
 
@@ -48,13 +46,13 @@ public class Auction extends AuditingFields {
     private User bidder;
 
     @OneToMany(mappedBy = "auction")
-    private final List<MemberAuction> memberAuctions = new ArrayList<>();
+    private final List<UserAuction> userAuctions = new ArrayList<>();
 
-    @Transient
-    private Set<User> likeUsers = new HashSet<>();
+    @Column(nullable = false)
+    private Integer likes;
 
     @Builder
-    public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice, Integer like, Boolean isFinish, User bidder) {
+    public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice) {
         this.auctionUuId = UUID.randomUUID().toString();
         this.title = title;
         this.content = content;
@@ -62,7 +60,7 @@ public class Auction extends AuditingFields {
         this.artPiece = artPiece;
         this.startPrice = startPrice;
         this.currentPrice = currentPrice;
-        this.like = 0;
+        this.likes = 0;
         this.isFinish = false;
         this.bidder = null;
     }
@@ -88,9 +86,19 @@ public class Auction extends AuditingFields {
         this.currentPrice = price;
     }
 
-    public void updateLike(User user) {
-        if (likeUsers.contains(user)) likeUsers.remove(user);
-        else likeUsers.add(user);
-        this.like = likeUsers.size();
+    public void updateUserAuction(UserAuction ua) {
+        this.userAuctions.add(ua);
+        ua.setAuction(this);
+    }
+
+    public void increaseLike(UserAuction ua) {
+        this.likes++;
+        ua.toggleIsLiked();
+    }
+
+    public void decreaseLike(UserAuction ua) {
+        this.likes--;
+        ua.toggleIsLiked();
     }
 }
+

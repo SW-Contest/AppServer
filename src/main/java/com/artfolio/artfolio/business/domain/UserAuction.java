@@ -5,24 +5,34 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MemberAuction {
+public class UserAuction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "memberId", nullable = false)
-    private User member;
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "auctionId", nullable = false)
     private Auction auction;
 
-    public MemberAuction(User member, Auction auction) {
-        this.member = member;
+    @Column(nullable = false)
+    private Boolean isLiked;
+
+    public UserAuction(User user, Auction auction) {
+        this.user = user;
         this.auction = auction;
+        this.isLiked = false;
+    }
+
+    public void toggleIsLiked() {
+        this.isLiked = !isLiked;
     }
 }
