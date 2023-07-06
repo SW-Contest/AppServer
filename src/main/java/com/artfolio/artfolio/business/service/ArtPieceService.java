@@ -9,6 +9,7 @@ import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class ArtPieceService {
     private final ArtPieceRepository artPieceRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public Long createArtPiece(ArtPieceDto.CreationReq req) {
         log.info("[ createArtPiece() ] req : {}", req);
 
@@ -24,9 +26,9 @@ public class ArtPieceService {
         User user = userRepository.findById(artistId)
                 .orElseThrow(() -> new UserNotFoundException(artistId));
 
-        ArtPiece artPiece = ArtPiece.of(req, user);
+        ArtPiece artPiece = artPieceRepository.saveAndFlush(ArtPiece.of(req, user));
         user.addArtPiece(artPiece);
 
-        return artPieceRepository.save(artPiece).getId();
+        return artPiece.getId();
     }
 }

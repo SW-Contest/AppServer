@@ -8,13 +8,16 @@ import java.util.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "auction", indexes = {
+        @Index(name = "idx_auction_uuid", columnList = "auctionUuId")
+})
 @Entity
 public class Auction extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String auctionUuId;
 
     @Column(nullable = false)
@@ -45,7 +48,7 @@ public class Auction extends AuditingFields {
     @JoinColumn(name = "bidder_id")
     private User bidder;
 
-    @OneToMany(mappedBy = "auction")
+    @OneToMany(mappedBy = "auction", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<UserAuction> userAuctions = new ArrayList<>();
 
     @Column(nullable = false)

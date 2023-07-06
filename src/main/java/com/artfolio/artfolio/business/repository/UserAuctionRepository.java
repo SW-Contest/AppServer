@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface UserAuctionRepository extends JpaRepository<UserAuction, Long> {
     Optional<UserAuction> findByUserAndAuction(User user, Auction auction);
+    void deleteByUserAndAuction(User user, Auction auction);
 }

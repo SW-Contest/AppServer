@@ -176,7 +176,7 @@ public class AuctionService {
                             .toList();
 
             bidderRedisRepository.deleteAllById(bidIDs);
-            auctionRepository.delete(auction);
+            auctionRepository.deleteById(auction.getId());
 
             return 1L;
         }

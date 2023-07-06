@@ -54,7 +54,7 @@ public class User implements UserDetails {
 
     private String refreshToken;
 
-    @OneToMany(mappedBy = "artist", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "artist")
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
