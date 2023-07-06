@@ -61,7 +61,7 @@ public class AuctionService {
     @Transactional(readOnly = true)
     public AuctionDto.DetailInfoRes getAuction(String auctionKey) {
         // 경매 정보 찾아오기
-        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
+        Auction auction = auctionRepository.findAuctionWithFetchJoin(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
         // 작가 정보 찾아오기
@@ -69,7 +69,7 @@ public class AuctionService {
 
         // 예술품 정보 찾아오기
         ArtPiece artPiece = auction.getArtPiece();
-        List<ArtPiecePhoto> artPiecePhotos = artPiecePhotoRepository.findArtPiecePhotoByArtPiece_Id(artPiece.getId());
+        List<ArtPiecePhoto> artPiecePhotos = artPiece.getArtPiecePhotos();
 
         // 입찰자 목록 가져오기
         List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(auctionKey);
@@ -111,7 +111,7 @@ public class AuctionService {
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
 
-        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
+        Auction auction = auctionRepository.findAuctionWithFetchJoin(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
         // 현재가보다 낮은 경우 예외 처리
@@ -137,13 +137,13 @@ public class AuctionService {
 
     @Transactional
     public Integer updateLike(String auctionKey, Long userId) {
-        // 멤버 정보 찾기
+        // 경매 정보 찾기
+        Auction auction = auctionRepository.findAuctionWithFetchJoin(auctionKey)
+                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+        // 유저 정보 찾기
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
-
-        // 경매 정보 찾기
-        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
-                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
         Optional<UserAuction> userAuction = userAuctionRepository.findByUserAndAuction(user, auction);
 
@@ -163,13 +163,12 @@ public class AuctionService {
 
     @Transactional
     public Long deleteAuction(String auctionKey, Long artistId) {
-        User user = userRepository.findById(artistId)
-                .orElseThrow(() -> new UserNotFoundException(artistId));
-
         Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
-        if (Objects.equals(auction.getArtist().getId(), user.getId())) {
+        User user = auction.getArtist();
+
+        if (Objects.equals(user.getId(), artistId)) {
             List<String> bidIDs = bidderRedisRepository.findByAuctionKey(auctionKey)
                             .stream()
                             .map(AuctionBidInfo::getId)

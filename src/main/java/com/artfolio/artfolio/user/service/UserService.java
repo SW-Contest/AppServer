@@ -35,7 +35,6 @@ public class UserService {
                 .socialType(SocialType.NAVER)
                 .socialId(userSignUpDto.getSocialId())
                 .content(userSignUpDto.getContent())
-                .like(userSignUpDto.getLike())
                 .build();
 
         user.passwordEncode(passwordEncoder);

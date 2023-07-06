@@ -65,7 +65,6 @@ public class OAuthAttributes {
                 .role(Role.USER)
                 .socialType(socialType)
                 .socialId(oAuth2UserInfo.getId())
-                .like(0)
                 .content("No Content")
                 .build();
     }

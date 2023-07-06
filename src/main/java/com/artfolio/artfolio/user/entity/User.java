@@ -46,9 +46,6 @@ public class User implements UserDetails {
     @Column(nullable = false)  // 로그인한 소셜 타입의 식별자 값
     private String socialId;
 
-    @Column(name = "member_like", nullable = false)
-    private Integer like;
-
     @Column(length = 1500, nullable = false)
     private String content;
 
@@ -62,7 +59,7 @@ public class User implements UserDetails {
 
 
     @Builder
-    public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, Integer like, String content, String refreshToken) {
+    public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, String content, String refreshToken) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -70,7 +67,6 @@ public class User implements UserDetails {
         this.role = role;
         this.socialType = socialType;
         this.socialId = socialId;
-        this.like = like;
         this.content = content;
         this.refreshToken = refreshToken;
     }

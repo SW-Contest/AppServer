@@ -16,6 +16,5 @@ public class UserSignUpDto {
     private Role role;
     private SocialType socialType;
     private String socialId;
-    private Integer like;
     private String content;
 }

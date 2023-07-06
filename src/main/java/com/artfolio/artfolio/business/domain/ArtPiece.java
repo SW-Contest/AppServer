@@ -21,8 +21,8 @@ public class ArtPiece extends AuditingFields {
     @Column(length = 10000, nullable = false)
     private String content;
 
-    @Column(name = "art_piece_like", nullable = false)
-    private Long like;
+    @Column(name = "art_piece_likes", nullable = false)
+    private Integer likes;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,10 +38,10 @@ public class ArtPiece extends AuditingFields {
     private final List<Auction> auctions = new ArrayList<>();
 
     @Builder
-    public ArtPiece(String title, String content, Long like, User artist) {
+    public ArtPiece(String title, String content, Integer likes, User artist) {
         this.title = title;
         this.content = content;
-        this.like = like;
+        this.likes = likes;
         this.artist = artist;
     }
 
@@ -49,7 +49,7 @@ public class ArtPiece extends AuditingFields {
         return ArtPiece.builder()
                 .title(req.getTitle())
                 .content(req.getContent())
-                .like(0L)
+                .likes(0)
                 .artist(artist)
                 .build();
     }

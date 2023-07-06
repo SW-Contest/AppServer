@@ -64,7 +64,6 @@ public class AuctionDto {
                     .email(artist.getEmail())
                     .username(artist.getEmail())
                     .name(artist.getNickname())
-                    .like(artist.getLike())
                     .photoPath(artist.getProfilePhoto())
                     .build();
 
@@ -100,7 +99,6 @@ public class AuctionDto {
         public static DetailInfoRes of(Auction auction, List<AuctionBidInfo> bidInfo, List<ArtPiecePhoto> paths, User artist, ArtPiece artPiece) {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
-                    .like(artist.getLike())
                     .username(artist.getEmail())
                     .name(artist.getNickname())
                     .email(artist.getEmail())
@@ -127,7 +125,7 @@ public class AuctionDto {
                     .id(artPiece.getId())
                     .title(artPiece.getTitle())
                     .content(artPiece.getContent())
-                    .like(artPiece.getLike())
+                    .like(artPiece.getLikes())
                     .build();
 
             List<BidderInfo> bidderInfos = bidInfo.stream()
@@ -150,14 +148,13 @@ public class AuctionDto {
         private Long id;
         private String title;
         private String content;
-        private Long like;
+        private Integer like;
     }
 
     @Builder @Getter
     @AllArgsConstructor
     private static class ArtistInfo {
         private Long id;
-        private Integer like;
         private String username;
         private String name;
         private String email;
@@ -185,7 +182,6 @@ public class AuctionDto {
         private String name;
         private String email;
         private String photoPath;
-        private Integer like;
         private Long bidPrice;
         private LocalDateTime bidDate;
 
@@ -195,7 +191,6 @@ public class AuctionDto {
                     .name(info.getName())
                     .email(info.getUsername())
                     .photoPath(info.getProfilePhotoPath())
-                    .like(info.getLike())
                     .bidPrice(info.getBidPrice())
                     .bidDate(info.getBidDate())
                     .build();
