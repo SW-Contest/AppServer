@@ -58,10 +58,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private final List<UserAuction> userAuctions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "follower")
+    @OneToMany(mappedBy = "fromUser")
     private final List<Follow> followers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "following")
+    @OneToMany(mappedBy = "toUser")
     private final List<Follow> followings = new ArrayList<>();
 
     @Builder
@@ -85,12 +85,24 @@ public class User implements UserDetails {
 
     public void addFollower(Follow follow) {
         this.followers.add(follow);
-        follow.setFollower(this);
+        follow.setToUser(this);
     }
 
     public void addFollowing(Follow follow) {
         this.followings.add(follow);
-        follow.setFollowing(this);
+        follow.setFromUser(this);
+    }
+
+    public void deleteFollower(Follow follow) {
+        if (this.followers.contains(follow)) {
+            followers.remove(follow);
+        }
+    }
+
+    public void deleteFollowing(Follow follow) {
+        if (this.followings.contains(follow)) {
+            followings.remove(follow);
+        }
     }
 
     /* 유저 권한 설정 메서드 */
