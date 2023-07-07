@@ -1,7 +1,6 @@
 package com.artfolio.artfolio.user.entity;
 
 import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.Follow;
 import com.artfolio.artfolio.business.domain.UserAuction;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;

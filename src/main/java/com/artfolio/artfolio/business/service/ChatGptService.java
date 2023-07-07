@@ -1,12 +1,9 @@
-package com.artfolio.artfolio.user.service;
+package com.artfolio.artfolio.business.service;
 
 import com.artfolio.artfolio.global.config.ChatGptConfig;
-import com.artfolio.artfolio.user.dto.ChatGptDto;
+import com.artfolio.artfolio.business.dto.ChatGptDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;

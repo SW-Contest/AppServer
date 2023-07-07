@@ -1,7 +1,7 @@
-package com.artfolio.artfolio.user.controller;
+package com.artfolio.artfolio.business.controller;
 
-import com.artfolio.artfolio.user.dto.ChatGptDto;
-import com.artfolio.artfolio.user.service.ChatGptService;
+import com.artfolio.artfolio.business.dto.ChatGptDto;
+import com.artfolio.artfolio.business.service.ChatGptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,6 @@
-package com.artfolio.artfolio.business.domain;
+package com.artfolio.artfolio.user.entity;
 
-import com.artfolio.artfolio.user.entity.User;
+import com.artfolio.artfolio.business.domain.AuditingFields;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;

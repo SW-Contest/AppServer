@@ -1,6 +1,6 @@
-package com.artfolio.artfolio.business.controller;
+package com.artfolio.artfolio.user.controller;
 
-import com.artfolio.artfolio.business.dto.FollowDto;
+import com.artfolio.artfolio.user.dto.FollowDto;
 import com.artfolio.artfolio.business.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.artfolio.artfolio.business.repository;
 
-import com.artfolio.artfolio.business.domain.Follow;
+import com.artfolio.artfolio.user.entity.Follow;
 import com.artfolio.artfolio.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

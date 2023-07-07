@@ -1,4 +1,4 @@
-package com.artfolio.artfolio.user.dto;
+package com.artfolio.artfolio.business.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

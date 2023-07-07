@@ -1,7 +1,7 @@
 package com.artfolio.artfolio.business.service;
 
-import com.artfolio.artfolio.business.domain.Follow;
-import com.artfolio.artfolio.business.dto.FollowDto;
+import com.artfolio.artfolio.user.entity.Follow;
+import com.artfolio.artfolio.user.dto.FollowDto;
 import com.artfolio.artfolio.business.repository.FollowRepository;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
 import com.artfolio.artfolio.user.entity.User;

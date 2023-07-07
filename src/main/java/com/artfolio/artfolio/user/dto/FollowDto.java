@@ -1,6 +1,6 @@
-package com.artfolio.artfolio.business.dto;
+package com.artfolio.artfolio.user.dto;
 
-import com.artfolio.artfolio.business.domain.Follow;
+import com.artfolio.artfolio.user.entity.Follow;
 import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 
