@@ -15,26 +15,27 @@ import java.io.File;
 @Component
 public class S3Manager {
     private final AmazonS3Client amazonS3Client;
+    private static final String DEFAULT_ART_PIECE_DIR = "static/artPiece/";
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     /* S3 파일 업로드 메서드 */
-    public String upload(Long artPieceId, File uploadFile) {
-        String DEFAULT_DIR = "static/" + artPieceId;
-        String fileName = DEFAULT_DIR + "/" + uploadFile.getName();
-        return putS3(uploadFile, fileName);
+    public String uploadArtPieceImage(Long artPieceId, File uploadFile) {
+        String PATH = DEFAULT_ART_PIECE_DIR + artPieceId + "/";
+        return putS3(uploadFile, PATH + uploadFile.getName());
     }
 
     /* 파일 확인 메서드 */
-    public boolean doesObjectExist(String fileKey) {
-        return amazonS3Client.doesObjectExist(bucket, fileKey);
+    public boolean doesObjectExist(Long artPieceId, String fileName) {
+        String PATH = DEFAULT_ART_PIECE_DIR + artPieceId + "/" + fileName;
+        return amazonS3Client.doesObjectExist(bucket, PATH);
     }
 
     /* 파일 삭제 메서드 */
-    public void deleteObject(String fileKey) {
-        log.info("s3 파일 삭제! 파일 이름 : {}", fileKey);
-        amazonS3Client.deleteObject(bucket, fileKey);
+    public void deleteObject(Long artPieceId, String fileName) {
+        String PATH = DEFAULT_ART_PIECE_DIR + artPieceId + "/" + fileName;
+        amazonS3Client.deleteObject(bucket, PATH);
     }
 
     private String putS3(File uploadFile, String fileName) {

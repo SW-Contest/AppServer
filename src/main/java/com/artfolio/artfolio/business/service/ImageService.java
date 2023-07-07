@@ -56,7 +56,7 @@ public class ImageService {
         List<ArtPiecePhoto> photos = new ArrayList<>();
 
         for (File img : Objects.requireNonNull(imgDir.listFiles())) {
-            String s3Path = s3Manager.upload(artPieceId, img);
+            String s3Path = s3Manager.uploadArtPieceImage(artPieceId, img);
             String fileFullName = img.getName();
             String fileName = fileFullName.substring(0, fileFullName.indexOf("."));
             String ext = fileFullName.substring(fileFullName.indexOf(".") + 1);
@@ -102,23 +102,19 @@ public class ImageService {
             return 0L;
         }
 
-        System.out.println("---------------- 1 --------------------");
-
         List<ArtPiecePhoto> artPiecePhotos = artPiece.getArtPiecePhotos();
 
         for (ArtPiecePhoto artPiecePhoto : artPiecePhotos) {
             String s3Filename = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
 
             if (s3Filename.equals(fileName)) {
-                String fileKey = "static/" + artistId + "/" + fileName;
-
                 try {
-                    boolean isExist = s3Manager.doesObjectExist(fileKey);
+                    boolean isExist = s3Manager.doesObjectExist(artPieceId, fileName);
 
                     if (isExist) {
-                        s3Manager.deleteObject(fileKey);
-                        artPiecePhotoRepository.delete(artPiecePhoto);
-                        artPiecePhotoRepository.flush();
+                        log.info("file 발견! -> filename : {}, s3Filename : {}", fileName, s3Filename);
+                        s3Manager.deleteObject(artPieceId, s3Filename);
+                        artPiecePhotoRepository.deleteById(artPiecePhoto.getId());
                         return 1L;
                     }
                 } catch (Exception e) {

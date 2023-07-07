@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.user.entity;
 
 import com.artfolio.artfolio.business.domain.ArtPiece;
+import com.artfolio.artfolio.business.domain.Follow;
 import com.artfolio.artfolio.business.domain.UserAuction;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
@@ -57,6 +58,11 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private final List<UserAuction> userAuctions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "follower")
+    private final List<Follow> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "following")
+    private final List<Follow> followings = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, String content, String refreshToken) {
@@ -72,30 +78,40 @@ public class User implements UserDetails {
     }
 
     /* 연관관계 편의 메서드 (유저 - 예술품) */
-
     public void addArtPiece(ArtPiece artPiece) {
         this.artPieces.add(artPiece);
         artPiece.setArtist(this);
     }
-    /* 유저 권한 설정 메서드 */
 
+    public void addFollower(Follow follow) {
+        this.followers.add(follow);
+        follow.setFollower(this);
+    }
+
+    public void addFollowing(Follow follow) {
+        this.followings.add(follow);
+        follow.setFollowing(this);
+    }
+
+    /* 유저 권한 설정 메서드 */
     public void authorizeUser() {
         this.role = Role.USER;
     }
+
     public void authorizeArtist() {
         this.role = Role.ARTIST;
     }
 
     /* 비밀번호 암호화 메서드 */
-
     public void passwordEncode(PasswordEncoder encoder) {
         this.password = encoder.encode(this.password);
     }
-    /* refresh-token 업데이트 메서드 */
 
+    /* refresh-token 업데이트 메서드 */
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
