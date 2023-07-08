@@ -22,6 +22,11 @@ public class ArtPieceController {
         return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{artPieceId}")
+    public ResponseEntity<ArtPieceDto.ArtPieceInfoRes> getArtPiece(@PathVariable("artPieceId") Long artPieceId) {
+        return ResponseEntity.ok(artPieceService.getArtPiece(artPieceId));
+    }
+
     @DeleteMapping
     public ResponseEntity<Long> deleteArtPiece(@RequestBody ArtPieceDto.DeletionReq req) {
         return ResponseEntity.ok(artPieceService.deleteArtPiece(req));

@@ -5,7 +5,6 @@ import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.UserArtPiece;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
-import com.artfolio.artfolio.business.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.repository.UserArtPieceRepository;
 import com.artfolio.artfolio.global.exception.ArtPieceNotFoundException;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +41,14 @@ public class ArtPieceService {
         user.addArtPiece(artPiece);
 
         return artPiece.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public ArtPieceDto.ArtPieceInfoRes getArtPiece(Long artPieceId) {
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
+
+        return ArtPieceDto.ArtPieceInfoRes.of(artPiece);
     }
 
     public Long deleteArtPiece(ArtPieceDto.DeletionReq req) {

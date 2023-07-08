@@ -99,7 +99,7 @@ public class AuctionDto {
         public static DetailInfoRes of(Auction auction, List<AuctionBidInfo> bidInfo, List<ArtPiecePhoto> paths, User artist, ArtPiece artPiece) {
             ArtistInfo artistInfo = ArtistInfo.builder()
                     .id(artist.getId())
-                    .username(artist.getEmail())
+                    .username(artist.getUsername())
                     .name(artist.getNickname())
                     .email(artist.getEmail())
                     .photoPath(artist.getProfilePhoto())
