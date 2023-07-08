@@ -10,25 +10,25 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class UserAuction {
+public class UserArtPiece {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "auction_id", nullable = false)
-    private Auction auction;
+    @JoinColumn(name = "art_piece_id")
+    private ArtPiece artPiece;
 
     @Column(nullable = false)
     private Boolean isLiked;
 
-    public UserAuction(User user, Auction auction) {
+    public UserArtPiece(User user, ArtPiece artPiece) {
         this.user = user;
-        this.auction = auction;
+        this.artPiece = artPiece;
         this.isLiked = false;
     }
 

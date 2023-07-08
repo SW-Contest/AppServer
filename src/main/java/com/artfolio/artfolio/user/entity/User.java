@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.user.entity;
 
 import com.artfolio.artfolio.business.domain.ArtPiece;
+import com.artfolio.artfolio.business.domain.UserArtPiece;
 import com.artfolio.artfolio.business.domain.UserAuction;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
@@ -62,6 +63,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "toUser")
     private final List<Follow> followings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private final List<UserArtPiece> userArtPieces = new ArrayList<>();
 
     @Builder
     public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, String content, String refreshToken) {

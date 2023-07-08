@@ -22,6 +22,26 @@ public class ArtPieceController {
         return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Long> deleteArtPiece(@RequestBody ArtPieceDto.DeletionReq req) {
+        return ResponseEntity.ok(artPieceService.deleteArtPiece(req));
+    }
+
+    @PatchMapping("/title")
+    public ResponseEntity<Long> updateArtPieceTitle(@RequestBody ArtPieceDto.UpdateTitleReq req) {
+        return ResponseEntity.ok(artPieceService.updateTitle(req));
+    }
+
+    @PatchMapping("/content")
+    public ResponseEntity<Long> updateArtPieceContent(@RequestBody ArtPieceDto.UpdateContentReq req) {
+        return ResponseEntity.ok(artPieceService.updateContent(req));
+    }
+
+    @PatchMapping("/like")
+    public ResponseEntity<Integer> updateArtPieceLike(@RequestBody ArtPieceDto.UpdateLikeReq req) {
+        return ResponseEntity.ok(artPieceService.updateLike(req));
+    }
+
     @PostMapping("/image")
     public ResponseEntity<Long> uploadArtPiecePhoto(
             @RequestParam("artistId") Long artistId,

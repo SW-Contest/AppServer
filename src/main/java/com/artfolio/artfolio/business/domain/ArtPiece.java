@@ -29,13 +29,14 @@ public class ArtPiece extends AuditingFields {
     @JoinColumn(name = "artist_id", nullable = false)
     private User artist;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ArtPiecePhoto> artPiecePhotos = new ArrayList<>();
 
-    @Column(nullable = false)
     @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<Auction> auctions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<UserArtPiece> userArtPieces = new ArrayList<>();
 
     @Builder
     public ArtPiece(String title, String content, Integer likes, User artist) {
@@ -57,5 +58,28 @@ public class ArtPiece extends AuditingFields {
     public void updatePhoto(ArtPiecePhoto artPiecePhoto) {
         this.artPiecePhotos.add(artPiecePhoto);
         artPiecePhoto.setArtPiece(this);
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void increaseLike(UserArtPiece userArtPiece) {
+        this.likes++;
+        userArtPiece.toggleIsLiked();
+    }
+
+    public void decreaseLike(UserArtPiece userArtPiece) {
+        this.likes--;
+        userArtPiece.toggleIsLiked();
+    }
+
+    public void updateUserArtPiece(UserArtPiece userArtPiece) {
+        userArtPiece.setArtPiece(this);
+        this.userArtPieces.add(userArtPiece);
     }
 }
