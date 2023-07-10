@@ -64,7 +64,6 @@ public class ArtPieceDto {
     public static class ArtPieceInfoRes {
         private ArtPieceInfo artPieceInfo;
         private ArtistInfo artistInfo;
-        private List<String> photos;
 
         public static ArtPieceInfoRes of(ArtPiece artPiece) {
             User artist = artPiece.getArtist();
@@ -75,8 +74,36 @@ public class ArtPieceDto {
 
             return ArtPieceInfoRes.builder()
                     .artistInfo(ArtistInfo.of(artist))
-                    .artPieceInfo(ArtPieceInfo.of(artPiece))
-                    .photos(artPiecePhotos)
+                    .artPieceInfo(ArtPieceInfo.of(artPiece, artPiecePhotos))
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserArtPieceListRes {
+        private ArtistInfo artistInfo;
+        private List<ArtPieceInfo> artPieceInfos;
+
+        public static UserArtPieceListRes of(User user) {
+            List<ArtPieceInfo> list = user.getArtPieces()
+                    .stream()
+                    .map(piece ->
+                            ArtPieceInfo.of(
+                                    piece,
+                                    piece.getArtPiecePhotos()
+                                            .stream()
+                                            .map(ArtPiecePhoto::getFilePath)
+                                            .collect(Collectors.toList())
+                            )
+                    )
+                    .toList();
+
+            return UserArtPieceListRes.builder()
+                    .artistInfo(ArtistInfo.of(user))
+                    .artPieceInfos(list)
                     .build();
         }
     }
@@ -88,13 +115,15 @@ public class ArtPieceDto {
         private String title;
         private String content;
         private Integer likes;
+        private List<String> photos;
 
-        public static ArtPieceInfo of(ArtPiece artPiece) {
+        public static ArtPieceInfo of(ArtPiece artPiece, List<String> artPiecePhotos) {
             return ArtPieceInfo.builder()
                     .id(artPiece.getId())
                     .title(artPiece.getTitle())
                     .content(artPiece.getContent())
                     .likes(artPiece.getLikes())
+                    .photos(artPiecePhotos)
                     .build();
         }
     }

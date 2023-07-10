@@ -14,6 +14,49 @@ import java.util.Comparator;
 import java.util.List;
 
 public class AuctionDto {
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserLiveAuctionListRes {
+        private Integer size;
+        private List<AuctionDto.UserAuctionInfo> data;
+
+        public static UserLiveAuctionListRes of(List<AuctionDto.UserAuctionInfo> infos, List<AuctionBidInfo> bidInfos) {
+            return UserLiveAuctionListRes.builder()
+                    .size(infos.size())
+                    .data(infos)
+                    .build();
+        }
+    }
+
+    @Builder @Getter
+    @AllArgsConstructor
+    public static class UserAuctionInfo {
+        private String id;
+        private String title;
+        private String content;
+        private Long startPrice;
+        private Long currentPrice;
+        private Integer like;
+        private LocalDateTime createdAt;
+        private LocalDateTime finishedAt;
+        private List<String> photoPaths;
+
+        public static UserAuctionInfo of(Auction auction, List<String> photoPaths) {
+            return UserAuctionInfo.builder()
+                    .id(auction.getAuctionUuId())
+                    .title(auction.getTitle())
+                    .content(auction.getContent())
+                    .startPrice(auction.getStartPrice())
+                    .currentPrice(auction.getCurrentPrice())
+                    .like(auction.getLikes())
+                    .createdAt(auction.getCreatedAt())
+                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
+                    .photoPaths(photoPaths)
+                    .build();
+        }
+    }
+
     @Getter @Setter @ToString
     @AllArgsConstructor
     @NoArgsConstructor
@@ -109,17 +152,7 @@ public class AuctionDto {
                     .map(ArtPiecePhoto::getFilePath)
                     .toList();
 
-            AuctionInfo auctionInfo = AuctionInfo.builder()
-                    .id(auction.getAuctionUuId())
-                    .title(auction.getTitle())
-                    .content(auction.getContent())
-                    .startPrice(auction.getStartPrice())
-                    .currentPrice(auction.getCurrentPrice())
-                    .like(auction.getLikes())
-                    .createdAt(auction.getCreatedAt())
-                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
-                    .photoPaths(photoPaths)
-                    .build();
+            AuctionInfo auctionInfo = AuctionInfo.of(auction, photoPaths);
 
             ArtPieceInfo artPieceInfo = ArtPieceInfo.builder()
                     .id(artPiece.getId())
@@ -144,7 +177,7 @@ public class AuctionDto {
 
     @Builder @Getter
     @AllArgsConstructor
-    private static class ArtPieceInfo {
+    public static class ArtPieceInfo {
         private Long id;
         private String title;
         private String content;
@@ -153,7 +186,7 @@ public class AuctionDto {
 
     @Builder @Getter
     @AllArgsConstructor
-    private static class ArtistInfo {
+    public static class ArtistInfo {
         private Long id;
         private String username;
         private String name;
@@ -163,7 +196,7 @@ public class AuctionDto {
 
     @Builder @Getter
     @AllArgsConstructor
-    private static class AuctionInfo {
+    public static class AuctionInfo {
         private String id;
         private String title;
         private String content;
@@ -173,6 +206,20 @@ public class AuctionDto {
         private LocalDateTime createdAt;
         private LocalDateTime finishedAt;
         private List<String> photoPaths;
+
+        public static AuctionInfo of(Auction auction, List<String> photoPaths) {
+            return AuctionInfo.builder()
+                    .id(auction.getAuctionUuId())
+                    .title(auction.getTitle())
+                    .content(auction.getContent())
+                    .startPrice(auction.getStartPrice())
+                    .currentPrice(auction.getCurrentPrice())
+                    .like(auction.getLikes())
+                    .createdAt(auction.getCreatedAt())
+                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
+                    .photoPaths(photoPaths)
+                    .build();
+        }
     }
 
     @Builder @Getter
