@@ -3,7 +3,7 @@ package com.artfolio.artfolio.business.dto;
 import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.redis_domain.AuctionBidInfo;
 import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 import org.springframework.data.domain.Slice;

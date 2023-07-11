@@ -1,13 +1,8 @@
 package com.artfolio.artfolio.user.service;
 
-import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
-import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
-import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.repository.AuctionRepository;
 import com.artfolio.artfolio.business.repository.BidRedisRepository;
-import com.artfolio.artfolio.global.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
@@ -18,10 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Transactional
 @RequiredArgsConstructor

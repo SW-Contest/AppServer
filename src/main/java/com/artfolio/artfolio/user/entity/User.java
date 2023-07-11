@@ -16,7 +16,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email", columnList = "email", unique = true)
+})
 @Getter @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
