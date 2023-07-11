@@ -2,7 +2,7 @@ package com.artfolio.artfolio.business.service;
 
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
-import com.artfolio.artfolio.business.domain.redis_domain.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import com.artfolio.artfolio.business.dto.*;
 import com.artfolio.artfolio.business.repository.*;
 import com.artfolio.artfolio.global.exception.*;

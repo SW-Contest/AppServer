@@ -1,6 +1,6 @@
 package com.artfolio.artfolio.business.dto;
 
-import com.artfolio.artfolio.business.domain.redis_domain.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import lombok.*;
 
 import java.time.LocalDateTime;
