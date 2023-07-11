@@ -20,5 +20,5 @@ WORKDIR $APP_HOME
 ARG JAR_FILE_PATH=./build/libs/*.jar
 COPY --from=builder $APP_HOME/${JAR_FILE_PATH} app.jar
 
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["java", "-jar", "app.jar"]
