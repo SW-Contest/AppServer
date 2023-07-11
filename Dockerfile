@@ -20,5 +20,10 @@ WORKDIR $APP_HOME
 ARG JAR_FILE_PATH=./build/libs/*.jar
 COPY --from=builder $APP_HOME/${JAR_FILE_PATH} app.jar
 
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Seoul
+
+RUN apt-get install -y tzdata
+
 EXPOSE 80
 ENTRYPOINT ["java", "-jar", "app.jar"]
