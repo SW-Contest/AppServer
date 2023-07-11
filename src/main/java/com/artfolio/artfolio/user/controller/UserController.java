@@ -3,6 +3,7 @@ package com.artfolio.artfolio.user.controller;
 import com.artfolio.artfolio.user.dto.UserSignUpDto;
 import com.artfolio.artfolio.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -15,34 +16,29 @@ public class UserController {
 
     /* 추가 정보를 입력받을 경우 사용 */
     @PostMapping("/sign-up")
-    public Long signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
-        userService.signUp(userSignUpDto);
-        return 1L;
+    public ResponseEntity<Long> signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
+        return ResponseEntity.ok(userService.signUp(userSignUpDto));
     }
 
-    /* 닉네임 변경 */
-    @PostMapping("/nickname")
-    public Long changeNickname(@RequestBody Map<String, Object> map) {
-        Object nickname = map.get("nickname");
-
-        if (!(nickname instanceof String)) {
-            return 0L;
-        }
-
-        userService.changeNickname(nickname);
-        return 1L;
+    /* 유저가 참여하고 있는 진행중인 경매 목록
+    @GetMapping("/auction/live/{userId}")
+    public ResponseEntity<?> getLiveAuctionList(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.getLiveAuctionList(userId));
     }
 
-    /* 소개글 변경 */
-    @PostMapping("/content")
-    public Long changeContent(@RequestBody Map<String, Object> map) {
-        Object content = map.get("content");
+     */
 
-        if (!(content instanceof String)) {
-            return 0L;
-        }
+    /* 유저가 참여했던 종료된 경매 기록 내역
+    @GetMapping("/auction/finish/{userId}")
+    public ResponseEntity<?> getFinishAuctionList(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.getFinishAuctionList(userId));
+    }
 
-        userService.changeContent(content);
-        return 1L;
+     */
+
+    /* 특정 유저가 등록한 예술품 리스트 반환 */
+    @GetMapping("/art_piece/{userId}")
+    public ResponseEntity<?> getArtPieceList(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.getArtPieceList(userId));
     }
 }

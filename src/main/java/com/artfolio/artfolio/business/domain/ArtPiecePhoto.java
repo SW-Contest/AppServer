@@ -17,7 +17,7 @@ public class ArtPiecePhoto {
     @Column(nullable = false)
     private String fileExtension;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String filePath;
 
     @Column(nullable = false)
@@ -27,7 +27,7 @@ public class ArtPiecePhoto {
     private Boolean isThumbnail;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "art_piece_id", nullable = false)
     private ArtPiece artPiece;
 

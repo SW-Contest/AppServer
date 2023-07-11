@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.user.service;
 
+import com.artfolio.artfolio.global.exception.AccessTokenInvalidException;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
@@ -103,7 +104,7 @@ public class JwtService {
             );
         } catch (Exception e) {
             log.error("유효하지 않은 엑세스 토큰");
-            return Optional.empty();
+            throw new AccessTokenInvalidException(accessToken);
         }
     }
 
@@ -133,7 +134,7 @@ public class JwtService {
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            return false;
+            throw new AccessTokenInvalidException(token);
         }
     }
 }

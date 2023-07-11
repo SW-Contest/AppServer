@@ -4,12 +4,13 @@
 
 <hr/>
 
-## Tech Stack & Version
-- Framework: Spring Boot 3.0.5
-- Language: Java 17
-- Test: JUnit5 (BDDMockito)
-- 보안: Spring Security
-- DB: PostgreSQL, Redis
+## Tech Stack
+- Spring Boot, Spring Data JPA, Spring Security
+- H2(Dev), PostgreSQL(Prod), Redis
+- OpenAI API, Java-JWT, OAuth2, STOMP
+- AWS S3, Rekognition, EC2 
+- Docker, Docker-Compose, Github Actions
+- Nginx
 
 <hr/>
 

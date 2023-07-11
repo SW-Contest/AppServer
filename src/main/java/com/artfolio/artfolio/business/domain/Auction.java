@@ -4,53 +4,104 @@ import com.artfolio.artfolio.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "auction", indexes = {
+        @Index(name = "idx_auction_uuid", columnList = "auctionUuId")
+})
 @Entity
 public class Auction extends AuditingFields {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /* TODO: 나중에 세션 정보에서 빼오도록 리팩터링 (Audit) */
+    @Column(nullable = false)
+    private String auctionUuId;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String content;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
     private User artist;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "art_piece_id", nullable = false)
+    private ArtPiece artPiece;
+
     @Column(nullable = false, updatable = false)
     private Long startPrice;
 
-    @Column(nullable = false, updatable = false)
-    private Long finalPrice;
-
-    @Column(nullable = false, name = "auction_like")
-    private Integer like;
+    @Column(nullable = false)
+    private Long currentPrice;
 
     @Column(nullable = false)
-    private Boolean isSold;
+    private Boolean isFinish;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bidder_id")
     private User bidder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "art_piece_id", nullable = false)
-    private ArtPiece artPiece;
+    @OneToMany(mappedBy = "auction", orphanRemoval = true, cascade = CascadeType.ALL)
+    private final List<UserAuction> userAuctions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "auction")
-    private final List<MemberAuction> memberAuctions = new ArrayList<>();
+    @Column(nullable = false)
+    private Integer likes;
 
     @Builder
-    public Auction(User artist, Long startPrice, Long finalPrice, Integer like, Boolean isSold, User bidder, ArtPiece artPiece) {
+    public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice) {
+        this.auctionUuId = UUID.randomUUID().toString();
+        this.title = title;
+        this.content = content;
         this.artist = artist;
-        this.startPrice = startPrice;
-        this.finalPrice = finalPrice;
-        this.like = like;
-        this.isSold = isSold;
-        this.bidder = bidder;
         this.artPiece = artPiece;
+        this.startPrice = startPrice;
+        this.currentPrice = currentPrice;
+        this.likes = 0;
+        this.isFinish = false;
+        this.bidder = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Auction auction = (Auction) o;
+        return Objects.equals(auctionUuId, auction.auctionUuId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(auctionUuId);
+    }
+
+    public void updateLastBidder(User bidder) {
+        this.bidder = bidder;
+    }
+
+    public void updateCurrentPrice(Long price) {
+        this.currentPrice = price;
+    }
+
+    public void updateUserAuction(UserAuction ua) {
+        this.userAuctions.add(ua);
+        ua.setAuction(this);
+    }
+
+    public void increaseLike(UserAuction ua) {
+        this.likes++;
+        ua.toggleIsLiked();
+    }
+
+    public void decreaseLike(UserAuction ua) {
+        this.likes--;
+        ua.toggleIsLiked();
     }
 }
+

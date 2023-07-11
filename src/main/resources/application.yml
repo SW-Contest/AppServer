@@ -1,4 +1,14 @@
 spring:
+  # h2:
+  #  console:
+  #    path: /h2-console
+  #    enabled: true
+  #datasource:
+  #  driver-class-name: org.h2.Driver
+  #  url: jdbc:h2:tcp://localhost/~/test
+  #  username: sa
+  #  password:
+
   datasource:
     url: jdbc:postgresql://db:5432/artfolio
     username: postgres
@@ -9,7 +19,7 @@ spring:
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: create
+    hibernate.ddl-auto: none
     open-in-view: false
     show-sql: true
     properties:
@@ -40,7 +50,8 @@ spring:
           naver:
             client-id: UEb2pI6CRV_pjnvultOT
             client-secret: go0P90IGJO
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+            # redirect-uri: http://localhost:8080/login/oauth2/code/naver
+            redirect-uri: http://localhost/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
@@ -49,7 +60,8 @@ spring:
             client-id: bf56a9d2ad0d3230fa65bb19d3b8ae41
             client-secret: ShB3B3RAsLb8sdzFnFxgkZlic4FsgFZ4
             client-authentication-method: POST
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            # redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: http://localhost/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image
             client-name: Kakao
@@ -66,7 +78,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
 
-
 # S3 설정
 cloud:
   aws:
@@ -75,6 +86,7 @@ cloud:
       secretKey: RKumRKY5SrKrMpJZyBbcYl/R7OlQ8WuwGbQLxS6k
     s3:
       bucket: artfolio-bucket
+      bucket-path: https://artfolio-bucket.s3.ap-northeast-2.amazonaws.com/static
     region:
       static: ap-northeast-2
     stack:
@@ -91,3 +103,7 @@ jwt:
   refresh:
     expiration: 1209600000
     header: Authorization-refresh
+
+# GPT 설정
+chatgpt:
+  api-key: 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

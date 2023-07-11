@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.business.domain;
 
+import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,27 +21,65 @@ public class ArtPiece extends AuditingFields {
     @Column(length = 10000, nullable = false)
     private String content;
 
-    @Column(name = "art_piece_like", nullable = false)
-    private Long like;
+    @Column(name = "art_piece_likes", nullable = false)
+    private Integer likes;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
     private User artist;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "artPiece")
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ArtPiecePhoto> artPiecePhotos = new ArrayList<>();
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "artPiece")
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private final List<Auction> auctions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "artPiece", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<UserArtPiece> userArtPieces = new ArrayList<>();
+
     @Builder
-    public ArtPiece(String title, String content, Long like, User artist) {
+    public ArtPiece(String title, String content, Integer likes, User artist) {
         this.title = title;
         this.content = content;
-        this.like = like;
+        this.likes = likes;
         this.artist = artist;
+    }
+
+    public static ArtPiece of(ArtPieceDto.CreationReq req, User artist) {
+        return ArtPiece.builder()
+                .title(req.getTitle())
+                .content(req.getContent())
+                .likes(0)
+                .artist(artist)
+                .build();
+    }
+
+    public void updatePhoto(ArtPiecePhoto artPiecePhoto) {
+        this.artPiecePhotos.add(artPiecePhoto);
+        artPiecePhoto.setArtPiece(this);
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void increaseLike(UserArtPiece userArtPiece) {
+        this.likes++;
+        userArtPiece.toggleIsLiked();
+    }
+
+    public void decreaseLike(UserArtPiece userArtPiece) {
+        this.likes--;
+        userArtPiece.toggleIsLiked();
+    }
+
+    public void updateUserArtPiece(UserArtPiece userArtPiece) {
+        userArtPiece.setArtPiece(this);
+        this.userArtPieces.add(userArtPiece);
     }
 }

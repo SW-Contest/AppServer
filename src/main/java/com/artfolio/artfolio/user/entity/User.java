@@ -1,7 +1,8 @@
 package com.artfolio.artfolio.user.entity;
 
 import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.MemberAuction;
+import com.artfolio.artfolio.business.domain.UserArtPiece;
+import com.artfolio.artfolio.business.domain.UserAuction;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
 import jakarta.persistence.*;
@@ -13,9 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "users")
-@Getter
+@Getter @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class User implements UserDetails {
@@ -45,9 +47,6 @@ public class User implements UserDetails {
     @Column(nullable = false)  // 로그인한 소셜 타입의 식별자 값
     private String socialId;
 
-    @Column(name = "member_like", nullable = false)
-    private Integer like;
-
     @Column(length = 1500, nullable = false)
     private String content;
 
@@ -56,11 +55,20 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "artist")
     private final List<ArtPiece> artPieces = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member")
-    private final List<MemberAuction> memberAuctions = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private final List<UserAuction> userAuctions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "fromUser")
+    private final List<Follow> followers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "toUser")
+    private final List<Follow> followings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private final List<UserArtPiece> userArtPieces = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, Integer like, String content, String refreshToken) {
+    public User(String email, String password, String nickname, String profilePhoto, Role role, SocialType socialType, String socialId, String content, String refreshToken) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -68,9 +76,36 @@ public class User implements UserDetails {
         this.role = role;
         this.socialType = socialType;
         this.socialId = socialId;
-        this.like = like;
         this.content = content;
         this.refreshToken = refreshToken;
+    }
+
+    /* 연관관계 편의 메서드 (유저 - 예술품) */
+    public void addArtPiece(ArtPiece artPiece) {
+        this.artPieces.add(artPiece);
+        artPiece.setArtist(this);
+    }
+
+    public void addFollower(Follow follow) {
+        this.followers.add(follow);
+        follow.setToUser(this);
+    }
+
+    public void addFollowing(Follow follow) {
+        this.followings.add(follow);
+        follow.setFromUser(this);
+    }
+
+    public void deleteFollower(Follow follow) {
+        if (this.followers.contains(follow)) {
+            followers.remove(follow);
+        }
+    }
+
+    public void deleteFollowing(Follow follow) {
+        if (this.followings.contains(follow)) {
+            followings.remove(follow);
+        }
     }
 
     /* 유저 권한 설정 메서드 */
@@ -120,5 +155,16 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User o1)) return false;
+        return Objects.equals(this.email, o1.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }

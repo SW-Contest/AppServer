@@ -29,7 +29,6 @@ public class AuctionBid {
                     .name(info.getName())
                     .email(info.getUsername())
                     .photoPath(info.getProfilePhotoPath())
-                    .like(info.getLike())
                     .build();
 
             return Res.builder()
@@ -48,6 +47,5 @@ public class AuctionBid {
         private String name;
         private String email;
         private String photoPath;
-        private Integer like;
     }
 }

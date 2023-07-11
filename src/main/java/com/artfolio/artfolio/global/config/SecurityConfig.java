@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .csrf().disable()
                 .headers().frameOptions().disable()
+
                 .and()
 
                 // 세션 사용X
@@ -51,7 +52,7 @@ public class SecurityConfig {
 
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/login/**")
+                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
@@ -61,8 +62,7 @@ public class SecurityConfig {
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler)
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+                .userInfoEndpoint().userService(customOAuth2UserService);
 
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);

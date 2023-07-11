@@ -10,15 +10,13 @@ public class CreateAuction {
     public static class Req {
         private final Long artistId;
         private final Long artPieceId;
-        private final String artPieceTitle;
         private final String auctionTitle;
         private final String auctionContent;
         private final Long auctionStartPrice;
 
-        public Req(Long artistId, Long artPieceId, String artPieceTitle, String auctionTitle, String auctionContent, Long auctionStartPrice) {
+        public Req(Long artistId, Long artPieceId, String auctionTitle, String auctionContent, Long auctionStartPrice) {
             this.artistId = artistId;
             this.artPieceId = artPieceId;
-            this.artPieceTitle = artPieceTitle;
             this.auctionTitle = auctionTitle;
             this.auctionContent = auctionContent;
             this.auctionStartPrice = auctionStartPrice;

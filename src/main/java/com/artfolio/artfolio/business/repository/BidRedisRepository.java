@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface BidRedisRepository extends CrudRepository<AuctionBidInfo, String> {
     List<AuctionBidInfo> findByAuctionKey(String auctionKey);
+    List<AuctionBidInfo> findByBidderId(Long bidderId);
 }
