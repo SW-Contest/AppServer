@@ -1,5 +1,7 @@
 package com.artfolio.artfolio.business.service;
 
+import com.amazonaws.services.rekognition.AmazonRekognitionClient;
+import com.amazonaws.services.rekognition.model.*;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.repository.ArtPiecePhotoRepository;
@@ -27,8 +29,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Service
 public class ImageService {
+    private final AmazonRekognitionClient rekognitionClient;
     private static final String DEFAULT_IMAGE_DIR = System.getProperty("user.dir")
             + "/src/main/resources/images";
+    private static final String REKOGNITION_BUCKET_NAME = "artfolio-bucket";
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final ArtPieceRepository artPieceRepository;
     private final UserRepository userRepository;
@@ -124,6 +128,22 @@ public class ImageService {
         }
 
         return 0L;
+    }
+
+    public List<Label> analyzeImage() {
+        S3Object s3Object = new S3Object()
+                .withBucket(REKOGNITION_BUCKET_NAME)
+                .withName("static/artPiece/1/lavender.jpg");
+
+        Image image = new Image().withS3Object(s3Object);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(image)
+                .withMaxLabels(10);
+
+        DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
+
+        return detectLabelsResult.getLabels();
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */

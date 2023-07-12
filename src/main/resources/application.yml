@@ -1,19 +1,19 @@
 spring:
-  # h2:
-  #  console:
-  #    path: /h2-console
-  #    enabled: true
-  #datasource:
-  #  driver-class-name: org.h2.Driver
-  #  url: jdbc:h2:tcp://localhost/~/test
-  #  username: sa
-  #  password:
-
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/artfolio
-    username: postgres
-    password: 1111
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
+
+  #datasource:
+  #  url: jdbc:postgresql://db:5432/artfolio
+  #  username: postgres
+  #  password: 1111
+  #  driver-class-name: org.postgresql.Driver
 
   sql.init.mode: always
 
@@ -50,8 +50,8 @@ spring:
           naver:
             client-id: UEb2pI6CRV_pjnvultOT
             client-secret: go0P90IGJO
-            # redirect-uri: http://localhost:8080/login/oauth2/code/naver
-            redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/login/oauth2/code/naver
+            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
@@ -60,8 +60,8 @@ spring:
             client-id: bf56a9d2ad0d3230fa65bb19d3b8ae41
             client-secret: ShB3B3RAsLb8sdzFnFxgkZlic4FsgFZ4
             client-authentication-method: POST
-            # redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-            redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image
             client-name: Kakao
@@ -78,7 +78,7 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
 
-# S3 설정
+# AWS 설정
 cloud:
   aws:
     credentials:
