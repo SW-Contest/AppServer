@@ -182,4 +182,9 @@ public class AuctionService {
 
         return 0L;
     }
+
+    public AuctionDto.SearchResultRes searchAuction(String keyword) {
+        List<Auction> allBySearch = auctionRepository.findAllBySearch(keyword);
+        return AuctionDto.SearchResultRes.of(allBySearch);
+    }
 }

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
 @RequestMapping("/rt_auction")
 @RequiredArgsConstructor
@@ -23,6 +25,12 @@ public class RealTimeAuctionController {
     public ResponseEntity<CreateAuction.Res> createAuction(@RequestBody CreateAuction.Req req) {
         CreateAuction.Res res = auctionService.createAuction(req);
         return new ResponseEntity<>(res, HttpStatus.CREATED);
+    }
+
+    /* 진행중인 경매 검색 메서드 */
+    @GetMapping("/search")
+    public ResponseEntity<AuctionDto.SearchResultRes> searchAuction(@RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(auctionService.searchAuction(keyword));
     }
 
     /* 단일 경매 정보를 불러오는 메서드 */

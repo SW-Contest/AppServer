@@ -11,8 +11,12 @@ import java.util.Optional;
 
 
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
-    @Query("select a from Auction a join fetch a.artist join fetch a.artPiece where a.auctionUuId = :uuid")
+    @Query("select a from Auction a join fetch a.artist join fetch a.artPiece where a.auctionUuId = :uuid and a.isFinish = false")
     Optional<Auction> findAuctionWithFetchJoin(String uuid);
+
+    @Query("select a from Auction a join fetch a.artist join fetch a.artPiece where a.isFinish = false and (a.title like %:keyword% or a.artist.nickname like %:keyword%)")
+    List<Auction> findAllBySearch(String keyword);
+
     Optional<Auction> findByAuctionUuId(String uuid);
     Slice<Auction> findAllByIsFinishFalseOrderByCurrentPriceAsc(Pageable pageable);
     Slice<Auction> findAllByIsFinishFalseOrderByCurrentPriceDesc(Pageable pageable);

@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/chat-gpt")
+@RequestMapping("/ai")
 @RestController
-public class OpenAIController {
+public class AIController {
     private final ChatGptService chatGptService;
     private final ImageService imageService;
 

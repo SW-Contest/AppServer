@@ -14,6 +14,52 @@ import java.util.Comparator;
 import java.util.List;
 
 public class AuctionDto {
+
+    /* 검색 결과를 반환해주는 DTO */
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SearchResultRes {
+        int size;
+        List<SearchResult> searchResult;
+
+        public static SearchResultRes of(List<Auction> auctions) {
+            List<SearchResult> searchResult = auctions.stream()
+                    .map(SearchResult::of)
+                    .toList();
+
+            return SearchResultRes.builder()
+                    .size(searchResult.size())
+                    .searchResult(searchResult)
+                    .build();
+        }
+
+        @Getter @Setter @ToString @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        private static class SearchResult {
+            private ArtistInfo artistInfo;
+            private ArtPieceInfo artPieceInfo;
+            private AuctionInfo auctionInfo;
+
+            private static SearchResult of(Auction auction) {
+                User artist = auction.getArtist();
+                ArtPiece artPiece = auction.getArtPiece();
+                List<String> paths = artPiece.getArtPiecePhotos()
+                        .stream()
+                        .map(ArtPiecePhoto::getFilePath)
+                        .toList();
+
+                return SearchResult.builder()
+                        .artistInfo(ArtistInfo.of(artist))
+                        .artPieceInfo(ArtPieceInfo.of(artPiece))
+                        .auctionInfo(AuctionInfo.of(auction, paths))
+                        .build();
+            }
+        }
+
+    }
+
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -102,13 +148,7 @@ public class AuctionDto {
         private AuctionInfo auctionInfo;
 
         public static PreviewInfo of(Auction auction, User artist, String thumbnailPath) {
-            ArtistInfo artistInfo = ArtistInfo.builder()
-                    .id(artist.getId())
-                    .email(artist.getEmail())
-                    .username(artist.getEmail())
-                    .name(artist.getNickname())
-                    .photoPath(artist.getProfilePhoto())
-                    .build();
+            ArtistInfo artistInfo = ArtistInfo.of(artist);
 
             AuctionInfo auctionInfo = AuctionInfo.builder()
                     .id(auction.getAuctionUuId())
@@ -140,13 +180,7 @@ public class AuctionDto {
         private List<BidderInfo> bidderInfos;
 
         public static DetailInfoRes of(Auction auction, List<AuctionBidInfo> bidInfo, List<ArtPiecePhoto> paths, User artist, ArtPiece artPiece) {
-            ArtistInfo artistInfo = ArtistInfo.builder()
-                    .id(artist.getId())
-                    .username(artist.getUsername())
-                    .name(artist.getNickname())
-                    .email(artist.getEmail())
-                    .photoPath(artist.getProfilePhoto())
-                    .build();
+            ArtistInfo artistInfo = ArtistInfo.of(artist);
 
             List<String> photoPaths = paths.stream()
                     .map(ArtPiecePhoto::getFilePath)
@@ -154,12 +188,7 @@ public class AuctionDto {
 
             AuctionInfo auctionInfo = AuctionInfo.of(auction, photoPaths);
 
-            ArtPieceInfo artPieceInfo = ArtPieceInfo.builder()
-                    .id(artPiece.getId())
-                    .title(artPiece.getTitle())
-                    .content(artPiece.getContent())
-                    .like(artPiece.getLikes())
-                    .build();
+            ArtPieceInfo artPieceInfo = ArtPieceInfo.of(artPiece);
 
             List<BidderInfo> bidderInfos = bidInfo.stream()
                     .map(BidderInfo::of)
@@ -181,7 +210,16 @@ public class AuctionDto {
         private Long id;
         private String title;
         private String content;
-        private Integer like;
+        private Integer likes;
+
+        public static ArtPieceInfo of(ArtPiece artPiece) {
+            return ArtPieceInfo.builder()
+                    .id(artPiece.getId())
+                    .title(artPiece.getTitle())
+                    .content(artPiece.getContent())
+                    .likes(artPiece.getLikes())
+                    .build();
+        }
     }
 
     @Builder @Getter
@@ -191,7 +229,19 @@ public class AuctionDto {
         private String username;
         private String name;
         private String email;
+        private String content;
         private String photoPath;
+
+        public static ArtistInfo of(User artist) {
+            return ArtistInfo.builder()
+                    .id(artist.getId())
+                    .username(artist.getUsername())
+                    .name(artist.getNickname())
+                    .email(artist.getEmail())
+                    .photoPath(artist.getProfilePhoto())
+                    .content(artist.getContent())
+                    .build();
+        }
     }
 
     @Builder @Getter
