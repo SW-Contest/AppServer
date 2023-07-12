@@ -7,6 +7,7 @@ import com.artfolio.artfolio.business.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +25,11 @@ public class OpenAIController {
 
     @GetMapping("/test")
     public List<Label> test() {
-        return imageService.analyzeImage();
+        return imageService.analyzeS3BucketImage();
+    }
+
+    @PostMapping("/test2")
+    public List<Label> test2(@RequestParam("file") MultipartFile file) {
+        return imageService.analyzeLocalImage(file);
     }
 }

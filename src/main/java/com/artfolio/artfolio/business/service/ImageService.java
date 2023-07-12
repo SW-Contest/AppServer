@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -130,7 +131,7 @@ public class ImageService {
         return 0L;
     }
 
-    public List<Label> analyzeImage() {
+    public List<Label> analyzeS3BucketImage() {
         S3Object s3Object = new S3Object()
                 .withBucket(REKOGNITION_BUCKET_NAME)
                 .withName("static/artPiece/1/lavender.jpg");
@@ -144,6 +145,25 @@ public class ImageService {
         DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
 
         return detectLabelsResult.getLabels();
+    }
+
+    public List<Label> analyzeLocalImage(MultipartFile file) {
+        try {
+            Image image = new Image().withBytes(ByteBuffer.wrap(file.getBytes()));
+
+            DetectLabelsRequest request = new DetectLabelsRequest()
+                    .withImage(image)
+                    .withMaxLabels(10);
+
+            DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
+
+            return detectLabelsResult.getLabels();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */
