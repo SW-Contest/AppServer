@@ -23,11 +23,6 @@ public class AIController {
         return ResponseEntity.ok(chatGptService.ask(req));
     }
 
-    @GetMapping("/test")
-    public List<Label> test() {
-        return imageService.analyzeS3BucketImage();
-    }
-
     @PostMapping("/test2")
     public List<Label> test2(@RequestParam("file") MultipartFile file) {
         return imageService.analyzeLocalImage(file);

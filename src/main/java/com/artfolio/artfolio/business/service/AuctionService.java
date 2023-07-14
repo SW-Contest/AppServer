@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.business.service;
 
+import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.business.domain.AuctionBidInfo;
@@ -29,6 +30,8 @@ public class AuctionService {
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final BidRedisRepository bidderRedisRepository;
     private final UserAuctionRepository userAuctionRepository;
+    private final ImageService imageService;
+    private final ChatGptService chatGptService;
 
     @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -75,7 +78,29 @@ public class AuctionService {
         List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(auctionKey);
 
         // 응답 dto 만들어서 반환하기
-        return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece);
+
+        if (artPiecePhotos.isEmpty()) {
+            return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, null);
+        } else {
+            ArtPiecePhoto thumbnail = artPiecePhotos.get(0);
+            String path = thumbnail.getFileName() + thumbnail.getFileExtension();
+
+            String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.";
+
+            List<Label> labels = imageService.analyzeS3BucketImage(artPiece.getId(), path);
+            ChatGptDto.Res ask;
+            StringBuffer sb = new StringBuffer();
+
+            try {
+                ask = chatGptService.ask(new ChatGptDto.QuestionReq(DEFAULT_QUESTION + "\n" + labels.toString()));
+                ask.getChoices().forEach(a -> sb.append(a.getMessage()).append(' '));
+            } catch (Exception e) {
+                ask = null;
+            }
+
+            AuctionDto.AIInfo aiInfo = AuctionDto.AIInfo.of(labels, sb.toString());
+            return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, aiInfo);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +131,7 @@ public class AuctionService {
     }
 
     @Transactional
-    public synchronized AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
+    public synchronized AuctionBidDto.Res updatePrice(Principal principal, AuctionBidDto.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
@@ -132,7 +157,7 @@ public class AuctionService {
         auctionRepository.save(auction);
 
         // 응답 객체를 만들어 반환
-        return AuctionBid.Res.of(bidInfo);
+        return AuctionBidDto.Res.of(bidInfo);
     }
 
     @Transactional

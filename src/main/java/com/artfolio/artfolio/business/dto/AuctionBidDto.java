@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /* 입찰 갱신 DTO */
-public class AuctionBid {
+public class AuctionBidDto {
     @Getter
     @AllArgsConstructor
     public static class Req {

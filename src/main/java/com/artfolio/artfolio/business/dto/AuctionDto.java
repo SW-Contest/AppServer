@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.business.dto;
 
+import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.Auction;
@@ -171,15 +172,39 @@ public class AuctionDto {
 
     @Getter @Setter @ToString
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AIInfo {
+        private List<Label> labels;
+        private String content;
+
+        public static AIInfo of(List<Label> labels, String content) {
+            return AIInfo.builder()
+                    .labels(labels)
+                    .content(content)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DetailInfoRes {
         private ArtistInfo artistInfo;
         private ArtPieceInfo artPieceInfo;
         private AuctionInfo auctionInfo;
+        private AIInfo aiInfo;
         private List<BidderInfo> bidderInfos;
 
-        public static DetailInfoRes of(Auction auction, List<AuctionBidInfo> bidInfo, List<ArtPiecePhoto> paths, User artist, ArtPiece artPiece) {
+        public static DetailInfoRes of(
+                Auction auction,
+                List<AuctionBidInfo> bidInfo,
+                List<ArtPiecePhoto> paths,
+                User artist,
+                ArtPiece artPiece,
+                AIInfo aiInfo
+        ) {
             ArtistInfo artistInfo = ArtistInfo.of(artist);
 
             List<String> photoPaths = paths.stream()
@@ -200,6 +225,7 @@ public class AuctionDto {
                     .artPieceInfo(artPieceInfo)
                     .auctionInfo(auctionInfo)
                     .bidderInfos(bidderInfos)
+                    .aiInfo(aiInfo)
                     .build();
         }
     }
