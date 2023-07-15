@@ -32,6 +32,7 @@ public class AuctionService {
     private final UserAuctionRepository userAuctionRepository;
     private final ImageService imageService;
     private final ChatGptService chatGptService;
+    private final AIRedisRepository aiRedisRepository;
 
     @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -78,27 +79,37 @@ public class AuctionService {
         List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(auctionKey);
 
         // 응답 dto 만들어서 반환하기
-
         if (artPiecePhotos.isEmpty()) {
             return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, null);
         } else {
-            ArtPiecePhoto thumbnail = artPiecePhotos.get(0);
-            String path = thumbnail.getFileName() + thumbnail.getFileExtension();
+            Optional<AIInfo> aiInfoOp = aiRedisRepository.findById(artPiece.getId());
 
-            String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.";
+            // 레디스에 캐싱된 정보가 있으면 꺼내오기
+            if (aiInfoOp.isPresent()) {
+                AIInfo aiInfo = aiInfoOp.get();
+                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
+                log.info("Redis aiInfo 추출 : {}", aiInfo);
+                return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, of);
+            }
+
+            ArtPiecePhoto thumbnail = artPiecePhotos.stream().filter(ArtPiecePhoto::getIsThumbnail).findFirst().get();
+            String path = thumbnail.getFileName() + "." + thumbnail.getFileExtension();
 
             List<Label> labels = imageService.analyzeS3BucketImage(artPiece.getId(), path);
-            ChatGptDto.Res ask;
+            ChatGptDto.Res ask = null;
             StringBuffer sb = new StringBuffer();
 
             try {
+                String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.";
                 ask = chatGptService.ask(new ChatGptDto.QuestionReq(DEFAULT_QUESTION + "\n" + labels.toString()));
                 ask.getChoices().forEach(a -> sb.append(a.getMessage()).append(' '));
             } catch (Exception e) {
-                ask = null;
+                e.printStackTrace();
             }
 
             AuctionDto.AIInfo aiInfo = AuctionDto.AIInfo.of(labels, sb.toString());
+            aiRedisRepository.save(new AIInfo(artPiece.getId(), aiInfo.getContent(), aiInfo.getLabels()));
+
             return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, aiInfo);
         }
     }

@@ -132,7 +132,7 @@ public class ImageService {
     }
 
     public List<Label> analyzeS3BucketImage(Long artPieceId, String path) {
-        String S3_PATH = "static/" + artPieceId + "/" + path;
+        String S3_PATH = "static/" + "artPiece/" + artPieceId + "/" + path;
 
         S3Object s3Object = new S3Object()
                 .withBucket(REKOGNITION_BUCKET_NAME)
