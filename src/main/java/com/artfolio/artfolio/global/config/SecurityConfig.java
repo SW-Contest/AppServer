@@ -43,14 +43,18 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .csrf().disable()
-                .headers().frameOptions().disable();
+                .headers().frameOptions().disable()
 
-        /*
+                .and()
+
+                .logout().logoutSuccessUrl("/")
+
                 .and()
 
                 // 세션 사용X
-                .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                //.sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                /*
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/", "/login/**", "/sock/**", "/sock", "/authorization/**")
@@ -58,6 +62,7 @@ public class SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
+                */
 
                 // 소셜 로그인 설정
                 .oauth2Login()
@@ -67,7 +72,6 @@ public class SecurityConfig {
 
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);
-*/
         return http.build();
     }
 
@@ -76,7 +80,6 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    /*
     // AuthenticationManager 설정 후 등록
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -112,6 +115,4 @@ public class SecurityConfig {
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
         return new JwtAuthenticationProcessingFilter(jwtService, userRepository);
     }
-
-     */
 }

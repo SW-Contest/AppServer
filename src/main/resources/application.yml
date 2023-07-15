@@ -1,5 +1,5 @@
 spring:
-  # h2:
+  #h2:
   #  console:
   #    path: /h2-console
   #    enabled: true
@@ -19,7 +19,7 @@ spring:
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
@@ -35,7 +35,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: localhost
+      host: redis6379
       port: 6379
 
   security:
@@ -58,12 +58,12 @@ spring:
 
           kakao:
             client-id: bf56a9d2ad0d3230fa65bb19d3b8ae41
-            client-secret: ShB3B3RAsLb8sdzFnFxgkZlic4FsgFZ4
+            client-secret: 50XgDccUqHV9078QLN4T0oXe9eH3W19X
             client-authentication-method: POST
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
-            scope: profile_nickname, profile_image
+            scope: profile_nickname, profile_image, account_email
             client-name: Kakao
 
         provider:

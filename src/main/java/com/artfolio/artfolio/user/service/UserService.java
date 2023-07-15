@@ -6,7 +6,7 @@ import com.artfolio.artfolio.business.repository.BidRedisRepository;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
-import com.artfolio.artfolio.user.dto.UserSignUpDto;
+import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserService {
     private final BidRedisRepository bidRedisRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public Long signUp(UserDto.SignUpReq userSignUpDto) throws Exception {
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new Exception("이미 존재하는 이메일");
         }
@@ -45,6 +45,14 @@ public class UserService {
 
         user.passwordEncode(passwordEncoder);
         return userRepository.save(user).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto.OAuth2LoginInfoRes getSocialUserInfo(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+
+        return UserDto.OAuth2LoginInfoRes.of(user);
     }
 
     /*

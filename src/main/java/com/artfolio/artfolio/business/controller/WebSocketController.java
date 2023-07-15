@@ -38,7 +38,6 @@ public class WebSocketController {
     }
 
     /* 현재가보다 낮은 입찰가가 들어온 경우 예외 처리 */
-
     @MessageExceptionHandler(InvalidBidPriceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected void handleInvalidBidPriceException(InvalidBidPriceException e) {
