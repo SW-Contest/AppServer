@@ -23,8 +23,8 @@ public class AIController {
         return ResponseEntity.ok(chatGptService.ask(req));
     }
 
-    @PostMapping("/test2")
-    public List<Label> test2(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/analyze")
+    public List<Label> analyzeImage(@RequestParam("file") MultipartFile file) {
         return imageService.analyzeLocalImage(file);
     }
 }
