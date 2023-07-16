@@ -61,49 +61,6 @@ public class AuctionDto {
 
     }
 
-    @Getter @Setter @ToString @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserLiveAuctionListRes {
-        private Integer size;
-        private List<AuctionDto.UserAuctionInfo> data;
-
-        public static UserLiveAuctionListRes of(List<AuctionDto.UserAuctionInfo> infos, List<AuctionBidInfo> bidInfos) {
-            return UserLiveAuctionListRes.builder()
-                    .size(infos.size())
-                    .data(infos)
-                    .build();
-        }
-    }
-
-    @Builder @Getter
-    @AllArgsConstructor
-    public static class UserAuctionInfo {
-        private String id;
-        private String title;
-        private String content;
-        private Long startPrice;
-        private Long currentPrice;
-        private Integer like;
-        private LocalDateTime createdAt;
-        private LocalDateTime finishedAt;
-        private List<String> photoPaths;
-
-        public static UserAuctionInfo of(Auction auction, List<String> photoPaths) {
-            return UserAuctionInfo.builder()
-                    .id(auction.getAuctionUuId())
-                    .title(auction.getTitle())
-                    .content(auction.getContent())
-                    .startPrice(auction.getStartPrice())
-                    .currentPrice(auction.getCurrentPrice())
-                    .like(auction.getLikes())
-                    .createdAt(auction.getCreatedAt())
-                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
-                    .photoPaths(photoPaths)
-                    .build();
-        }
-    }
-
     @Getter @Setter @ToString
     @AllArgsConstructor
     @NoArgsConstructor
@@ -300,7 +257,7 @@ public class AuctionDto {
 
     @Builder @Getter
     @AllArgsConstructor
-    private static class BidderInfo {
+    public static class BidderInfo {
         private Long id;
         private String name;
         private String email;

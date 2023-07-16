@@ -21,6 +21,16 @@ services:
       - redis6379
       - db
 
+  vault:
+    container_name: vault
+    image: vault:1.13.3
+
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+
+    ports:
+      - "8200:8200"
+
   db:
     container_name: postgres
     image: postgres:latest

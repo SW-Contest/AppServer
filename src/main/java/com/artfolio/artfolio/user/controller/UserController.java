@@ -18,21 +18,17 @@ public class UserController {
         return ResponseEntity.ok(userService.signUp(userSignUpDto));
     }
 
-    /* 유저가 참여하고 있는 진행중인 경매 목록
+    /* 유저가 참여하고 있는 진행중인 경매 목록 */
     @GetMapping("/auction/live/{userId}")
     public ResponseEntity<?> getLiveAuctionList(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getLiveAuctionList(userId));
     }
 
-     */
-
-    /* 유저가 참여했던 종료된 경매 기록 내역
+    /* 유저가 낙찰받은 종료된 경매 기록 내역 */
     @GetMapping("/auction/finish/{userId}")
     public ResponseEntity<?> getFinishAuctionList(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(userService.getFinishAuctionList(userId));
+        return ResponseEntity.ok(userService.getBidAuctionList(userId));
     }
-
-     */
 
     /* 특정 유저가 등록한 예술품 리스트 반환 */
     @GetMapping("/art_piece/{userId}")

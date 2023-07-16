@@ -8,9 +8,9 @@
 - Spring Boot, Spring Data JPA, Spring Security
 - H2(Dev), PostgreSQL(Prod), Redis
 - OpenAI API, Java-JWT, OAuth2, STOMP
-- AWS S3, Rekognition, EC2 
+- AWS EC2, S3, Route 53, Rekognition
 - Docker, Docker-Compose, Github Actions
-- Nginx
+- Nginx, Hashicorp Vault
 
 <hr/>
 

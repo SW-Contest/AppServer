@@ -1,9 +1,13 @@
 package com.artfolio.artfolio.user.dto;
 
+import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.business.domain.Auction;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
+import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.user.entity.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.*;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import java.util.List;
 
 
 public class UserDto {
@@ -44,6 +48,48 @@ public class UserDto {
                     .name(user.getNickname())
                     .profileImage(user.getProfilePhoto())
                     .role(user.getRole().name())
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserBidAuctionListRes {
+        private Integer size;
+        private List<UserBidAuctionList> userBidAuctionList;
+
+        public static UserBidAuctionListRes of(List<Auction> auctions) {
+            List<UserBidAuctionList> list = auctions.stream()
+                    .map(UserBidAuctionList::of)
+                    .toList();
+
+            return UserBidAuctionListRes.builder()
+                    .size(auctions.size())
+                    .userBidAuctionList(list)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @Builder @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class UserBidAuctionList {
+        private AuctionDto.ArtistInfo artistInfo;
+        private AuctionDto.AuctionInfo auctionInfo;
+
+        public static UserBidAuctionList of(Auction auction) {
+            List<String> paths = auction.getArtPiece()
+                    .getArtPiecePhotos()
+                    .stream()
+                    .map(ArtPiecePhoto::getFilePath)
+                    .toList();
+
+            User artist = auction.getArtist();
+
+            return UserBidAuctionList.builder()
+                    .artistInfo(AuctionDto.ArtistInfo.of(artist))
+                    .auctionInfo(AuctionDto.AuctionInfo.of(auction, paths))
                     .build();
         }
     }
