@@ -47,16 +47,22 @@ public class SecurityConfig {
 
                 .and()
 
-                // 세션 사용X
-                .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .logout().logoutSuccessUrl("/")
 
+                .and()
+
+                // 세션 사용X
+                //.sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                /*
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock")
+                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock", "/authorization/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
+                */
 
                 // 소셜 로그인 설정
                 .oauth2Login()
@@ -66,7 +72,6 @@ public class SecurityConfig {
 
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

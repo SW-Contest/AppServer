@@ -1,8 +1,9 @@
 package com.artfolio.artfolio.business.service;
 
+import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import com.artfolio.artfolio.business.dto.*;
 import com.artfolio.artfolio.business.repository.*;
 import com.artfolio.artfolio.global.exception.*;
@@ -29,6 +30,9 @@ public class AuctionService {
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final BidRedisRepository bidderRedisRepository;
     private final UserAuctionRepository userAuctionRepository;
+    private final ImageService imageService;
+    private final ChatGptService chatGptService;
+    private final AIRedisRepository aiRedisRepository;
 
     @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
@@ -75,7 +79,39 @@ public class AuctionService {
         List<AuctionBidInfo> bidInfos = bidderRedisRepository.findByAuctionKey(auctionKey);
 
         // 응답 dto 만들어서 반환하기
-        return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece);
+        if (artPiecePhotos.isEmpty()) {
+            return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, null);
+        } else {
+            Optional<AIInfo> aiInfoOp = aiRedisRepository.findById(artPiece.getId());
+
+            // 레디스에 캐싱된 정보가 있으면 꺼내오기
+            if (aiInfoOp.isPresent()) {
+                AIInfo aiInfo = aiInfoOp.get();
+                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
+                log.info("Redis aiInfo 추출 : {}", aiInfo);
+                return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, of);
+            }
+
+            ArtPiecePhoto thumbnail = artPiecePhotos.stream().filter(ArtPiecePhoto::getIsThumbnail).findFirst().get();
+            String path = thumbnail.getFileName() + "." + thumbnail.getFileExtension();
+
+            List<Label> labels = imageService.analyzeS3BucketImage(artPiece.getId(), path);
+            ChatGptDto.Res ask = null;
+            StringBuffer sb = new StringBuffer();
+
+            try {
+                String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.";
+                ask = chatGptService.ask(new ChatGptDto.QuestionReq(DEFAULT_QUESTION + "\n" + labels.toString()));
+                ask.getChoices().forEach(a -> sb.append(a.getMessage()).append(' '));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            AuctionDto.AIInfo aiInfo = AuctionDto.AIInfo.of(labels, sb.toString());
+            aiRedisRepository.save(new AIInfo(artPiece.getId(), aiInfo.getContent(), aiInfo.getLabels()));
+
+            return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, aiInfo);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +142,7 @@ public class AuctionService {
     }
 
     @Transactional
-    public synchronized AuctionBid.Res updatePrice(Principal principal, AuctionBid.Req req) {
+    public synchronized AuctionBidDto.Res updatePrice(Principal principal, AuctionBidDto.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
         Long bidderId = req.getBidderId();
@@ -132,7 +168,7 @@ public class AuctionService {
         auctionRepository.save(auction);
 
         // 응답 객체를 만들어 반환
-        return AuctionBid.Res.of(bidInfo);
+        return AuctionBidDto.Res.of(bidInfo);
     }
 
     @Transactional
@@ -181,5 +217,10 @@ public class AuctionService {
         }
 
         return 0L;
+    }
+
+    public AuctionDto.SearchResultRes searchAuction(String keyword) {
+        List<Auction> allBySearch = auctionRepository.findAllBySearch(keyword);
+        return AuctionDto.SearchResultRes.of(allBySearch);
     }
 }

@@ -1,5 +1,7 @@
 package com.artfolio.artfolio.business.service;
 
+import com.amazonaws.services.rekognition.AmazonRekognitionClient;
+import com.amazonaws.services.rekognition.model.*;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.repository.ArtPiecePhotoRepository;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,8 +30,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Service
 public class ImageService {
+    private final AmazonRekognitionClient rekognitionClient;
     private static final String DEFAULT_IMAGE_DIR = System.getProperty("user.dir")
             + "/src/main/resources/images";
+    private static final String REKOGNITION_BUCKET_NAME = "artfolio-bucket";
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final ArtPieceRepository artPieceRepository;
     private final UserRepository userRepository;
@@ -124,6 +129,43 @@ public class ImageService {
         }
 
         return 0L;
+    }
+
+    public List<Label> analyzeS3BucketImage(Long artPieceId, String path) {
+        String S3_PATH = "static/" + "artPiece/" + artPieceId + "/" + path;
+
+        S3Object s3Object = new S3Object()
+                .withBucket(REKOGNITION_BUCKET_NAME)
+                .withName(S3_PATH);
+
+        Image image = new Image().withS3Object(s3Object);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(image)
+                .withMaxLabels(10);
+
+        DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
+
+        return detectLabelsResult.getLabels();
+    }
+
+    public List<Label> analyzeLocalImage(MultipartFile file) {
+        try {
+            Image image = new Image().withBytes(ByteBuffer.wrap(file.getBytes()));
+
+            DetectLabelsRequest request = new DetectLabelsRequest()
+                    .withImage(image)
+                    .withMaxLabels(10);
+
+            DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
+
+            return detectLabelsResult.getLabels();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */

@@ -1,5 +1,8 @@
 package com.artfolio.artfolio.business.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderType {
     ASC("asc"), DESC("desc");
 

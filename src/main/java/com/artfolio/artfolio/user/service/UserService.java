@@ -1,17 +1,14 @@
 package com.artfolio.artfolio.user.service;
 
-import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
-import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.repository.AuctionRepository;
 import com.artfolio.artfolio.business.repository.BidRedisRepository;
-import com.artfolio.artfolio.global.exception.AuctionNotFoundException;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
 import com.artfolio.artfolio.user.dto.Role;
 import com.artfolio.artfolio.user.dto.SocialType;
-import com.artfolio.artfolio.user.dto.UserSignUpDto;
+import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @RequiredArgsConstructor
@@ -32,7 +28,7 @@ public class UserService {
     private final BidRedisRepository bidRedisRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Long signUp(UserSignUpDto userSignUpDto) throws Exception {
+    public Long signUp(UserDto.SignUpReq userSignUpDto) throws Exception {
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
             throw new Exception("이미 존재하는 이메일");
         }
@@ -56,48 +52,33 @@ public class UserService {
         return userRepository.save(user).getId();
     }
 
-    /*
     @Transactional(readOnly = true)
-    public AuctionDto.UserLiveAuctionListRes getLiveAuctionList(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+    public UserDto.OAuth2LoginInfoRes getSocialUserInfo(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
 
-        List<AuctionBidInfo> bidInfos = bidRedisRepository.findByBidderId(user.getId());
-
-        List<String> auctionKeys = bidInfos
-                .stream()
-                .map(AuctionBidInfo::getAuctionKey)
-                .toList();
-
-        List<AuctionDto.UserAuctionInfo> result = new ArrayList<>();
-
-        for (int i = 0; i < bidInfos.size(); i++) {
-            String key = auctionKeys.get(i);
-            AuctionBidInfo bidInfo = bidInfos.get(i);
-
-            Auction auction = auctionRepository.findByAuctionUuId(key)
-                    .orElseThrow(() -> new AuctionNotFoundException(key));
-
-            if (auction.getIsFinish()) continue;
-
-            List<String> photoPaths = auction.getArtPiece().getArtPiecePhotos()
-                    .stream()
-                    .map(ArtPiecePhoto::getFilePath)
-                    .toList();
-
-            result.add(AuctionDto.UserAuctionInfo.of(auction, photoPaths, bidInfo));
-        }
-
-        result.sort(Comparator.comparing(AuctionDto.UserAuctionInfo::getCreatedAt));
-
-        return AuctionDto.UserLiveAuctionListRes.of(result);
+        return UserDto.OAuth2LoginInfoRes.of(user);
     }
 
-     */
+    @Transactional(readOnly = true)
+    public UserDto.UserBidAuctionListRes getLiveAuctionList(Long userId) {
+        // 1. userId로 입찰 목록 검색
+        // 2. 가져온 입찰 목록으로 경매 검색
+        List<Auction> auctions = bidRedisRepository.findByBidderId(userId)
+                .stream()
+                .map(info -> auctionRepository.findByAuctionUuIdWithFetch(info.getAuctionKey()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        return UserDto.UserBidAuctionListRes.of(auctions);
+    }
 
     @Transactional(readOnly = true)
-    public void getFinishAuctionList(Long userId) {
-
+    public UserDto.UserBidAuctionListRes getBidAuctionList(Long userId) {
+        // auction 엔티티의 isFinish가 True이고, lastBidder가 userId와 같은 경매 목록 반환
+        List<Auction> allByBidder = auctionRepository.findAllByBidder(userId);
+        return UserDto.UserBidAuctionListRes.of(allByBidder);
     }
 
     @Transactional(readOnly = true)

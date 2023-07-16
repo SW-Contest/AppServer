@@ -1,6 +1,6 @@
 package com.artfolio.artfolio.business.repository;
 
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

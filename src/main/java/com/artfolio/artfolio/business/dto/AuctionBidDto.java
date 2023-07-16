@@ -1,12 +1,12 @@
 package com.artfolio.artfolio.business.dto;
 
-import com.artfolio.artfolio.business.domain.redis.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 /* 입찰 갱신 DTO */
-public class AuctionBid {
+public class AuctionBidDto {
     @Getter
     @AllArgsConstructor
     public static class Req {

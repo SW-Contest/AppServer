@@ -48,7 +48,7 @@ public class ChatGptDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter @Setter
-    private static class Choice implements Serializable {
+    public static class Choice implements Serializable {
         private Message message;
         private Integer index;
         @JsonProperty("finish_reason")
