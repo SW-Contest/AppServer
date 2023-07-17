@@ -54,15 +54,13 @@ public class SecurityConfig {
                 // 세션 사용X
                 //.sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                /*
                 // URL별 권한 관리 옵션
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock", "/authorization/**")
+                        auth.requestMatchers("/", "/login/**", "/sock/**", "/sock", "/oauth2/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
-                */
 
                 // 소셜 로그인 설정
                 .oauth2Login()
