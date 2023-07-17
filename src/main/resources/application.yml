@@ -44,25 +44,22 @@ spring:
       client:
         registration:
           google:
-            client-id: 876862065988-ddrqt7c47e25mk5ju8f30g0qsfn1rokc.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 978078249197-cmok2f3od5tnuurgia1eab2elenkv6mt.apps.googleusercontent.com
+            client-secret: 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
             scope: profile, email
 
           naver:
-            client-id: UEb2pI6CRV_pjnvultOT
-            client-secret: go0P90IGJO
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
-            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            client-id: K692PISIR76RNyBp8luR
+            client-secret: T3KdSI3DHm
+            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
 
           kakao:
-            client-id: bf56a9d2ad0d3230fa65bb19d3b8ae41
-            client-secret: 50XgDccUqHV9078QLN4T0oXe9eH3W19X
+            client-id: e665d02f2f15df465b84e5f07a980dea
             client-authentication-method: POST
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
             client-name: Kakao
