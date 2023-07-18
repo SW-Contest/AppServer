@@ -101,7 +101,7 @@ public class AuctionService {
             StringBuffer sb = new StringBuffer();
 
             try {
-                String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.";
+                String DEFAULT_QUESTION = "아래 이미지를 분석한 자료를 가지고 예술품 설명글을 작성해줘.\n그리고 경매에 이 작품을 붙인다면 예상 가격을 알려줘";
                 ask = chatGptService.ask(new ChatGptDto.QuestionReq(DEFAULT_QUESTION + "\n" + labels.toString()));
                 ask.getChoices().forEach(a -> sb.append(a.getMessage()).append(' '));
             } catch (Exception e) {

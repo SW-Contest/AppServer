@@ -27,4 +27,9 @@ public class AIController {
     public List<Label> analyzeImage(@RequestParam("file") MultipartFile file) {
         return imageService.analyzeLocalImage(file);
     }
+
+    @PostMapping("/question/test")
+    public ResponseEntity<String> questionTest(@RequestBody ChatGptDto.QuestionReq req) {
+        return ResponseEntity.ok(chatGptService.asking(req));
+    }
 }

@@ -57,8 +57,9 @@ public class ErrorHandlingController {
 
     @ExceptionHandler(WebClientResponseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ErrorResponse handleWebClientResponseException() {
+    protected ErrorResponse handleWebClientResponseException(WebClientResponseException e) {
         log.error("OpenAI 크레딧 부족");
+        log.info(e.getMessage());
         return buildError(ErrorCode.OPENAI_NOT_AVAILABLE);
     }
 
