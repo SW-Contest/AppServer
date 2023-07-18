@@ -9,6 +9,7 @@ import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.repository.UserArtPieceRepository;
 import com.artfolio.artfolio.global.exception.ArtPieceNotFoundException;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
+import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -147,5 +148,15 @@ public class ArtPieceService {
         }
 
         return artPieceRepository.saveAndFlush(artPiece).getLikes();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto.LikeUsersRes getLikeUserList(Long artPieceId) {
+        List<User> users = userArtPieceRepository.findByArtPiece_IdAndIsLikedTrue(artPieceId)
+                .stream()
+                .map(UserArtPiece::getUser)
+                .toList();
+
+        return UserDto.LikeUsersRes.of(users);
     }
 }

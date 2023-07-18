@@ -2,6 +2,7 @@ package com.artfolio.artfolio.business.service;
 
 import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.*;
+import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.business.domain.AuctionBidInfo;
 import com.artfolio.artfolio.business.dto.*;
@@ -222,5 +223,15 @@ public class AuctionService {
     public AuctionDto.SearchResultRes searchAuction(String keyword) {
         List<Auction> allBySearch = auctionRepository.findAllBySearch(keyword);
         return AuctionDto.SearchResultRes.of(allBySearch);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto.LikeUsersRes getLikeUserList(String auctionKey) {
+        List<User> users = userAuctionRepository.findByAuction_AuctionUuIdAndIsLikedTrue(auctionKey)
+                .stream()
+                .map(UserAuction::getUser)
+                .toList();
+
+        return UserDto.LikeUsersRes.of(users);
     }
 }

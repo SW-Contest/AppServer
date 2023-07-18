@@ -35,4 +35,16 @@ public class UserController {
     public ResponseEntity<?> getArtPieceList(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getArtPieceList(userId));
     }
+
+    @GetMapping("/art_piece/like/{userId}")
+    public ResponseEntity<UserDto.UserLikeArtPiecesRes> getLikeArtPieces(@PathVariable("userId") Long userId) {
+        UserDto.UserLikeArtPiecesRes likeArtPieces = userService.getLikeArtPieces(userId);
+        return ResponseEntity.ok(likeArtPieces);
+    }
+
+    @GetMapping("/auction/like/{userId}")
+    public ResponseEntity<UserDto.UserLikeAuctionsRes> getLikeAuctions(@PathVariable("userId") Long userId) {
+        UserDto.UserLikeAuctionsRes likeAuctions = userService.getLikeAuctions(userId);
+        return ResponseEntity.ok(likeAuctions);
+    }
 }

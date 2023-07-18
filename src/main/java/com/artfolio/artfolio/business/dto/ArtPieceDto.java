@@ -110,12 +110,12 @@ public class ArtPieceDto {
 
     @Getter @Builder
     @AllArgsConstructor
-    private static class ArtPieceInfo {
+    public static class ArtPieceInfo {
         private Long id;
         private String title;
         private String content;
         private Integer likes;
-        private List<String> photos;
+        private List<String> photoPaths;
 
         public static ArtPieceInfo of(ArtPiece artPiece, List<String> artPiecePhotos) {
             return ArtPieceInfo.builder()
@@ -123,7 +123,7 @@ public class ArtPieceDto {
                     .title(artPiece.getTitle())
                     .content(artPiece.getContent())
                     .likes(artPiece.getLikes())
-                    .photos(artPiecePhotos)
+                    .photoPaths(artPiecePhotos)
                     .build();
         }
     }
