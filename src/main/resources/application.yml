@@ -35,8 +35,8 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: redis6379
-      # host: localhost
+      #host: redis6379
+      host: localhost
       port: 6379
 
   security:
@@ -105,4 +105,4 @@ jwt:
 
 # GPT 설정
 chatgpt:
-  api-key: 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
+  api-key:
