@@ -18,26 +18,12 @@ services:
 
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      # certbot 컨테이너와 폴더 공유를 위해 볼륨 추가
-      - ../certbot/conf:/etc/letsencrypt
-      - ../certbot/www:/var/www/certbot
+      - /var/log/nginx:/var/log/nginx # log파일의 위치
+      - /etc/letsencrypt:/etc/letsencrypt #letsencrypt폴더 위치
 
     # https://velog.io/@zero-black/Docker-compose-certbot-nginx-%EB%A1%9C-SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89%ED%95%98%EA%B8%B0
     command:
       - "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    container_name: certbot
-
-    image: certbot/certbot
-
-    restart: unless-stopped
-
-    volumes:
-      - ../certbot/conf:/etc/letsencrypt
-      - ../certbot/www:/var/www/certbot
-
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   application:
     container_name: artfolio
