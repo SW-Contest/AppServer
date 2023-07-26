@@ -17,13 +17,9 @@ services:
     restart: unless-stopped
 
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /nginx/default.conf:/etc/nginx/conf.d/default.conf
       - /var/log/nginx:/var/log/nginx # log파일의 위치
       - /etc/letsencrypt:/etc/letsencrypt #letsencrypt폴더 위치
-
-    # https://velog.io/@zero-black/Docker-compose-certbot-nginx-%EB%A1%9C-SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89%ED%95%98%EA%B8%B0
-    command:
-      - "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   application:
     container_name: artfolio
