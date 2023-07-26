@@ -41,23 +41,4 @@ public class ChatGptService {
                 .bodyToMono(ChatGptDto.Res.class)
                 .block();
     }
-
-    public String asking(ChatGptDto.QuestionReq questionReq) {
-        ChatGptDto.Message message = new ChatGptDto.Message("user", questionReq.getQuestion());
-
-        ChatGptDto.Req req = ChatGptDto.Req.builder()
-                .model(ChatGptConfig.MODEL)
-                .messages(List.of(message))
-                .build();
-
-
-        return WebClient.create()
-                .post()
-                .uri(ChatGptConfig.URL)
-                .header(HttpHeaders.AUTHORIZATION, ChatGptConfig.BEARER + OPENAI_KEY)
-                .body(BodyInserters.fromValue(req))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-    }
 }
