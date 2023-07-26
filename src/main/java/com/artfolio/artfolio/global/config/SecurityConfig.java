@@ -76,11 +76,11 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /*
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+    /*
 
     // AuthenticationManager 설정 후 등록
     @Bean
