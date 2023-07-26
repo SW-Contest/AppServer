@@ -5,7 +5,6 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "80:80"
       - "443:443"
 
     depends_on:
@@ -16,6 +15,27 @@ services:
 
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      # certbot 컨테이너와 폴더 공유를 위해 볼륨 추가
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+    # https://velog.io/@zero-black/Docker-compose-certbot-nginx-%EB%A1%9C-SSL-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89%ED%95%98%EA%B8%B0
+    command:
+      - "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    container_name: certbot
+
+    image: certbot:latest
+
+    restart: unless-stopped
+
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+
+    entrypoint:
+      - "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   application:
     container_name: artfolio
