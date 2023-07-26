@@ -17,9 +17,9 @@ services:
     restart: unless-stopped
 
     volumes:
-      - /nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - /var/log/nginx:/var/log/nginx # log파일의 위치
-      - /etc/letsencrypt:/etc/letsencrypt #letsencrypt폴더 위치
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /var/log/nginx:/var/log/nginx      # log파일의 위치
+      - /etc/letsencrypt:/etc/letsencrypt  #letsencrypt폴더 위치
 
   application:
     container_name: artfolio
