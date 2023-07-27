@@ -1,25 +1,22 @@
 spring:
-  #h2:
-  #  console:
-  #    path: /h2-console
-  #    enabled: true
-  #datasource:
-  #  driver-class-name: org.h2.Driver
-  #  url: jdbc:h2:tcp://localhost/~/test
-  #  username: sa
-  #  password:
+  profiles:
+    active: local
 
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/artfolio
-    username: postgres
-    password: 1111
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
 
   sql.init.mode: always
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
@@ -35,8 +32,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: redis6379
-      #host: localhost
+      host: localhost
       port: 6379
 
   security:
@@ -106,3 +102,37 @@ jwt:
 # GPT 설정
 chatgpt:
   api-key:
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:postgresql://db:5432/artfolio
+    username: postgres
+    password: 1111
+    driver-class-name: org.postgresql.Driver
+
+  # redis 설정
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 5
+          max-idle: 5
+          min-idle: 2
+      host: redis6379
+      port: 6379
+
+  jpa:
+    defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
+    hibernate.ddl-auto: none
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100

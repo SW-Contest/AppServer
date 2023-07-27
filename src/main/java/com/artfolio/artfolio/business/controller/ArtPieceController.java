@@ -1,6 +1,7 @@
 package com.artfolio.artfolio.business.controller;
 
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
+import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import com.artfolio.artfolio.business.service.ImageService;
@@ -68,5 +69,14 @@ public class ArtPieceController {
     public ResponseEntity<UserDto.LikeUsersRes> getLikeUsers(@PathVariable("artPieceId") Long artPieceId) {
         UserDto.LikeUsersRes list = artPieceService.getLikeUserList(artPieceId);
         return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/analyze/image")
+    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(
+            @RequestParam("artPieceId") Long artPieceId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId, file);
+        return ResponseEntity.ok(aiInfo);
     }
 }
