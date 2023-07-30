@@ -155,7 +155,7 @@ public class ImageService {
         return detectLabelsResult.getLabels();
     }
 
-    public AuctionDto.AIInfo analyzeImage(Long artPieceId, MultipartFile file) {
+    public AuctionDto.AIInfo analyzeImage(Long artPieceId) {
         Optional<AIInfo> aiInfoOp = aiRedisRepository.findById(artPieceId);
 
         if (aiInfoOp.isPresent()) {
@@ -163,8 +163,27 @@ public class ImageService {
             return AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
         }
 
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
+
+        List<ArtPiecePhoto> artPiecePhotos = artPiece.getArtPiecePhotos();
+
         try {
-            Image image = new Image().withBytes(ByteBuffer.wrap(file.getBytes()));
+            if (artPiecePhotos.isEmpty()) {
+                throw new Exception("해당 예술품에 등록된 사진이 없습니다.");
+            }
+
+            ArtPiecePhoto artPiecePhoto = artPiecePhotos.get(0);
+
+            String DEFAULT_BUCKET_PATH = "static/" + artPieceId + "/";
+            String FILE_NAME = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
+            String S3_PATH = DEFAULT_BUCKET_PATH + FILE_NAME;
+
+            S3Object s3Object = new S3Object()
+                    .withBucket(REKOGNITION_BUCKET_NAME)
+                    .withName(S3_PATH);
+
+            Image image = new Image().withS3Object(s3Object);
 
             DetectLabelsRequest request = new DetectLabelsRequest()
                     .withImage(image)

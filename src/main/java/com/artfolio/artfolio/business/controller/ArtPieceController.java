@@ -1,5 +1,6 @@
 package com.artfolio.artfolio.business.controller;
 
+import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
@@ -72,11 +73,14 @@ public class ArtPieceController {
     }
 
     @PostMapping("/analyze/image")
-    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(
-            @RequestParam("artPieceId") Long artPieceId,
-            @RequestParam("file") MultipartFile file
-    ) {
-        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId, file);
+    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestParam("artPieceId") Long artPieceId) {
+        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId);
+        return ResponseEntity.ok(aiInfo);
+    }
+
+    @GetMapping("/analyze/info/{artPieceId}")
+    public ResponseEntity<AIInfo> getArtPieceAnalyzeInfo(@PathVariable("artPieceId") Long artPieceId) {
+        AIInfo aiInfo = artPieceService.getArtPieceAnalyzeInfo(artPieceId);
         return ResponseEntity.ok(aiInfo);
     }
 }
