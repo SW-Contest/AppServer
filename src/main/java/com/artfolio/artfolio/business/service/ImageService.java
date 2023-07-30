@@ -175,7 +175,7 @@ public class ImageService {
 
             ArtPiecePhoto artPiecePhoto = artPiecePhotos.get(0);
 
-            String DEFAULT_BUCKET_PATH = "static/" + artPieceId + "/";
+            String DEFAULT_BUCKET_PATH = "static/artPiece/" + artPieceId + "/";
             String FILE_NAME = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
             String S3_PATH = DEFAULT_BUCKET_PATH + FILE_NAME;
 
