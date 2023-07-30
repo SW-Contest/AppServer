@@ -140,18 +140,36 @@ public class UserDto {
     @Getter @Setter @ToString @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UserAuctionArtistInfo {
+        private AuctionDto.AuctionInfo auctionInfo;
+        private AuctionDto.ArtistInfo artistInfo;
+
+        public static UserAuctionArtistInfo of(User artist, AuctionDto.AuctionInfo auctionInfo) {
+            return UserAuctionArtistInfo.builder()
+                    .auctionInfo(auctionInfo)
+                    .artistInfo(AuctionDto.ArtistInfo.of(artist))
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserLikeAuctionsRes {
         private Integer size;
-        private List<AuctionDto.AuctionInfo> auctionInfos;
+        private List<UserAuctionArtistInfo> auctionInfos;
 
         public static UserLikeAuctionsRes of(List<Auction> auctions) {
-            List<AuctionDto.AuctionInfo> list = auctions.stream()
-                    .map(auction -> AuctionDto.AuctionInfo.of(
-                            auction,
-                            auction.getArtPiece().getArtPiecePhotos()
-                                    .stream()
-                                    .map(ArtPiecePhoto::getFilePath)
-                                    .toList()
+            List<UserAuctionArtistInfo> list = auctions.stream()
+                    .map(auction -> UserAuctionArtistInfo.of(
+                            auction.getArtist(),
+                            AuctionDto.AuctionInfo.of(
+                                    auction,
+                                    auction.getArtPiece().getArtPiecePhotos()
+                                            .stream()
+                                            .map(ArtPiecePhoto::getFilePath)
+                                            .toList()
+                            )
                     ))
                     .toList();
 

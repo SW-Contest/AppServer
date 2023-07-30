@@ -1,9 +1,6 @@
 package com.artfolio.artfolio.user.service;
 
-import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.UserArtPiece;
-import com.artfolio.artfolio.business.domain.UserAuction;
+import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.repository.AuctionRepository;
 import com.artfolio.artfolio.business.repository.BidRedisRepository;
@@ -20,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
