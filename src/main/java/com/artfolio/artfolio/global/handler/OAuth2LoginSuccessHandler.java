@@ -52,7 +52,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             loginSuccess(response, oAuth2User, findUser);
         }
-
     }
 
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User, User findUser) throws IOException {

@@ -1,9 +1,12 @@
 package com.artfolio.artfolio.business.controller;
 
+import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
+import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import com.artfolio.artfolio.business.service.ImageService;
+import com.artfolio.artfolio.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +64,23 @@ public class ArtPieceController {
     public ResponseEntity<Long> deleteArtPiecePhoto(@RequestBody ImageDto.DeleteReq req) {
         Long result = imageService.deleteFile(req);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/like/{artPieceId}")
+    public ResponseEntity<UserDto.LikeUsersRes> getLikeUsers(@PathVariable("artPieceId") Long artPieceId) {
+        UserDto.LikeUsersRes list = artPieceService.getLikeUserList(artPieceId);
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/analyze/image")
+    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestParam("artPieceId") Long artPieceId) {
+        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId);
+        return ResponseEntity.ok(aiInfo);
+    }
+
+    @GetMapping("/analyze/info/{artPieceId}")
+    public ResponseEntity<AIInfo> getArtPieceAnalyzeInfo(@PathVariable("artPieceId") Long artPieceId) {
+        AIInfo aiInfo = artPieceService.getArtPieceAnalyzeInfo(artPieceId);
+        return ResponseEntity.ok(aiInfo);
     }
 }

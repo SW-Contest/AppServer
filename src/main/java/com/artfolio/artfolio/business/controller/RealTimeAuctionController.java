@@ -5,6 +5,7 @@ import com.artfolio.artfolio.business.domain.SearchType;
 import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.CreateAuction;
 import com.artfolio.artfolio.business.service.AuctionService;
+import com.artfolio.artfolio.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -84,7 +85,7 @@ public class RealTimeAuctionController {
         return ResponseEntity.ok(result);
     }
 
-     */
+    */
 
     /* 경매 좋아요 +-1 메서드 */
     @PatchMapping("/like")
@@ -94,5 +95,11 @@ public class RealTimeAuctionController {
     ) {
         Integer likes = auctionService.updateLike(auctionKey, userId);
         return ResponseEntity.ok(likes);
+    }
+
+    @GetMapping("/like/{auctionKey}")
+    public ResponseEntity<UserDto.LikeUsersRes> getLikeUsers(@PathVariable("auctionKey") String auctionKey) {
+        UserDto.LikeUsersRes likeUserList = auctionService.getLikeUserList(auctionKey);
+        return ResponseEntity.ok(likeUserList);
     }
 }

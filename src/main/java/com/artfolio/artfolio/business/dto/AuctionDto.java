@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class AuctionDto {
 
@@ -61,7 +62,7 @@ public class AuctionDto {
 
     }
 
-    @Getter @Setter @ToString
+    @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class PreviewInfoRes {
@@ -73,29 +74,27 @@ public class AuctionDto {
         private List<PreviewInfo> data;
 
         public static AuctionDto.PreviewInfoRes of(Slice<Auction> auctions) {
-            List<PreviewInfo> previewInfos = new ArrayList<>();
+            List<PreviewInfo> list = auctions.stream()
+                    .map(auction -> PreviewInfo.of(
+                                    auction,
+                                    auction.getArtist(),
+                                    auction.getArtPiece().getArtPiecePhotos()
+                                            .stream()
+                                            .filter(ArtPiecePhoto::getIsThumbnail)
+                                            .map(ArtPiecePhoto::getFilePath)
+                                            .findFirst()
+                            )
+                    )
+                    .toList();
 
-            for (Auction auction : auctions) {
-                User artist = auction.getArtist();
-                List<ArtPiecePhoto> artPiecePhotos = auction.getArtPiece().getArtPiecePhotos()
-                        .stream()
-                        .filter(ArtPiecePhoto::getIsThumbnail)
-                        .toList();
-
-                String path = "null";
-                if (!artPiecePhotos.isEmpty()) path = artPiecePhotos.get(0).getFilePath();
-
-                previewInfos.add(PreviewInfo.of(auction, artist, path));
-            }
-
-            return new PreviewInfoRes(
-                    auctions.hasNext(),
-                    auctions.isLast(),
-                    auctions.getSize(),
-                    auctions.getNumber(),
-                    previewInfos.size(),
-                    previewInfos
-            );
+            return PreviewInfoRes.builder()
+                    .hasNext(auctions.hasNext())
+                    .isLast(auctions.isLast())
+                    .pageSize(auctions.getSize())
+                    .pageNumber(auctions.getNumber())
+                    .dataSize(list.size())
+                    .data(list)
+                    .build();
         }
     }
 
@@ -105,21 +104,10 @@ public class AuctionDto {
         private ArtistInfo artistInfo;
         private AuctionInfo auctionInfo;
 
-        public static PreviewInfo of(Auction auction, User artist, String thumbnailPath) {
+        public static PreviewInfo of(Auction auction, User artist, Optional<String> thumbnailPath) {
             ArtistInfo artistInfo = ArtistInfo.of(artist);
-
-            AuctionInfo auctionInfo = AuctionInfo.builder()
-                    .id(auction.getAuctionUuId())
-                    .title(auction.getTitle())
-                    .content(auction.getContent())
-                    .startPrice(auction.getStartPrice())
-                    .currentPrice(auction.getCurrentPrice())
-                    .like(auction.getLikes())
-                    .createdAt(auction.getCreatedAt())
-                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
-                    .photoPaths(List.of(thumbnailPath))
-                    .build();
-
+            List<String> paths = thumbnailPath.map(List::of).orElseGet(List::of);
+            AuctionInfo auctionInfo = AuctionInfo.of(auction, paths);
             return new PreviewInfo(artistInfo, auctionInfo);
         }
     }

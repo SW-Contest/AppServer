@@ -5,8 +5,8 @@ services:
     container_name: nginx
     image: nginx:latest
     ports:
-      - "80:80"
       - "443:443"
+      - "80:80"
 
     depends_on:
       - application
@@ -14,8 +14,12 @@ services:
     environment:
       - TZ=Asia/Seoul
 
+    restart: unless-stopped
+
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - /var/log/nginx:/var/log/nginx      # log파일의 위치
+      - /etc/letsencrypt:/etc/letsencrypt  #letsencrypt폴더 위치
 
   application:
     container_name: artfolio

@@ -1,8 +1,7 @@
 package com.artfolio.artfolio.user.dto;
 
-import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
-import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.*;
+import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
@@ -90,6 +89,93 @@ public class UserDto {
             return UserBidAuctionList.builder()
                     .artistInfo(AuctionDto.ArtistInfo.of(artist))
                     .auctionInfo(AuctionDto.AuctionInfo.of(auction, paths))
+                    .build();
+        }
+    }
+
+    @Getter @Setter @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class LikeUsersRes {
+        private Integer size;
+        private List<AuctionDto.ArtistInfo> likeUsers;
+
+        public static LikeUsersRes of(List<User> users) {
+            List<AuctionDto.ArtistInfo> likeUsers = users.stream()
+                    .map(AuctionDto.ArtistInfo::of)
+                    .toList();
+
+            return LikeUsersRes.builder()
+                    .size(users.size())
+                    .likeUsers(likeUsers)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserLikeArtPiecesRes {
+        private Integer size;
+        private List<ArtPieceDto.ArtPieceInfo> artPieceInfos;
+
+        public static UserLikeArtPiecesRes of(List<ArtPiece> artPieces) {
+            List<ArtPieceDto.ArtPieceInfo> list = artPieces.stream()
+                    .map(piece -> ArtPieceDto.ArtPieceInfo.of(
+                            piece,
+                            piece.getArtPiecePhotos()
+                                    .stream()
+                                    .map(ArtPiecePhoto::getFilePath)
+                                    .toList()
+                    ))
+                    .toList();
+
+            return UserLikeArtPiecesRes.builder()
+                    .size(artPieces.size())
+                    .artPieceInfos(list)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserAuctionArtistInfo {
+        private AuctionDto.AuctionInfo auctionInfo;
+        private AuctionDto.ArtistInfo artistInfo;
+
+        public static UserAuctionArtistInfo of(User artist, AuctionDto.AuctionInfo auctionInfo) {
+            return UserAuctionArtistInfo.builder()
+                    .auctionInfo(auctionInfo)
+                    .artistInfo(AuctionDto.ArtistInfo.of(artist))
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserLikeAuctionsRes {
+        private Integer size;
+        private List<UserAuctionArtistInfo> auctionInfos;
+
+        public static UserLikeAuctionsRes of(List<Auction> auctions) {
+            List<UserAuctionArtistInfo> list = auctions.stream()
+                    .map(auction -> UserAuctionArtistInfo.of(
+                            auction.getArtist(),
+                            AuctionDto.AuctionInfo.of(
+                                    auction,
+                                    auction.getArtPiece().getArtPiecePhotos()
+                                            .stream()
+                                            .map(ArtPiecePhoto::getFilePath)
+                                            .toList()
+                            )
+                    ))
+                    .toList();
+
+            return UserLikeAuctionsRes.builder()
+                    .size(auctions.size())
+                    .auctionInfos(list)
                     .build();
         }
     }

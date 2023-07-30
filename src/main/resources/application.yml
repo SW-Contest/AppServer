@@ -1,25 +1,22 @@
 spring:
-  #h2:
-  #  console:
-  #    path: /h2-console
-  #    enabled: true
-  #datasource:
-  #  driver-class-name: org.h2.Driver
-  #  url: jdbc:h2:tcp://localhost/~/test
-  #  username: sa
-  #  password:
+  profiles:
+    active: local
 
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/artfolio
-    username: postgres
-    password: 1111
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
 
   sql.init.mode: always
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
@@ -35,8 +32,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: redis6379
-      # host: localhost
+      host: localhost
       port: 6379
 
   security:
@@ -44,25 +40,23 @@ spring:
       client:
         registration:
           google:
-            client-id: 876862065988-ddrqt7c47e25mk5ju8f30g0qsfn1rokc.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 978078249197-cmok2f3od5tnuurgia1eab2elenkv6mt.apps.googleusercontent.com
+            client-secret: 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
             scope: profile, email
 
           naver:
-            client-id: UEb2pI6CRV_pjnvultOT
-            client-secret: go0P90IGJO
-            redirect-uri: http://localhost:8080/login/oauth2/code/naver
-            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            client-id: K692PISIR76RNyBp8luR
+            client-secret: T3KdSI3DHm
+            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
 
           kakao:
-            client-id: bf56a9d2ad0d3230fa65bb19d3b8ae41
-            client-secret: 50XgDccUqHV9078QLN4T0oXe9eH3W19X
+            client-id: e665d02f2f15df465b84e5f07a980dea
+            client-secret: vWOakBYa2NiCMRd7Q1MMvykjXxwJBNFU
             client-authentication-method: POST
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-            #redirect-uri: http://20.214.201.205/login/oauth2/code/kakao
+            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
             client-name: Kakao
@@ -107,4 +101,38 @@ jwt:
 
 # GPT 설정
 chatgpt:
-  api-key: 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
+  api-key:
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:postgresql://db:5432/artfolio
+    username: postgres
+    password: 1111
+    driver-class-name: org.postgresql.Driver
+
+  # redis 설정
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 5
+          max-idle: 5
+          min-idle: 2
+      host: redis6379
+      port: 6379
+
+  jpa:
+    defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
+    hibernate.ddl-auto: none
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100

@@ -1,14 +1,17 @@
 package com.artfolio.artfolio.business.service;
 
+import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.UserArtPiece;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
+import com.artfolio.artfolio.business.repository.AIRedisRepository;
 import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.repository.UserArtPieceRepository;
 import com.artfolio.artfolio.global.exception.ArtPieceNotFoundException;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
+import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ public class ArtPieceService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final UserArtPieceRepository userArtPieceRepository;
+    private final AIRedisRepository aiRedisRepository;
 
     public Long createArtPiece(ArtPieceDto.CreationReq req) {
         log.info("[ createArtPiece() ] req : {}", req);
@@ -147,5 +151,20 @@ public class ArtPieceService {
         }
 
         return artPieceRepository.saveAndFlush(artPiece).getLikes();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto.LikeUsersRes getLikeUserList(Long artPieceId) {
+        List<User> users = userArtPieceRepository.findByArtPiece_IdAndIsLikedTrue(artPieceId)
+                .stream()
+                .map(UserArtPiece::getUser)
+                .toList();
+
+        return UserDto.LikeUsersRes.of(users);
+    }
+
+    public AIInfo getArtPieceAnalyzeInfo(Long artPieceId) {
+        Optional<AIInfo> byId = aiRedisRepository.findById(artPieceId);
+        return byId.orElse(null);
     }
 }

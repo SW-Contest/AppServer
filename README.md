@@ -10,7 +10,7 @@
 - OpenAI API, Java-JWT, OAuth2, STOMP
 - AWS EC2, S3, Route 53, Rekognition
 - Docker, Docker-Compose, Github Actions
-- Nginx, Hashicorp Vault
+- Nginx, Hashicorp Vault, Certbot
 
 <hr/>
 
