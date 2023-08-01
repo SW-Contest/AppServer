@@ -112,4 +112,13 @@ public class UserService {
 
         return UserDto.UserLikeAuctionsRes.of(auctions);
     }
+
+    public Long updateUserContent(Long userId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        user.updateContent(content);
+
+        return 1L;
+    }
 }

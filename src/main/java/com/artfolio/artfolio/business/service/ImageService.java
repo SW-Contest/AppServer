@@ -34,9 +34,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ImageService {
-    private final AmazonRekognitionClient rekognitionClient;
     private static final String DEFAULT_IMAGE_DIR = System.getProperty("user.dir")
             + "/src/main/resources/images";
+    private final AmazonRekognitionClient rekognitionClient;
     private static final String REKOGNITION_BUCKET_NAME = "artfolio-bucket";
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final ArtPieceRepository artPieceRepository;

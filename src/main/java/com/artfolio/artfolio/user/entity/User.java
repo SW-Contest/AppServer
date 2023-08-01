@@ -129,6 +129,10 @@ public class User implements UserDetails {
         this.refreshToken = refreshToken;
     }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

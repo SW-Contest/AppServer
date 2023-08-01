@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -46,5 +48,13 @@ public class UserController {
     public ResponseEntity<UserDto.UserLikeAuctionsRes> getLikeAuctions(@PathVariable("userId") Long userId) {
         UserDto.UserLikeAuctionsRes likeAuctions = userService.getLikeAuctions(userId);
         return ResponseEntity.ok(likeAuctions);
+    }
+
+    @PatchMapping("/content")
+    public ResponseEntity<Long> updateUserContent(@RequestBody Map<String, Object> map) {
+        String content = String.valueOf(map.get("content"));
+        Long userId = Long.parseLong(String.valueOf(map.get("userId")));
+        Long result = userService.updateUserContent(userId, content);
+        return ResponseEntity.ok(result);
     }
 }
