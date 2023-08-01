@@ -101,7 +101,7 @@ jwt:
 
 # GPT 설정
 chatgpt:
-  api-key: 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
+  api-key:
 
 
 ---
