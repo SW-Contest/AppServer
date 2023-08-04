@@ -6,6 +6,7 @@ import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import com.artfolio.artfolio.business.service.ImageService;
+import com.artfolio.artfolio.business.service.VoiceExtractService;
 import com.artfolio.artfolio.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ArtPieceController {
     private final ArtPieceService artPieceService;
     private final ImageService imageService;
+    private final VoiceExtractService voiceExtractService;
 
     @PostMapping
     public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req) {
@@ -82,5 +84,10 @@ public class ArtPieceController {
     public ResponseEntity<AIInfo> getArtPieceAnalyzeInfo(@PathVariable("artPieceId") Long artPieceId) {
         AIInfo aiInfo = artPieceService.getArtPieceAnalyzeInfo(artPieceId);
         return ResponseEntity.ok(aiInfo);
+    }
+
+    @PostMapping("/voice/extract")
+    public void extractVoice(@RequestParam("artPieceId") Long artPieceId) {
+        voiceExtractService.extractVoice(artPieceId, "안녕하세요.");
     }
 }
