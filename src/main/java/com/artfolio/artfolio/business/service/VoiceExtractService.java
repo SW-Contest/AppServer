@@ -37,7 +37,7 @@ public class VoiceExtractService {
     private static final Integer SPEED = 0;
     private static final Integer PITCH = 0;
 
-    public void extractVoice(Long artPieceId, String text) {
+    public String extractVoice(Long artPieceId, String text) {
         try {
             URL url = new URL(API_URL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -84,13 +84,17 @@ public class VoiceExtractService {
                 }
 
                 is.close();
+
+                String voice = s3Manager.uploadArtPieceImage(artPieceId, f);
+                f.delete();
+                return voice;
             }
 
             // 오류 발생
             else {
                 br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
                 String inputLine;
-                StringBuffer response = new StringBuffer();
+                StringBuilder response = new StringBuilder();
 
                 while ((inputLine = br.readLine()) != null) {
                     response.append(inputLine);
@@ -103,5 +107,7 @@ public class VoiceExtractService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 }

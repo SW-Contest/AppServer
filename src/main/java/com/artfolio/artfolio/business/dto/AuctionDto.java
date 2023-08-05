@@ -122,11 +122,13 @@ public class AuctionDto {
     public static class AIInfo {
         private List<Label> labels;
         private String content;
+        private String voice;
 
-        public static AIInfo of(List<Label> labels, String content) {
+        public static AIInfo of(List<Label> labels, String content, String voice) {
             return AIInfo.builder()
                     .labels(labels)
                     .content(content)
+                    .voice(voice)
                     .build();
         }
     }

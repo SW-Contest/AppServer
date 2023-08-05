@@ -44,6 +44,7 @@ public class ImageService {
     private final S3Manager s3Manager;
     private final AIRedisRepository aiRedisRepository;
     private final ChatGptService chatGptService;
+    private final VoiceExtractService voiceExtractService;
     private String thumbnailFileName;
 
     @Transactional
@@ -160,7 +161,7 @@ public class ImageService {
 
         if (aiInfoOp.isPresent()) {
             AIInfo aiInfo = aiInfoOp.get();
-            return AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
+            return AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent(), aiInfo.getVoice());
         }
 
         ArtPiece artPiece = artPieceRepository.findById(artPieceId)
@@ -194,14 +195,18 @@ public class ImageService {
 
             String content = chatGptService.createDesc(artPieceId, labels);
 
+            // mp3 파일이 저장된 S3 버킷 오브젝트 경로
+            String voice = voiceExtractService.extractVoice(artPieceId, content);
+
             AIInfo aiInfo = AIInfo.builder()
                     .artPieceId(artPieceId)
                     .labels(labels)
                     .content(content)
+                    .voice(voice)
                     .build();
 
             aiRedisRepository.save(aiInfo);
-            return AuctionDto.AIInfo.of(labels, content);
+            return AuctionDto.AIInfo.of(labels, content, voice);
 
         } catch (Exception e) {
             e.printStackTrace();

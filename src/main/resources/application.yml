@@ -103,6 +103,7 @@ jwt:
 chatgpt:
   api-key:
 
+
 naver:
   voice:
     client-id: op9vhnz42x

@@ -26,7 +26,7 @@ public class ChatGptService {
         Optional<AIInfo> op = aiRedisRepository.findById(artPieceId);
 
         if (op.isEmpty()) {
-            String question = "아래 키워드로 예술품에 대한 설명글을 작성해줘.\n";
+            String question = "아래 키워드로 예술품에 대한 설명글을 1000자 내외로 작성해줘.\n";
             ChatGptDto.Message message = new ChatGptDto.Message("user", question + labels.toString());
 
             ChatGptDto.Req req = ChatGptDto.Req.builder()

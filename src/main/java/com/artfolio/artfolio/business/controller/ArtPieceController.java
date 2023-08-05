@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RequestMapping("/art_piece")
 @RequiredArgsConstructor
 @RestController
@@ -87,7 +89,10 @@ public class ArtPieceController {
     }
 
     @PostMapping("/voice/extract")
-    public void extractVoice(@RequestParam("artPieceId") Long artPieceId) {
-        voiceExtractService.extractVoice(artPieceId, "안녕하세요.");
+    public void extractVoice(
+            @RequestParam("artPieceId") Long artPieceId,
+            @RequestParam("text") String text
+        ) {
+        voiceExtractService.extractVoice(artPieceId, text);
     }
 }

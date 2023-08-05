@@ -83,7 +83,7 @@ public class AuctionService {
             // 레디스에 캐싱된 정보가 있으면 꺼내오기
             if (aiInfoOp.isPresent()) {
                 AIInfo aiInfo = aiInfoOp.get();
-                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
+                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent(), aiInfo.getVoice());
                 log.info("Redis aiInfo 추출 : {}", aiInfo);
                 return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, of);
             }
