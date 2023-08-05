@@ -43,11 +43,19 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
             "a.auctionUuId = :uuid")
     Optional<Auction> findByAuctionUuIdWithFetch(String uuid);
 
+    @Query("select a from Auction a " +
+            "join fetch a.artist " +
+            "join fetch a.artPiece " +
+            "where a.artist.id = :userId")
+    List<Auction> findAuctionListByArtistId(Long userId);
+
     Optional<Auction> findByAuctionUuId(String uuid);
     Slice<Auction> findAllByIsFinishFalseOrderByCurrentPriceAsc(Pageable pageable);
     Slice<Auction> findAllByIsFinishFalseOrderByCurrentPriceDesc(Pageable pageable);
     Slice<Auction> findAllByIsFinishFalseOrderByLikesAsc(Pageable pageable);
     Slice<Auction> findAllByIsFinishFalseOrderByLikesDesc(Pageable pageable);
     Slice<Auction> findAllByIsFinishFalseOrderByCreatedAtAsc(Pageable pageable);
+
     Slice<Auction> findAllByIsFinishFalseOrderByCreatedAtDesc(Pageable pageable);
+
 }

@@ -1,19 +1,13 @@
 package com.artfolio.artfolio.business.dto;
 
 import com.amazonaws.services.rekognition.model.Label;
-import com.artfolio.artfolio.business.domain.ArtPiece;
-import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
-import com.artfolio.artfolio.business.domain.Auction;
-import com.artfolio.artfolio.business.domain.AuctionBidInfo;
+import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AuctionDto {
 
@@ -172,6 +166,54 @@ public class AuctionDto {
                     .artPieceInfo(artPieceInfo)
                     .auctionInfo(auctionInfo)
                     .bidderInfos(bidderInfos)
+                    .aiInfo(aiInfo)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyAuctions {
+        private Integer size;
+        private List<MyAuction> myAuctions;
+
+        public static MyAuctions of(List<Auction> auctions, List<Optional<com.artfolio.artfolio.business.domain.AIInfo>> aiInfos) {
+            List<MyAuction> list = new ArrayList<>();
+
+            for (int i = 0; i < auctions.size(); i++) {
+                Auction auction = auctions.get(i);
+                com.artfolio.artfolio.business.domain.AIInfo ai = aiInfos.get(i).get();
+
+                Long artPieceId = auction.getArtPiece().getId();
+
+                if (Objects.equals(ai.getArtPieceId(), artPieceId)) {
+                    AIInfo aiInfo = AIInfo.of(ai.getLabels(), ai.getContent(), ai.getVoice());
+                    MyAuction myAuction = MyAuction.of(auction, aiInfo);
+
+                    list.add(myAuction);
+                }
+            }
+
+            return MyAuctions.builder()
+                    .size(auctions.size())
+                    .myAuctions(list)
+                    .build();
+        }
+    }
+
+    @Getter @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyAuction {
+        private ArtPieceInfo artPieceInfo;
+        private AuctionInfo auctionInfo;
+        private AIInfo aiInfo;
+
+        public static MyAuction of(Auction auction, AIInfo aiInfo) {
+            return MyAuction.builder()
+                    .artPieceInfo(ArtPieceInfo.of(auction.getArtPiece()))
+                    .auctionInfo(AuctionInfo.of(auction, auction.getArtPiece().getArtPiecePhotos().stream().map(ArtPiecePhoto::getFilePath).toList()))
                     .aiInfo(aiInfo)
                     .build();
         }

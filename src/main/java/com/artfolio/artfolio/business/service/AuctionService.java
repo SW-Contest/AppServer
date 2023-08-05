@@ -211,4 +211,15 @@ public class AuctionService {
 
         return UserDto.LikeUsersRes.of(users);
     }
+
+    @Transactional(readOnly = true)
+    public AuctionDto.MyAuctions getMyAuctions(Long userId) {
+        List<Auction> auctions = auctionRepository.findAuctionListByArtistId(userId);
+
+        List<Optional<AIInfo>> aiInfos = auctions.stream()
+                .map(auction -> aiRedisRepository.findById(auction.getArtPiece().getId()))
+                .toList();
+
+        return AuctionDto.MyAuctions.of(auctions, aiInfos);
+    }
 }
