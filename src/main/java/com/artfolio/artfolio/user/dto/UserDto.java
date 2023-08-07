@@ -179,4 +179,28 @@ public class UserDto {
                     .build();
         }
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter @Setter
+    public static class UserInfo {
+        private Long id;
+        private String username;
+        private String email;
+        private String name;
+        private String content;
+        private String photoPath;
+
+        public static UserInfo of(User user) {
+            return UserInfo.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .name(user.getNickname())
+                    .content(user.getContent())
+                    .photoPath(user.getProfilePhoto())
+                    .build();
+        }
+    }
 }
