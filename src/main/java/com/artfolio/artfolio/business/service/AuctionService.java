@@ -1,6 +1,5 @@
 package com.artfolio.artfolio.business.service;
 
-import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
