@@ -9,16 +9,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RequiredArgsConstructor
 @RestController
 public class OAuthController {
     private final UserService userService;
-    private CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-    @GetMapping("/login/auth/{provider}")
+    @GetMapping("/login/oauth/{provider}")
     public ResponseEntity<?> login(
             @PathVariable("provider") String provider,
             @RequestParam("code") String code,

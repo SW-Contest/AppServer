@@ -26,7 +26,9 @@ public class CustomOAuth2UserService {
 
     private static final String NAVER = "naver";
     private static final String KAKAO = "kakao";
-    private static final String DEFAULT_GRANT_TYPE = "authorization_code";
+
+    @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}")
+    private String DEFAULT_GRANT_TYPE;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String NAVER_CLIENT_ID;
@@ -57,12 +59,17 @@ public class CustomOAuth2UserService {
         String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken();
 
-        jwtService.sendAccessAndRefreshToken(res, accessToken, refreshToken);
 
         // 이전 로그인 기록이 없는 경우 유저 정보를 저장
         if (userOp.isEmpty()) {
-            userRepository.save(userInfo.toEntity(socialType, refreshToken));
+            User user = userRepository.save(userInfo.toEntity(socialType, refreshToken));
+            res.setHeader("UserId", String.valueOf(user.getId()));
         }
+        else {
+            res.setHeader("UserId", String.valueOf(userOp.get().getId()));
+        }
+
+        jwtService.sendAccessAndRefreshToken(res, accessToken, refreshToken);
 
         return userInfo;
     }
@@ -93,6 +100,7 @@ public class CustomOAuth2UserService {
     private LoginDto.UserInfoRes getNaverUserInfo(LoginDto.TokenRes tokenResponse) {
         return WebClient.create()
                 .get()
+                .uri(NAVER_USER_INFO_URI)
                 .header("Authorization", "Bearer " + tokenResponse.getAccess_token())
                 .retrieve()
                 .bodyToMono(LoginDto.UserInfoRes.class)
