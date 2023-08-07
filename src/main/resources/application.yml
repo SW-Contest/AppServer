@@ -45,9 +45,9 @@ spring:
             scope: profile, email
 
           naver:
-            client-id: K692PISIR76RNyBp8luR
-            client-secret: T3KdSI3DHm
-            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/naver
+            client-id: 7M3VC0kOvjSMITe2yKF5
+            client-secret: sGZSTKAW_o
+            redirect-uri: http://localhost:3000
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver

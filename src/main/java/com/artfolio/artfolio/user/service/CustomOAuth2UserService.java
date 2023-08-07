@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -121,7 +120,7 @@ public class CustomOAuth2UserService {
     }
 
     private LoginDto.TokenRes getTokenFromKakao(SocialType socialType, String code, String state) {
-
+        return null;
     }
 
     private MultiValueMap<String, String> tokenRequest(SocialType socialType, String code, String state) {
