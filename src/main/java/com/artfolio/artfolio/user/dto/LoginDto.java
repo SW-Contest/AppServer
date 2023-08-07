@@ -54,6 +54,8 @@ public class LoginDto {
             private String profile_image;
             private String birthyear;
             private String mobile;
+            private String accessToken;
+            private String refreshToken;
         }
     }
 }

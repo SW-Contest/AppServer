@@ -70,6 +70,8 @@ public class CustomOAuth2UserService {
         }
 
         jwtService.sendAccessAndRefreshToken(res, accessToken, refreshToken);
+        userInfo.getResponse().setAccessToken(accessToken);
+        userInfo.getResponse().setRefreshToken(refreshToken);
 
         return userInfo;
     }
