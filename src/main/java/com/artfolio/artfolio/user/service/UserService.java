@@ -119,4 +119,11 @@ public class UserService {
 
         return 1L;
     }
+
+    public UserDto.UserInfo getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return UserDto.UserInfo.of(user);
+    }
 }

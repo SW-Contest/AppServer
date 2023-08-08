@@ -57,4 +57,10 @@ public class UserController {
         Long result = userService.updateUserContent(userId, content);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto.UserInfo> getUserInfo(@PathVariable("userId") Long userId) {
+        UserDto.UserInfo userInfo = userService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfo);
+    }
 }
