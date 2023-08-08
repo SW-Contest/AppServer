@@ -24,33 +24,6 @@ public class UserDto {
         private String content;
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter @Setter
-    public static class OAuth2LoginInfoRes {
-        private Long userId;
-        private String socialId;
-        private String profileImage;
-        private String email;
-        private String name;
-        private String socialType;
-        private String role;
-
-        public static OAuth2LoginInfoRes of(User user) {
-            return OAuth2LoginInfoRes
-                    .builder()
-                    .userId(user.getId())
-                    .socialId(user.getSocialId())
-                    .socialType(user.getSocialType().name())
-                    .email(user.getEmail())
-                    .name(user.getNickname())
-                    .profileImage(user.getProfilePhoto())
-                    .role(user.getRole().name())
-                    .build();
-        }
-    }
-
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -186,7 +159,6 @@ public class UserDto {
     @Getter @Setter
     public static class UserInfo {
         private Long id;
-        private String username;
         private String email;
         private String name;
         private String content;
@@ -195,7 +167,6 @@ public class UserDto {
         public static UserInfo of(User user) {
             return UserInfo.builder()
                     .id(user.getId())
-                    .username(user.getUsername())
                     .email(user.getEmail())
                     .name(user.getNickname())
                     .content(user.getContent())

@@ -14,12 +14,6 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    /* 추가 정보를 입력받을 경우 사용 */
-    @PostMapping("/sign-up")
-    public ResponseEntity<Long> signUp(@RequestBody UserDto.SignUpReq userSignUpDto) throws Exception {
-        return ResponseEntity.ok(userService.signUp(userSignUpDto));
-    }
-
     /* 유저가 참여하고 있는 진행중인 경매 목록 */
     @GetMapping("/auction/live/{userId}")
     public ResponseEntity<?> getLiveAuctionList(@PathVariable("userId") Long userId) {
