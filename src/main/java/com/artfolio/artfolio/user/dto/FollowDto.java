@@ -43,7 +43,6 @@ public class FollowDto {
     @NoArgsConstructor
     private static class FollowInfo {
         private Long id;
-        private String username;
         private String nickname;
         private String email;
         private String photoPath;
@@ -51,7 +50,6 @@ public class FollowDto {
         public static FollowInfo of(User user) {
             return FollowInfo.builder()
                     .id(user.getId())
-                    .username(user.getUsername())
                     .nickname(user.getNickname())
                     .email(user.getEmail())
                     .photoPath(user.getProfilePhoto())

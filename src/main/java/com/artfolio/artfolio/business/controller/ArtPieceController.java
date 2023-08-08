@@ -9,13 +9,15 @@ import com.artfolio.artfolio.business.service.ImageService;
 import com.artfolio.artfolio.business.service.VoiceExtractService;
 import com.artfolio.artfolio.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
 
+@Slf4j
 @RequestMapping("/art_piece")
 @RequiredArgsConstructor
 @RestController
@@ -25,7 +27,8 @@ public class ArtPieceController {
     private final VoiceExtractService voiceExtractService;
 
     @PostMapping
-    public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req) {
+    public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req, Authentication authentication) {
+        log.info("is authenticated? = " + authentication.isAuthenticated());
         return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 

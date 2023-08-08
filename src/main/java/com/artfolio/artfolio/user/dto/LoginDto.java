@@ -1,7 +1,6 @@
 package com.artfolio.artfolio.user.dto;
 
 import com.artfolio.artfolio.user.entity.User;
-import jdk.jfr.consumer.RecordedFrame;
 import lombok.*;
 
 public class LoginDto {
@@ -33,7 +32,6 @@ public class LoginDto {
                     .content("..")
                     .socialType(socialType)
                     .nickname(response.nickname)
-                    .password("...")
                     .role(Role.USER)
                     .refreshToken(refreshToken)
                     .socialId(response.id)

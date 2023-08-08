@@ -241,7 +241,6 @@ public class AuctionDto {
     @AllArgsConstructor
     public static class ArtistInfo {
         private Long id;
-        private String username;
         private String name;
         private String email;
         private String content;
@@ -250,7 +249,6 @@ public class AuctionDto {
         public static ArtistInfo of(User artist) {
             return ArtistInfo.builder()
                     .id(artist.getId())
-                    .username(artist.getUsername())
                     .name(artist.getNickname())
                     .email(artist.getEmail())
                     .photoPath(artist.getProfilePhoto())

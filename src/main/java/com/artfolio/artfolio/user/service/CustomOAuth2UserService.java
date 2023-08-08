@@ -3,7 +3,6 @@ package com.artfolio.artfolio.user.service;
 import com.artfolio.artfolio.user.dto.LoginDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.dto.SocialType;
-import com.artfolio.artfolio.user.dto.OAuthAttributes;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +58,6 @@ public class CustomOAuth2UserService {
         String accessToken = jwtService.createAccessToken(email);
         String refreshToken = jwtService.createRefreshToken();
 
-
         // 이전 로그인 기록이 없는 경우 유저 정보를 저장
         if (userOp.isEmpty()) {
             User user = userRepository.save(userInfo.toEntity(socialType, refreshToken));
@@ -78,17 +76,6 @@ public class CustomOAuth2UserService {
         if (NAVER.equals(registrationId)) return SocialType.NAVER;
         if (KAKAO.equals(registrationId)) return SocialType.KAKAO;
         return SocialType.GOOGLE;
-    }
-
-    private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOAuth2UserInfo().getId()).orElse(null);
-        if (findUser == null) return saveUser(attributes, socialType);
-        return findUser;
-    }
-
-    private User saveUser(OAuthAttributes attributes, SocialType socialType) {
-        User createdUser = attributes.toEntity(socialType, attributes.getOAuth2UserInfo());
-        return userRepository.save(createdUser);
     }
 
     private LoginDto.UserInfoRes getUserInfo(SocialType socialType, LoginDto.TokenRes tokenResponse) {

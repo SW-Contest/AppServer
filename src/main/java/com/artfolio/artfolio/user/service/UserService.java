@@ -43,7 +43,6 @@ public class UserService {
 
         User user = User.builder()
                 .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
                 .nickname(userSignUpDto.getNickname())
                 .profilePhoto(userSignUpDto.getProfilePhoto())
                 .role(Role.USER)
@@ -52,7 +51,6 @@ public class UserService {
                 .content(userSignUpDto.getContent())
                 .build();
 
-        user.passwordEncode(passwordEncoder);
         return userRepository.save(user).getId();
     }
 
