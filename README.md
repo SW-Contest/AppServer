@@ -14,5 +14,10 @@
 
 <hr/>
 
+## Architecture
+![](document/artfolio-server-architecture.png)
+
+<hr/>
+
 ## ERD
 ![](document/artfolio_erd.png)
