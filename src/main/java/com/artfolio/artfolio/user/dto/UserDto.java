@@ -24,33 +24,6 @@ public class UserDto {
         private String content;
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter @Setter
-    public static class OAuth2LoginInfoRes {
-        private Long userId;
-        private String socialId;
-        private String profileImage;
-        private String email;
-        private String name;
-        private String socialType;
-        private String role;
-
-        public static OAuth2LoginInfoRes of(User user) {
-            return OAuth2LoginInfoRes
-                    .builder()
-                    .userId(user.getId())
-                    .socialId(user.getSocialId())
-                    .socialType(user.getSocialType().name())
-                    .email(user.getEmail())
-                    .name(user.getNickname())
-                    .profileImage(user.getProfilePhoto())
-                    .role(user.getRole().name())
-                    .build();
-        }
-    }
-
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -140,24 +113,64 @@ public class UserDto {
     @Getter @Setter @ToString @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class UserAuctionArtistInfo {
+        private AuctionDto.AuctionInfo auctionInfo;
+        private AuctionDto.ArtistInfo artistInfo;
+
+        public static UserAuctionArtistInfo of(User artist, AuctionDto.AuctionInfo auctionInfo) {
+            return UserAuctionArtistInfo.builder()
+                    .auctionInfo(auctionInfo)
+                    .artistInfo(AuctionDto.ArtistInfo.of(artist))
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserLikeAuctionsRes {
         private Integer size;
-        private List<AuctionDto.AuctionInfo> auctionInfos;
+        private List<UserAuctionArtistInfo> auctionInfos;
 
         public static UserLikeAuctionsRes of(List<Auction> auctions) {
-            List<AuctionDto.AuctionInfo> list = auctions.stream()
-                    .map(auction -> AuctionDto.AuctionInfo.of(
-                            auction,
-                            auction.getArtPiece().getArtPiecePhotos()
-                                    .stream()
-                                    .map(ArtPiecePhoto::getFilePath)
-                                    .toList()
+            List<UserAuctionArtistInfo> list = auctions.stream()
+                    .map(auction -> UserAuctionArtistInfo.of(
+                            auction.getArtist(),
+                            AuctionDto.AuctionInfo.of(
+                                    auction,
+                                    auction.getArtPiece().getArtPiecePhotos()
+                                            .stream()
+                                            .map(ArtPiecePhoto::getFilePath)
+                                            .toList()
+                            )
                     ))
                     .toList();
 
             return UserLikeAuctionsRes.builder()
                     .size(auctions.size())
                     .auctionInfos(list)
+                    .build();
+        }
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter @Setter
+    public static class UserInfo {
+        private Long id;
+        private String email;
+        private String name;
+        private String content;
+        private String photoPath;
+
+        public static UserInfo of(User user) {
+            return UserInfo.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .name(user.getNickname())
+                    .content(user.getContent())
+                    .photoPath(user.getProfilePhoto())
                     .build();
         }
     }

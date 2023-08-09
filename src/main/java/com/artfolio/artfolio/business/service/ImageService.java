@@ -2,8 +2,11 @@ package com.artfolio.artfolio.business.service;
 
 import com.amazonaws.services.rekognition.AmazonRekognitionClient;
 import com.amazonaws.services.rekognition.model.*;
+import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
+import com.artfolio.artfolio.business.repository.AIRedisRepository;
 import com.artfolio.artfolio.business.repository.ArtPiecePhotoRepository;
 import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.domain.ArtPiece;
@@ -18,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,19 +29,23 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ImageService {
-    private final AmazonRekognitionClient rekognitionClient;
     private static final String DEFAULT_IMAGE_DIR = System.getProperty("user.dir")
             + "/src/main/resources/images";
+    private final AmazonRekognitionClient rekognitionClient;
     private static final String REKOGNITION_BUCKET_NAME = "artfolio-bucket";
     private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final ArtPieceRepository artPieceRepository;
     private final UserRepository userRepository;
     private final S3Manager s3Manager;
+    private final AIRedisRepository aiRedisRepository;
+    private final ChatGptService chatGptService;
+    private final VoiceExtractService voiceExtractService;
     private String thumbnailFileName;
 
     @Transactional
@@ -149,23 +157,57 @@ public class ImageService {
         return detectLabelsResult.getLabels();
     }
 
-    public List<Label> analyzeLocalImage(MultipartFile file) {
-        try {
-            Image image = new Image().withBytes(ByteBuffer.wrap(file.getBytes()));
+    public AuctionDto.AIInfo analyzeImage(Long artPieceId) throws Exception {
+        Optional<AIInfo> aiInfoOp = aiRedisRepository.findById(artPieceId);
 
-            DetectLabelsRequest request = new DetectLabelsRequest()
-                    .withImage(image)
-                    .withMaxLabels(10);
-
-            DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
-
-            return detectLabelsResult.getLabels();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (aiInfoOp.isPresent()) {
+            AIInfo aiInfo = aiInfoOp.get();
+            return AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent(), aiInfo.getVoice());
         }
 
-        return null;
+        ArtPiece artPiece = artPieceRepository.findById(artPieceId)
+                .orElseThrow(() -> new ArtPieceNotFoundException(artPieceId));
+
+        List<ArtPiecePhoto> artPiecePhotos = artPiece.getArtPiecePhotos();
+
+        if (artPiecePhotos.isEmpty()) {
+            throw new Exception("해당 예술품에 등록된 사진이 없습니다.");
+        }
+
+        ArtPiecePhoto artPiecePhoto = artPiecePhotos.get(0);
+
+        String DEFAULT_BUCKET_PATH = "static/artPiece/" + artPieceId + "/";
+        String FILE_NAME = artPiecePhoto.getFileName() + "." + artPiecePhoto.getFileExtension();
+        String S3_PATH = DEFAULT_BUCKET_PATH + FILE_NAME;
+
+        S3Object s3Object = new S3Object()
+                .withBucket(REKOGNITION_BUCKET_NAME)
+                .withName(S3_PATH);
+
+        Image image = new Image().withS3Object(s3Object);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(image)
+                .withMaxLabels(10);
+
+        DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
+        List<Label> labels = detectLabelsResult.getLabels();
+
+        String content = chatGptService.createDesc(artPieceId, labels);
+
+        // mp3 파일이 저장된 S3 버킷 오브젝트 경로
+        String voice = voiceExtractService.extractVoice(artPieceId, content);
+
+        AIInfo aiInfo = AIInfo.builder()
+                .artPieceId(artPieceId)
+                .labels(labels)
+                .content(content)
+                .voice(voice)
+                .build();
+
+        aiRedisRepository.save(aiInfo);
+        return AuctionDto.AIInfo.of(labels, content, voice);
+
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */

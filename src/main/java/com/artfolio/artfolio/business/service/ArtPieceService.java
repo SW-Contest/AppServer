@@ -1,10 +1,12 @@
 package com.artfolio.artfolio.business.service;
 
+import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.domain.ArtPiece;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
 import com.artfolio.artfolio.business.domain.UserArtPiece;
 import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
+import com.artfolio.artfolio.business.repository.AIRedisRepository;
 import com.artfolio.artfolio.business.repository.ArtPieceRepository;
 import com.artfolio.artfolio.business.repository.UserArtPieceRepository;
 import com.artfolio.artfolio.global.exception.ArtPieceNotFoundException;
@@ -26,10 +28,10 @@ import java.util.Optional;
 @Service
 public class ArtPieceService {
     private final ArtPieceRepository artPieceRepository;
-    // private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final UserArtPieceRepository userArtPieceRepository;
+    private final AIRedisRepository aiRedisRepository;
 
     public Long createArtPiece(ArtPieceDto.CreationReq req) {
         log.info("[ createArtPiece() ] req : {}", req);
@@ -158,5 +160,10 @@ public class ArtPieceService {
                 .toList();
 
         return UserDto.LikeUsersRes.of(users);
+    }
+
+    public AIInfo getArtPieceAnalyzeInfo(Long artPieceId) {
+        Optional<AIInfo> byId = aiRedisRepository.findById(artPieceId);
+        return byId.orElse(null);
     }
 }

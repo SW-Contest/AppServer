@@ -61,6 +61,12 @@ public class RealTimeAuctionController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<AuctionDto.MyAuctions> getMyAuctions(@PathVariable("userId") Long userId) {
+        AuctionDto.MyAuctions myAuctions = auctionService.getMyAuctions(userId);
+        return ResponseEntity.ok(myAuctions);
+    }
+
     /* 경매 종료 메서드 */
     /*
     @PostMapping("/finish")

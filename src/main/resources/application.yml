@@ -1,25 +1,22 @@
 spring:
-  #h2:
-  #  console:
-  #    path: /h2-console
-  #    enabled: true
-  #datasource:
-  #  driver-class-name: org.h2.Driver
-  #  url: jdbc:h2:tcp://localhost/~/test
-  #  username: sa
-  #  password:
+  profiles:
+    active: local
 
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   datasource:
-    url: jdbc:postgresql://db:5432/artfolio
-    username: postgres
-    password: 1111
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/test
+    username: sa
+    password:
 
   sql.init.mode: always
 
   jpa:
     defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:
@@ -35,8 +32,7 @@ spring:
           max-active: 5
           max-idle: 5
           min-idle: 2
-      host: redis6379
-      #host: localhost
+      host: localhost
       port: 6379
 
   security:
@@ -49,9 +45,8 @@ spring:
             scope: profile, email
 
           naver:
-            client-id: K692PISIR76RNyBp8luR
-            client-secret: T3KdSI3DHm
-            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/naver
+            client-id: 7M3VC0kOvjSMITe2yKF5
+            client-secret: sGZSTKAW_o
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
@@ -106,3 +101,43 @@ jwt:
 # GPT 설정
 chatgpt:
   api-key:
+
+naver:
+  voice:
+    client-id: op9vhnz42x
+    client-secret: HZ9WbPXxINLfkC43hnyY4BCkkGer56ei35BgKyZz
+    api-url: https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:postgresql://db:5432/artfolio
+    username: postgres
+    password: 1111
+    driver-class-name: org.postgresql.Driver
+
+  # redis 설정
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 5
+          max-idle: 5
+          min-idle: 2
+      host: redis6379
+      port: 6379
+
+  jpa:
+    defer-datasource-initialization: true   # data.sql이 하이버네이트 초기화 이후 실행하도록 설정하는 옵션
+    hibernate.ddl-auto: none
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100

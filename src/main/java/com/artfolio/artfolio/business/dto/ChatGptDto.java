@@ -41,6 +41,7 @@ public class ChatGptDto {
     @AllArgsConstructor
     @Getter @Setter
     public static class QuestionReq implements Serializable {
+        private Long artPieceId;
         private String question;
     }
 
