@@ -210,7 +210,6 @@ public class ImageService {
 
         aiRedisRepository.save(aiInfo);
         return AuctionDto.AIInfo.of(labels, content, voice);
-
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */
