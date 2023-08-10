@@ -37,7 +37,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
-    private static final String NO_CHECK_URL = "/login";
+    private static final String NO_CHECK_URL = "/login/oauth/";
     private static final String SOCIAL_USER_TEMP_PASSWORD = "temp_password";
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -46,7 +46,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // "/login" 요청이 들어오면 다음 필터로 넘긴다
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
+        if (request.getRequestURI().equals(NO_CHECK_URL + "naver") || request.getRequestURI().equals(NO_CHECK_URL + "kakao")) {
             filterChain.doFilter(request, response);
             return;
         }
