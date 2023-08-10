@@ -23,6 +23,15 @@ public class ArtPieceDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class AnalyzeReq {
+        private Long artPieceId;
+        private String question;
+    }
+
+    @Getter @Setter @ToString
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class DeletionReq {
         private Long artistId;
         private Long artPieceId;
