@@ -22,13 +22,16 @@ public class ChatGptService {
     private String OPENAI_KEY;
     private final AIRedisRepository aiRedisRepository;
 
+    private static final String QUESTION = "당신은 그림의 태그들을 보고 그림에 대하여 다른 사람에게 설명하는 역할을 맡았습니다. " +
+            "다음 태그들을 보고 그림에 대하여 실제로 보고 있는 것처럼 확신을 가지고 설명해주세요. " +
+            "태그를 명시하면서 설명하기보다는 전체적인 느낌으로 설명해주세요. " +
+            "답변은 '이 작품은'으로 시작하며 500자 정도로 설명해주세요.\n" ;
+
     protected String createDesc(Long artPieceId, List<Label> labels) {
         Optional<AIInfo> op = aiRedisRepository.findById(artPieceId);
 
         if (op.isEmpty()) {
-            String question = "이건 어떠한 그림을 태그로 분석한 결과입니다.\n" +
-                    "이 태그를 통하여 이미지를 적절한 글로써 500자 내외로 나타내주세요";
-            ChatGptDto.Message message = new ChatGptDto.Message("user", question + labels.toString());
+            ChatGptDto.Message message = new ChatGptDto.Message("user", QUESTION + labels.toString());
 
             ChatGptDto.Req req = ChatGptDto.Req.builder()
                     .model(ChatGptConfig.MODEL)
