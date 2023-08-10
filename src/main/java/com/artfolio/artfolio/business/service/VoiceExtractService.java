@@ -1,7 +1,5 @@
 package com.artfolio.artfolio.business.service;
 
-import com.artfolio.artfolio.business.domain.AIInfo;
-import com.artfolio.artfolio.business.repository.AIRedisRepository;
 import com.artfolio.artfolio.global.util.S3Manager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +17,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Service
 public class VoiceExtractService {
-    private final AIRedisRepository aiRedisRepository;
     private final S3Manager s3Manager;
 
     @Value("${naver.voice.client-id}")
