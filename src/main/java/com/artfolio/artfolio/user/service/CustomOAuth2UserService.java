@@ -42,18 +42,14 @@ public class CustomOAuth2UserService {
     @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
     private String NAVER_USER_INFO_URI;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String KAKAO_CLIENT_ID;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String KAKAO_REDIRECT_URI;
+    private final String KAKAO_CLIENT_ID = "e665d02f2f15df465b84e5f07a980dea";
 
-    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
-    private String KAKAO_TOKEN_URI;
+    private final String KAKAO_REDIRECT_URI = "http://localhost:3000/KakaoRedirect";
 
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info.uri}")
-    private String KAKAO_USER_INFO_URI;
+    private final String KAKAO_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
 
+    private final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
 
     public LoginDto.UserInfo loadUser(HttpServletResponse res, String provider, String code, String state) {
         log.info("CustomOAuth2UserService.loadUser() 실행");

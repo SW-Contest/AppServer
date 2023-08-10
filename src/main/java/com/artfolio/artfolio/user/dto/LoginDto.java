@@ -4,7 +4,7 @@ import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 
 public class LoginDto {
-    @Getter @Setter @ToString @Builder
+    @Getter @Setter @ToString
     @AllArgsConstructor
     @NoArgsConstructor
     public static abstract class TokenRes {
