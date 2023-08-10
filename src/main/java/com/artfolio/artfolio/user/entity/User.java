@@ -38,8 +38,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    @Column(nullable = false)  // 로그인한 소셜 타입의 식별자 값
-    private String socialId;
 
     @Column(length = 1500, nullable = false)
     private String content;
@@ -68,7 +66,6 @@ public class User {
         this.profilePhoto = profilePhoto;
         this.role = role;
         this.socialType = socialType;
-        this.socialId = socialId;
         this.content = content;
         this.refreshToken = refreshToken;
     }
