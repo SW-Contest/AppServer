@@ -4,15 +4,21 @@ import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 
 public class LoginDto {
+    @Getter @Setter @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static abstract class TokenRes {
+        private String token_type;
+        private String access_token;
+        private String refresh_token;
+        private Integer expires_in;
+    }
+
 
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class TokenRes {
-        private String access_token;
-        private String refresh_token;
-        private String token_type;
-        private Integer expires_in;
+    public static class NaverTokenRes extends TokenRes {
         private String error;
         private String error_description;
     }
@@ -20,7 +26,53 @@ public class LoginDto {
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UserInfoRes {
+    public static class KakaoTokenRes extends TokenRes {
+        private Integer refresh_token_expires_in;
+    }
+
+    public interface UserInfo { }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class KakaoUserInfo implements UserInfo {
+        private Long id;
+        private KakaoAccount kakaoAccount;
+
+        public User toEntity(SocialType socialType, String refreshToken) {
+            return User.builder()
+                    .email(kakaoAccount.getEmail())
+                    .profilePhoto(kakaoAccount.profile.profile_image_url)
+                    .content("..")
+                    .socialType(socialType)
+                    .nickname(kakaoAccount.profile.nickname)
+                    .role(Role.USER)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class KakaoAccount {
+        private String email;
+        private Profile profile;
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Profile {
+        private String nickname;
+        private String thumbnail_image_url;
+        private String profile_image_url;
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class NaverUserInfo implements UserInfo {
         private String resultCode;
         private String message;
         private Response response;
@@ -34,7 +86,6 @@ public class LoginDto {
                     .nickname(response.nickname)
                     .role(Role.USER)
                     .refreshToken(refreshToken)
-                    .socialId(response.id)
                     .build();
         }
 

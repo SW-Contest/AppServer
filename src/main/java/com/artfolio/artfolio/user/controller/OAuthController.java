@@ -19,7 +19,9 @@ public class OAuthController {
             @RequestParam("state") String state,
             HttpServletResponse res
     ) {
-        LoginDto.UserInfoRes userInfoRes = customOAuth2UserService.loadUser(res, provider, code, state);
-        return ResponseEntity.ok(userInfoRes);
+        LoginDto.UserInfo userInfoRes = customOAuth2UserService.loadUser(res, provider, code, state);
+
+        if (provider.equals("kakao")) return ResponseEntity.ok((LoginDto.KakaoUserInfo) userInfoRes);
+        return ResponseEntity.ok((LoginDto.NaverUserInfo) userInfoRes);
     }
 }

@@ -55,7 +55,7 @@ spring:
             client-id: e665d02f2f15df465b84e5f07a980dea
             client-secret: vWOakBYa2NiCMRd7Q1MMvykjXxwJBNFU
             client-authentication-method: POST
-            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/kakao
+            redirect-uri: http://localhost:3000/KakaoRedirect
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
             client-name: Kakao

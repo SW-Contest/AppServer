@@ -80,8 +80,11 @@ public class ArtPieceController {
     }
 
     @PostMapping("/analyze/image")
-    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestParam("artPieceId") Long artPieceId) throws Exception {
-        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId);
+    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestBody ArtPieceDto.AnalyzeReq req) throws Exception {
+        log.info("analyzeImage() 실행 dto = {}", req.toString());
+        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(req);
+
+        log.info("분석 완료 : {}", aiInfo.toString());
         return ResponseEntity.ok(aiInfo);
     }
 

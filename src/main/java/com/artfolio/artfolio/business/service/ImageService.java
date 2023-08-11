@@ -4,6 +4,7 @@ import com.amazonaws.services.rekognition.AmazonRekognitionClient;
 import com.amazonaws.services.rekognition.model.*;
 import com.artfolio.artfolio.business.domain.AIInfo;
 import com.artfolio.artfolio.business.domain.ArtPiecePhoto;
+import com.artfolio.artfolio.business.dto.ArtPieceDto;
 import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.repository.AIRedisRepository;
@@ -157,7 +158,9 @@ public class ImageService {
         return detectLabelsResult.getLabels();
     }
 
-    public AuctionDto.AIInfo analyzeImage(Long artPieceId) throws Exception {
+    public AuctionDto.AIInfo analyzeImage(ArtPieceDto.AnalyzeReq req) throws Exception {
+        Long artPieceId = req.getArtPieceId();
+
         Optional<AIInfo> aiInfoOp = aiRedisRepository.findById(artPieceId);
 
         if (aiInfoOp.isPresent()) {
@@ -193,7 +196,7 @@ public class ImageService {
         DetectLabelsResult detectLabelsResult = rekognitionClient.detectLabels(request);
         List<Label> labels = detectLabelsResult.getLabels();
 
-        String content = chatGptService.createDesc(artPieceId, labels);
+        String content = chatGptService.createDesc(artPieceId, labels, req.getQuestion());
 
         // mp3 파일이 저장된 S3 버킷 오브젝트 경로
         String voice = voiceExtractService.extractVoice(artPieceId, content);
@@ -207,7 +210,6 @@ public class ImageService {
 
         aiRedisRepository.save(aiInfo);
         return AuctionDto.AIInfo.of(labels, content, voice);
-
     }
 
     /* resources/images 경로에 원본 이미지와 압축된 이미지를 생성해주는 메서드 */

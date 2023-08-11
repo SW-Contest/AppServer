@@ -25,6 +25,7 @@ public class CustomOAuth2UserService {
 
     private static final String NAVER = "naver";
     private static final String KAKAO = "kakao";
+    private static final String DEFAULT_CONTENT_TYPE = "application/x-www.form-urlencoded;charset=utf-8";
 
     @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}")
     private String DEFAULT_GRANT_TYPE;
@@ -36,13 +37,21 @@ public class CustomOAuth2UserService {
     private String NAVER_CLIENT_SECRET;
 
     @Value("${spring.security.oauth2.client.provider.naver.token_uri}")
-    private String NAVER_TOKEN_URL;
+    private String NAVER_TOKEN_URI;
 
     @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
     private String NAVER_USER_INFO_URI;
 
 
-    public LoginDto.UserInfoRes loadUser(HttpServletResponse res, String provider, String code, String state) {
+    private final String KAKAO_CLIENT_ID = "e665d02f2f15df465b84e5f07a980dea";
+
+    private final String KAKAO_REDIRECT_URI = "http://localhost:3000/KakaoRedirect";
+
+    private final String KAKAO_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
+
+    private final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
+
+    public LoginDto.UserInfo loadUser(HttpServletResponse res, String provider, String code, String state) {
         log.info("CustomOAuth2UserService.loadUser() 실행");
 
         SocialType socialType = getSocialType(provider);
@@ -50,54 +59,84 @@ public class CustomOAuth2UserService {
 
         log.info("token 정보 획득 : {}", tokenResponse.toString());
 
-        LoginDto.UserInfoRes userInfo = getUserInfo(socialType, tokenResponse);
+        LoginDto.UserInfo userInfo = getUserInfo(socialType, tokenResponse);
 
-        String email = userInfo.getResponse().getEmail();
-        Optional<User> userOp = userRepository.findByEmail(email);
+        String email, refreshToken;
+
+        // 카카오 로그인인 경우
+        if (userInfo instanceof LoginDto.KakaoUserInfo kakaoUserInfo) {
+            email = kakaoUserInfo.getKakaoAccount().getEmail();
+            Optional<User> userOp = userRepository.findByEmail(email);
+
+            refreshToken = jwtService.createRefreshToken();
+
+            if (userOp.isEmpty()) {
+                User user = userRepository.save(kakaoUserInfo.toEntity(socialType, refreshToken));
+                res.setHeader("UserId", String.valueOf(user.getId()));
+            }
+
+            else {
+                res.setHeader("UserId", String.valueOf(userOp.get().getId()));
+            }
+        }
+
+        // 네이버 로그인인 경우
+        else {
+            LoginDto.NaverUserInfo naverUserInfo = (LoginDto.NaverUserInfo) userInfo;
+            email = naverUserInfo.getResponse().getEmail();
+            Optional<User> userOp = userRepository.findByEmail(email);
+
+            refreshToken = jwtService.createRefreshToken();
+
+            if (userOp.isEmpty()) {
+                User user = userRepository.save(naverUserInfo.toEntity(socialType, refreshToken));
+                res.setHeader("UserId", String.valueOf(user.getId()));
+            }
+
+            else {
+                res.setHeader("UserId", String.valueOf(userOp.get().getId()));
+            }
+        }
 
         String accessToken = jwtService.createAccessToken(email);
-        String refreshToken = jwtService.createRefreshToken();
-
-        // 이전 로그인 기록이 없는 경우 유저 정보를 저장
-        if (userOp.isEmpty()) {
-            User user = userRepository.save(userInfo.toEntity(socialType, refreshToken));
-            res.setHeader("UserId", String.valueOf(user.getId()));
-        }
-        else {
-            res.setHeader("UserId", String.valueOf(userOp.get().getId()));
-        }
-
         jwtService.sendAccessAndRefreshToken(res, accessToken, refreshToken);
-        userInfo.getResponse().setAccessToken(accessToken);
-        userInfo.getResponse().setRefreshToken(refreshToken);
 
         return userInfo;
     }
 
     private SocialType getSocialType(String registrationId) {
         if (NAVER.equals(registrationId)) return SocialType.NAVER;
-        if (KAKAO.equals(registrationId)) return SocialType.KAKAO;
-        return SocialType.GOOGLE;
-    }
-
-    private LoginDto.UserInfoRes getUserInfo(SocialType socialType, LoginDto.TokenRes tokenResponse) {
-        if (socialType.equals(SocialType.NAVER)) return getNaverUserInfo(tokenResponse);
-        else if (socialType.equals(SocialType.KAKAO)) return getKakaoUserInfo(tokenResponse);
+        else if (KAKAO.equals(registrationId)) return SocialType.KAKAO;
         return null;
     }
 
-    private LoginDto.UserInfoRes getNaverUserInfo(LoginDto.TokenRes tokenResponse) {
+    private LoginDto.UserInfo getUserInfo(SocialType socialType, LoginDto.TokenRes tokenResponse) {
+        if (socialType.equals(SocialType.NAVER)) return getNaverUserInfo((LoginDto.NaverTokenRes) tokenResponse);
+        else if (socialType.equals(SocialType.KAKAO)) return getKakaoUserInfo((LoginDto.KakaoTokenRes) tokenResponse);
+        return null;
+    }
+
+    private LoginDto.UserInfo getNaverUserInfo(LoginDto.NaverTokenRes tokenResponse) {
         return WebClient.create()
                 .get()
                 .uri(NAVER_USER_INFO_URI)
                 .header("Authorization", "Bearer " + tokenResponse.getAccess_token())
                 .retrieve()
-                .bodyToMono(LoginDto.UserInfoRes.class)
+                .bodyToMono(LoginDto.NaverUserInfo.class)
                 .block();
     }
 
-    private LoginDto.UserInfoRes getKakaoUserInfo(LoginDto.TokenRes tokenResponse) {
-        return null;
+    private LoginDto.UserInfo getKakaoUserInfo(LoginDto.KakaoTokenRes tokenResponse) {
+        return WebClient.create()
+                .post()
+                .uri(KAKAO_USER_INFO_URI)
+                .headers(h -> {
+                    h.add("Authorization", "Bearer " + tokenResponse.getAccess_token());
+                    h.add("Content-type", DEFAULT_CONTENT_TYPE);
+                })
+                .retrieve()
+                .bodyToMono(LoginDto.KakaoUserInfo.class)
+                .block();
     }
 
     private LoginDto.TokenRes getToken(SocialType socialType, String code, String state) {
@@ -106,33 +145,42 @@ public class CustomOAuth2UserService {
         return null;
     }
 
-    private LoginDto.TokenRes getTokenFromNaver(SocialType socialType, String code, String state) {
+    private LoginDto.NaverTokenRes getTokenFromNaver(SocialType socialType, String code, String state) {
         return WebClient.create()
                 .post()
-                .uri(NAVER_TOKEN_URL)
+                .uri(NAVER_TOKEN_URI)
                 .bodyValue(tokenRequest(socialType, code, state))
                 .retrieve()
-                .bodyToMono(LoginDto.TokenRes.class)
+                .bodyToMono(LoginDto.NaverTokenRes.class)
                 .block();
     }
 
-    private LoginDto.TokenRes getTokenFromKakao(SocialType socialType, String code, String state) {
-        return null;
+    private LoginDto.KakaoTokenRes getTokenFromKakao(SocialType socialType, String code, String state) {
+        return WebClient.create()
+                .post()
+                .uri(KAKAO_TOKEN_URI)
+                .header("Content-type", DEFAULT_CONTENT_TYPE)
+                .bodyValue(tokenRequest(socialType, code, state))
+                .retrieve()
+                .bodyToMono(LoginDto.KakaoTokenRes.class)
+                .block();
     }
 
     private MultiValueMap<String, String> tokenRequest(SocialType socialType, String code, String state) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", DEFAULT_GRANT_TYPE);
 
         if (socialType.equals(SocialType.NAVER)) {
             formData.add("client_id", NAVER_CLIENT_ID);
             formData.add("client_secret", NAVER_CLIENT_SECRET);
-            formData.add("grant_type", DEFAULT_GRANT_TYPE);
             formData.add("code", code);
             formData.add("state", state);
         }
 
         else if (socialType.equals(SocialType.KAKAO)) {
-
+            formData.add("client_id", KAKAO_CLIENT_ID);
+            formData.add("redirect_uri", KAKAO_REDIRECT_URI);
+            formData.add("code", code);
         }
 
         return formData;
