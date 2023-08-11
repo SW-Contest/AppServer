@@ -14,7 +14,6 @@ public class LoginDto {
         private Integer expires_in;
     }
 
-
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -30,7 +29,9 @@ public class LoginDto {
         private Integer refresh_token_expires_in;
     }
 
-    public interface UserInfo { }
+    public interface UserInfo {
+        User toEntity(SocialType socialType, String refreshToken);
+    }
 
     @Getter @Setter @ToString @Builder
     @AllArgsConstructor
@@ -39,6 +40,7 @@ public class LoginDto {
         private Long id;
         private KakaoAccount kakaoAccount;
 
+        @Override
         public User toEntity(SocialType socialType, String refreshToken) {
             return User.builder()
                     .email(kakaoAccount.getEmail())
@@ -77,6 +79,7 @@ public class LoginDto {
         private String message;
         private Response response;
 
+        @Override
         public User toEntity(SocialType socialType, String refreshToken) {
             return User.builder()
                     .email(response.getEmail())
