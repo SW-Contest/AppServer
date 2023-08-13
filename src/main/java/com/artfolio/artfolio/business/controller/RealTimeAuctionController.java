@@ -12,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
-/** 실시간 경매 정보 처리를 위한 컨트롤러 (redis 연동) */
 @RequestMapping("/rt_auction")
 @RequiredArgsConstructor
 @RestController
@@ -59,6 +57,12 @@ public class RealTimeAuctionController {
     ) {
         Long res = auctionService.deleteAuction(auctionKey, artistId);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<AuctionDto.MyAuctions> getMyAuctions(@PathVariable("userId") Long userId) {
+        AuctionDto.MyAuctions myAuctions = auctionService.getMyAuctions(userId);
+        return ResponseEntity.ok(myAuctions);
     }
 
     /* 경매 종료 메서드 */

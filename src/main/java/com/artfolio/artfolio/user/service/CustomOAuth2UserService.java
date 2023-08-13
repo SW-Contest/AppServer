@@ -1,77 +1,64 @@
 package com.artfolio.artfolio.user.service;
 
-import com.artfolio.artfolio.user.dto.CustomOAuth2User;
-import com.artfolio.artfolio.user.entity.User;
+import com.artfolio.artfolio.user.dto.LoginDto;
 import com.artfolio.artfolio.user.dto.SocialType;
-import com.artfolio.artfolio.user.dto.OAuthAttributes;
+import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
+import com.artfolio.artfolio.user.util.KakaoLogin;
+import com.artfolio.artfolio.user.util.NaverLogin;
+import com.artfolio.artfolio.user.util.SocialLogin;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.Optional;
+
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService {
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    private static final String NAVER = "naver";
-    private static final String KAKAO = "kakao";
-
-    /* [DefaultOAuth2User 객체]
-    * 소셜 로그인 API의 사용자 정보 제공 URI로 요청을 보내 사용자 정보를 얻은 후
-    * 이를 통해 DefaultOAuth2User 객체 생성 후 반환
-    * */
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public void login(HttpServletResponse res, String provider, String code, String state) {
         log.info("CustomOAuth2UserService.loadUser() 실행");
 
-        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+        SocialType socialType = getSocialType(provider);
+        SocialLogin socialLogin = getLoginObject(socialType, code, state);
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        SocialType socialType = getSocialType(registrationId);
-        String userNameAttributeName = userRequest.getClientRegistration()
-                .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+        if (socialLogin == null) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
-        // socialType에 따라 유저 정보를 통해 OAuthAttributes 객체 생성
-        OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
+        LoginDto.UserInfo userInfo = socialLogin.login();
 
-        User createdUser = getUser(extractAttributes, socialType);
+        String email = socialLogin.getEmail();
+        String accessToken = jwtService.createAccessToken(email);
+        String refreshToken = jwtService.createRefreshToken();
 
-        return new CustomOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getKey())),
-                attributes,
-                extractAttributes.getNameAttributeKey(),
-                createdUser.getEmail(),
-                createdUser.getRole()
-        );
+        Optional<User> userOp = userRepository.findByEmail(email);
+
+        if (userOp.isEmpty()) {
+            User user = userRepository.save(userInfo.toEntity(socialType, refreshToken));
+            jwtService.sendAccessAndRefreshAndUserId(res, user.getId(), accessToken, refreshToken);
+        } else {
+            Long userId = userOp.get().getId();
+            jwtService.sendAccessAndRefreshAndUserId(res, userId, accessToken, refreshToken);
+        }
     }
 
-    private SocialType getSocialType(String registrationId) {
-        if (NAVER.equals(registrationId)) return SocialType.NAVER;
-        if (KAKAO.equals(registrationId)) return SocialType.KAKAO;
-        return SocialType.GOOGLE;
+    private SocialType getSocialType(String provider) {
+        if (provider.equals(SocialType.NAVER.getType())) return SocialType.NAVER;
+        else if (provider.equals(SocialType.KAKAO.getType())) return SocialType.KAKAO;
+        return null;
     }
 
-    private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOAuth2UserInfo().getId()).orElse(null);
-        if (findUser == null) return saveUser(attributes, socialType);
-        return findUser;
-    }
-
-    private User saveUser(OAuthAttributes attributes, SocialType socialType) {
-        User createdUser = attributes.toEntity(socialType, attributes.getOAuth2UserInfo());
-        return userRepository.save(createdUser);
+    private SocialLogin getLoginObject(SocialType socialType, String code, String state) {
+        if (SocialType.NAVER.equals(socialType)) return new NaverLogin(code, state);
+        else if (SocialType.KAKAO.equals(socialType)) return new KakaoLogin(code);
+        return null;
     }
 }

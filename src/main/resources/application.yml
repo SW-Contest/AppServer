@@ -45,9 +45,8 @@ spring:
             scope: profile, email
 
           naver:
-            client-id: K692PISIR76RNyBp8luR
-            client-secret: T3KdSI3DHm
-            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/naver
+            client-id: 7M3VC0kOvjSMITe2yKF5
+            client-secret: sGZSTKAW_o
             authorization-grant-type: authorization_code
             scope: name, email, profile_image
             client-name: Naver
@@ -56,7 +55,7 @@ spring:
             client-id: e665d02f2f15df465b84e5f07a980dea
             client-secret: vWOakBYa2NiCMRd7Q1MMvykjXxwJBNFU
             client-authentication-method: POST
-            redirect-uri: http://syu.artfolio.shop/login/oauth2/code/kakao
+            redirect-uri: http://localhost:3000/KakaoRedirect
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email
             client-name: Kakao
@@ -102,6 +101,12 @@ jwt:
 # GPT 설정
 chatgpt:
   api-key:
+
+naver:
+  voice:
+    client-id: op9vhnz42x
+    client-secret: HZ9WbPXxINLfkC43hnyY4BCkkGer56ei35BgKyZz
+    api-url: https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts
 
 ---
 

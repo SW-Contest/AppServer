@@ -16,4 +16,5 @@ public class AIInfo {
     @Id private Long artPieceId;
     private String content;
     private List<Label> labels;
+    private String voice;
 }

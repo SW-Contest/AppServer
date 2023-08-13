@@ -6,22 +6,30 @@ import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.business.dto.ImageDto;
 import com.artfolio.artfolio.business.service.ArtPieceService;
 import com.artfolio.artfolio.business.service.ImageService;
+import com.artfolio.artfolio.business.service.VoiceExtractService;
 import com.artfolio.artfolio.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
+
+@Slf4j
 @RequestMapping("/art_piece")
 @RequiredArgsConstructor
 @RestController
 public class ArtPieceController {
     private final ArtPieceService artPieceService;
     private final ImageService imageService;
+    private final VoiceExtractService voiceExtractService;
 
     @PostMapping
-    public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req) {
+    public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req, Authentication authentication) {
+        log.info("is authenticated? = " + authentication.isAuthenticated());
         return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 
@@ -73,8 +81,10 @@ public class ArtPieceController {
     }
 
     @PostMapping("/analyze/image")
-    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestParam("artPieceId") Long artPieceId) {
-        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(artPieceId);
+    public ResponseEntity<AuctionDto.AIInfo> analyzeImage(@RequestBody ArtPieceDto.AnalyzeReq req) throws Exception {
+        log.info("analyzeImage() 실행 dto = {}", req.toString());
+        AuctionDto.AIInfo aiInfo = imageService.analyzeImage(req);
+        log.info("분석 완료 : {}", aiInfo.toString());
         return ResponseEntity.ok(aiInfo);
     }
 
@@ -82,5 +92,13 @@ public class ArtPieceController {
     public ResponseEntity<AIInfo> getArtPieceAnalyzeInfo(@PathVariable("artPieceId") Long artPieceId) {
         AIInfo aiInfo = artPieceService.getArtPieceAnalyzeInfo(artPieceId);
         return ResponseEntity.ok(aiInfo);
+    }
+
+    @PostMapping("/voice/extract")
+    public void extractVoice(
+            @RequestParam("artPieceId") Long artPieceId,
+            @RequestParam("text") String text
+        ) {
+        voiceExtractService.extractVoice(artPieceId, text);
     }
 }

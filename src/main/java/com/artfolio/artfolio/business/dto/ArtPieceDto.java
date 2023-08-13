@@ -23,6 +23,15 @@ public class ArtPieceDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class AnalyzeReq {
+        private Long artPieceId;
+        private String question;
+    }
+
+    @Getter @Setter @ToString
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class DeletionReq {
         private Long artistId;
         private Long artPieceId;
@@ -132,16 +141,14 @@ public class ArtPieceDto {
     @AllArgsConstructor
     private static class ArtistInfo {
         private Long id;
-        private String username;
-        private String name;
+        private String nickname;
         private String email;
         private String photoPath;
 
         public static ArtistInfo of(User artist) {
             return ArtistInfo.builder()
                     .id(artist.getId())
-                    .username(artist.getUsername())
-                    .name(artist.getNickname())
+                    .nickname(artist.getNickname())
                     .email(artist.getEmail())
                     .photoPath(artist.getProfilePhoto())
                     .build();

@@ -22,11 +22,10 @@ public class ChatGptService {
     private String OPENAI_KEY;
     private final AIRedisRepository aiRedisRepository;
 
-    protected String createDesc(Long artPieceId, List<Label> labels) {
+    protected String createDesc(Long artPieceId, List<Label> labels, String question) {
         Optional<AIInfo> op = aiRedisRepository.findById(artPieceId);
 
         if (op.isEmpty()) {
-            String question = "아래 키워드로 예술품에 대한 설명글을 작성해줘.\n";
             ChatGptDto.Message message = new ChatGptDto.Message("user", question + labels.toString());
 
             ChatGptDto.Req req = ChatGptDto.Req.builder()

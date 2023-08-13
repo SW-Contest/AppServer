@@ -28,7 +28,6 @@ import java.util.Optional;
 @Service
 public class ArtPieceService {
     private final ArtPieceRepository artPieceRepository;
-    // private final ArtPiecePhotoRepository artPiecePhotoRepository;
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final UserArtPieceRepository userArtPieceRepository;

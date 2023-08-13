@@ -1,6 +1,5 @@
 package com.artfolio.artfolio.business.service;
 
-import com.amazonaws.services.rekognition.model.Label;
 import com.artfolio.artfolio.business.domain.*;
 import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
@@ -83,7 +82,7 @@ public class AuctionService {
             // 레디스에 캐싱된 정보가 있으면 꺼내오기
             if (aiInfoOp.isPresent()) {
                 AIInfo aiInfo = aiInfoOp.get();
-                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent());
+                AuctionDto.AIInfo of = AuctionDto.AIInfo.of(aiInfo.getLabels(), aiInfo.getContent(), aiInfo.getVoice());
                 log.info("Redis aiInfo 추출 : {}", aiInfo);
                 return AuctionDto.DetailInfoRes.of(auction, bidInfos, artPiecePhotos, artist, artPiece, of);
             }
@@ -210,5 +209,16 @@ public class AuctionService {
                 .toList();
 
         return UserDto.LikeUsersRes.of(users);
+    }
+
+    @Transactional(readOnly = true)
+    public AuctionDto.MyAuctions getMyAuctions(Long userId) {
+        List<Auction> auctions = auctionRepository.findAuctionListByArtistId(userId);
+
+        List<Optional<AIInfo>> aiInfos = auctions.stream()
+                .map(auction -> aiRedisRepository.findById(auction.getArtPiece().getId()))
+                .toList();
+
+        return AuctionDto.MyAuctions.of(auctions, aiInfos);
     }
 }

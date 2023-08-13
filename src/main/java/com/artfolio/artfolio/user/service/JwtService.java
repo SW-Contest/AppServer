@@ -65,14 +65,13 @@ public class JwtService {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    /* Access-Token 헤더에 담아 보내기 */
-    public void sendAccessToken(HttpServletResponse res, String accessToken) {
-        res.setStatus(HttpServletResponse.SC_OK);
-        setAccessTokenHeader(res, accessToken);
-        log.info("발급된 Access Token : {}", accessToken);
+    /* UserId, AccessToken, RefreshToken 헤더에 담아 보내기 */
+    public void sendAccessAndRefreshAndUserId(HttpServletResponse res, Long userId, String accessToken, String refreshToken) {
+        sendAccessAndRefreshToken(res, accessToken, refreshToken);
+        res.setHeader("UserId", String.valueOf(userId));
     }
 
-    /* Access-Token, RefreshToken 헤더에 담아 보내기 */
+    /* AccessToken, RefreshToken 헤더에 담아 보내기 */
     public void sendAccessAndRefreshToken(HttpServletResponse res, String accessToken, String refreshToken) {
         res.setStatus(HttpServletResponse.SC_OK);
         setAccessTokenHeader(res, accessToken);

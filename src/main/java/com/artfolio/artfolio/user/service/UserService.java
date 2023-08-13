@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,41 +27,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuctionRepository auctionRepository;
     private final BidRedisRepository bidRedisRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserArtPieceRepository userArtPieceRepository;
     private final UserAuctionRepository userAuctionRepository;
-
-    public Long signUp(UserDto.SignUpReq userSignUpDto) throws Exception {
-        if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
-            throw new Exception("이미 존재하는 이메일");
-        }
-
-        if (userRepository.findByNickname(userSignUpDto.getNickname()).isPresent()) {
-            throw new Exception("이미 존재하는 닉네임");
-        }
-
-        User user = User.builder()
-                .email(userSignUpDto.getEmail())
-                .password(userSignUpDto.getPassword())
-                .nickname(userSignUpDto.getNickname())
-                .profilePhoto(userSignUpDto.getProfilePhoto())
-                .role(Role.USER)
-                .socialType(SocialType.NAVER)
-                .socialId(userSignUpDto.getSocialId())
-                .content(userSignUpDto.getContent())
-                .build();
-
-        user.passwordEncode(passwordEncoder);
-        return userRepository.save(user).getId();
-    }
-
-    @Transactional(readOnly = true)
-    public UserDto.OAuth2LoginInfoRes getSocialUserInfo(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
-
-        return UserDto.OAuth2LoginInfoRes.of(user);
-    }
 
     @Transactional(readOnly = true)
     public UserDto.UserBidAuctionListRes getLiveAuctionList(Long userId) {
@@ -111,5 +77,21 @@ public class UserService {
                 .toList();
 
         return UserDto.UserLikeAuctionsRes.of(auctions);
+    }
+
+    public Long updateUserContent(Long userId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        user.updateContent(content);
+
+        return 1L;
+    }
+
+    public UserDto.UserInfo getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        return UserDto.UserInfo.of(user);
     }
 }

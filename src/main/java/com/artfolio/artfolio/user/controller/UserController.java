@@ -6,17 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    /* 추가 정보를 입력받을 경우 사용 */
-    @PostMapping("/sign-up")
-    public ResponseEntity<Long> signUp(@RequestBody UserDto.SignUpReq userSignUpDto) throws Exception {
-        return ResponseEntity.ok(userService.signUp(userSignUpDto));
-    }
 
     /* 유저가 참여하고 있는 진행중인 경매 목록 */
     @GetMapping("/auction/live/{userId}")
@@ -46,5 +42,19 @@ public class UserController {
     public ResponseEntity<UserDto.UserLikeAuctionsRes> getLikeAuctions(@PathVariable("userId") Long userId) {
         UserDto.UserLikeAuctionsRes likeAuctions = userService.getLikeAuctions(userId);
         return ResponseEntity.ok(likeAuctions);
+    }
+
+    @PatchMapping("/content")
+    public ResponseEntity<Long> updateUserContent(@RequestBody Map<String, Object> map) {
+        String content = String.valueOf(map.get("content"));
+        Long userId = Long.parseLong(String.valueOf(map.get("userId")));
+        Long result = userService.updateUserContent(userId, content);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto.UserInfo> getUserInfo(@PathVariable("userId") Long userId) {
+        UserDto.UserInfo userInfo = userService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfo);
     }
 }
