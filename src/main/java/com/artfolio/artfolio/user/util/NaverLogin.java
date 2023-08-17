@@ -28,6 +28,7 @@ public class NaverLogin implements SocialLogin {
     public NaverLogin(String code, String state) {
         this.code = code;
         this.state = state;
+        userInfo = null;
     }
 
     @Override

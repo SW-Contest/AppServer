@@ -28,6 +28,7 @@ public class KakaoLogin implements SocialLogin {
     public KakaoLogin(String code, String redirectUri) {
         this.code = code;
         this.redirectUri = redirectUri;
+        userInfo = null;
     }
 
     @Override
