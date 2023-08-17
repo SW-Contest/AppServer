@@ -38,16 +38,16 @@ public class LoginDto {
     @NoArgsConstructor
     public static class KakaoUserInfo implements UserInfo {
         private Long id;
-        private KakaoAccount kakaoAccount;
+        private KakaoAccount kakao_account;
 
         @Override
         public User toEntity(SocialType socialType, String refreshToken) {
             return User.builder()
-                    .email(kakaoAccount.getEmail())
-                    .profilePhoto(kakaoAccount.profile.profile_image_url)
+                    .email(kakao_account.getEmail())
+                    .profilePhoto(kakao_account.profile.profile_image_url)
                     .content("..")
                     .socialType(socialType)
-                    .nickname(kakaoAccount.profile.nickname)
+                    .nickname(kakao_account.profile.nickname)
                     .role(Role.USER)
                     .refreshToken(refreshToken)
                     .build();

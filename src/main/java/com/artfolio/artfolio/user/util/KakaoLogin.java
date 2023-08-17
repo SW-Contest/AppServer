@@ -34,7 +34,7 @@ public class KakaoLogin implements SocialLogin {
     @Override
     public String getEmail() {
         if (userInfo != null) {
-            return userInfo.getKakaoAccount().getEmail();
+            return userInfo.getKakao_account().getEmail();
         }
 
         return null;
