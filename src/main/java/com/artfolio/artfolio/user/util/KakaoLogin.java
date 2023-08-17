@@ -1,24 +1,14 @@
 package com.artfolio.artfolio.user.util;
 
 import com.artfolio.artfolio.user.dto.LoginDto;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import lombok.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class KakaoLogin implements SocialLogin {
-    @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}")
-    private String DEFAULT_GRANT_TYPE;
-
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String KAKAO_CLIENT_ID;
-
-    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
-    private String KAKAO_TOKEN_URI;
-
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
-    private String KAKAO_USER_INFO_URI;
-
+    private static final String DEFAULT_GRANT_TYPE = "authorization_code";
+    private static final String KAKAO_CLIENT_ID = "7f9e17f1074f3fee9f9de841ec5cfb02";
+    private static final String KAKAO_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
+    private static final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
     private static final String DEFAULT_CONTENT_TYPE = "application/x-www.form-urlencoded;charset=utf-8";
     private static LoginDto.KakaoUserInfo userInfo;
 
@@ -51,11 +41,22 @@ public class KakaoLogin implements SocialLogin {
     }
 
     private LoginDto.KakaoTokenRes getToken() {
+        String params = "grant_type=" + DEFAULT_GRANT_TYPE + "&" +
+                "client_id=" + KAKAO_CLIENT_ID + "&" +
+                "redirect_uri=" + redirectUri + "&" +
+                "code=" + code;
+
+        TokenRequest req = TokenRequest.builder()
+                .client_id(KAKAO_CLIENT_ID)
+                .redirect_uri(redirectUri)
+                .grant_type(DEFAULT_GRANT_TYPE)
+                .code(code)
+                .build();
+
         return WebClient.create()
                 .post()
-                .uri(KAKAO_TOKEN_URI)
+                .uri(KAKAO_TOKEN_URI + "?" + params)
                 .header("Content-type", DEFAULT_CONTENT_TYPE)
-                .bodyValue(tokenRequest())
                 .retrieve()
                 .bodyToMono(LoginDto.KakaoTokenRes.class)
                 .block();
@@ -74,14 +75,13 @@ public class KakaoLogin implements SocialLogin {
                 .block();
     }
 
-    private MultiValueMap<String, String> tokenRequest() {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-
-        formData.add("grant_type", DEFAULT_GRANT_TYPE);
-        formData.add("client_id", KAKAO_CLIENT_ID);
-        formData.add("redirect_uri", redirectUri);
-        formData.add("code", code);
-
-        return formData;
+    @Getter @Setter @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class TokenRequest {
+        private String client_id;
+        private String redirect_uri;
+        private String grant_type;
+        private String code;
     }
 }

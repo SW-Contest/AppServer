@@ -25,6 +25,8 @@ public class CustomOAuth2UserService {
     public void login(HttpServletResponse res, String provider, String code, String state, String redirectUri) {
         log.info("CustomOAuth2UserService.loadUser() 실행");
 
+        log.info("provider=" + provider + " code=" + code + " state=" + state + " redirectUri=" + redirectUri);
+
         SocialType socialType = getSocialType(provider);
         SocialLogin socialLogin = getLoginObject(socialType, code, state, redirectUri);
 
