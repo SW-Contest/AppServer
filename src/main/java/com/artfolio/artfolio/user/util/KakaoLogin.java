@@ -13,9 +13,6 @@ public class KakaoLogin implements SocialLogin {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String KAKAO_CLIENT_ID;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String KAKAO_REDIRECT_URI;
-
     @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
     private String KAKAO_TOKEN_URI;
 
@@ -25,10 +22,12 @@ public class KakaoLogin implements SocialLogin {
     private static final String DEFAULT_CONTENT_TYPE = "application/x-www.form-urlencoded;charset=utf-8";
     private static LoginDto.KakaoUserInfo userInfo;
 
+    private final String redirectUri;
     private final String code;
 
-    public KakaoLogin(String code) {
+    public KakaoLogin(String code, String redirectUri) {
         this.code = code;
+        this.redirectUri = redirectUri;
     }
 
     @Override
@@ -79,7 +78,7 @@ public class KakaoLogin implements SocialLogin {
 
         formData.add("grant_type", DEFAULT_GRANT_TYPE);
         formData.add("client_id", KAKAO_CLIENT_ID);
-        formData.add("redirect_uri", KAKAO_REDIRECT_URI);
+        formData.add("redirect_uri", redirectUri);
         formData.add("code", code);
 
         return formData;
