@@ -52,7 +52,7 @@ spring:
             client-name: Naver
 
           kakao:
-            client-id: 7f 9e17f1074f3fee9f9de841ec5cfb02
+            client-id: 7f9e17f1074f3fee9f9de841ec5cfb02
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image, account_email

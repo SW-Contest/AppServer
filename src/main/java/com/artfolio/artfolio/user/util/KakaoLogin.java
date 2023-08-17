@@ -16,7 +16,7 @@ public class KakaoLogin implements SocialLogin {
     @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
     private String KAKAO_TOKEN_URI;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info.uri}")
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String KAKAO_USER_INFO_URI;
 
     private static final String DEFAULT_CONTENT_TYPE = "application/x-www.form-urlencoded;charset=utf-8";
