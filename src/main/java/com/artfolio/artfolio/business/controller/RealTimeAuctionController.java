@@ -65,31 +65,11 @@ public class RealTimeAuctionController {
         return ResponseEntity.ok(myAuctions);
     }
 
-    /* 경매 종료 메서드 */
-    /*
-    @PostMapping("/finish")
-    public ResponseEntity<Long> finishAuction(
-            @RequestParam("auctionId") String auctionKey,
-            @RequestParam("isSold") Boolean isSold
-    ) {
-        Long result = auctionService.finishAuction(auctionKey, isSold);
-        return ResponseEntity.ok(result);
-    }
-     */
-
-    /* 경매 낙찰 메서드 */
-    /*
     @PostMapping("/bid")
-    public ResponseEntity<Long> finishAuctionWithBidder(
-            @RequestParam("auctionId") String auctionKey,
-            @RequestParam("bidderId") Long bidderId,
-            @RequestParam("finalPrice") Long finalPrice
-    ) {
-        Long result = auctionService.finishAuctionWithBidder(auctionKey, bidderId, finalPrice);
+    public ResponseEntity<Long> finishAuctionWithBidder(@RequestParam("auctionId") String auctionKey) {
+        Long result = auctionService.finishAuctionWithBidder(auctionKey);
         return ResponseEntity.ok(result);
     }
-
-    */
 
     /* 경매 좋아요 +-1 메서드 */
     @PatchMapping("/like")

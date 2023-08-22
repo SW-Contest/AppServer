@@ -29,7 +29,7 @@ public class ArtPieceController {
 
     @PostMapping
     public ResponseEntity<Long> createArtPiece(@RequestBody ArtPieceDto.CreationReq req, Authentication authentication) {
-        log.info("is authenticated? = " + authentication.isAuthenticated());
+        // log.info("is authenticated? = " + authentication.isAuthenticated());
         return new ResponseEntity<>(artPieceService.createArtPiece(req), HttpStatus.CREATED);
     }
 

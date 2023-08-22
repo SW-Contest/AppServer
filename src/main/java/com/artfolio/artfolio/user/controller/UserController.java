@@ -14,6 +14,12 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
+    @PostMapping("/test/sign-up")
+    public ResponseEntity<Long> testUserSignUp(@RequestBody UserDto.SignUpReq req) {
+        Long userId = userService.testUserSignUp(req);
+        return ResponseEntity.ok(userId);
+    }
+
     /* 유저가 참여하고 있는 진행중인 경매 목록 */
     @GetMapping("/auction/live/{userId}")
     public ResponseEntity<?> getLiveAuctionList(@PathVariable("userId") Long userId) {

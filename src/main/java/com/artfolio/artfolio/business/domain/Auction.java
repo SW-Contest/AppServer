@@ -43,16 +43,15 @@ public class Auction extends AuditingFields {
     @Column(nullable = false)
     private Boolean isFinish;
 
-    @Setter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bidder_id")
-    private User bidder;
+    @Column(nullable = false)
+    private Integer likes;
+
+    @OneToOne
+    private Bid bid;
 
     @OneToMany(mappedBy = "auction", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<UserAuction> userAuctions = new ArrayList<>();
 
-    @Column(nullable = false)
-    private Integer likes;
 
     @Builder
     public Auction(String title, String content, User artist, ArtPiece artPiece, Long startPrice, Long currentPrice) {
@@ -65,7 +64,6 @@ public class Auction extends AuditingFields {
         this.currentPrice = currentPrice;
         this.likes = 0;
         this.isFinish = false;
-        this.bidder = null;
     }
 
     @Override
@@ -81,9 +79,6 @@ public class Auction extends AuditingFields {
         return Objects.hash(auctionUuId);
     }
 
-    public void updateLastBidder(User bidder) {
-        this.bidder = bidder;
-    }
 
     public void updateCurrentPrice(Long price) {
         this.currentPrice = price;
@@ -102,6 +97,11 @@ public class Auction extends AuditingFields {
     public void decreaseLike(UserAuction ua) {
         this.likes--;
         ua.toggleIsLiked();
+    }
+
+    public void updateBidInfo(Bid bid) {
+        this.isFinish = true;
+        this.bid = bid;
     }
 }
 

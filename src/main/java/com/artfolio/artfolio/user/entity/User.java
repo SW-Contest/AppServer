@@ -38,8 +38,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-
-    @Column(length = 1500, nullable = false)
+    @Column(length = 1500)
     private String content;
 
     private String refreshToken;
