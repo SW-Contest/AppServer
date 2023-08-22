@@ -26,18 +26,18 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     List<Auction> findAllBySearch(String keyword);
 
     @Query("select a from Auction a " +
-            "join fetch a.bidder " +
+            "join fetch a.bid b " +
             "join fetch a.artist " +
             "join fetch a.artPiece " +
             "where a.isFinish = true " +
             "and " +
-            "a.bidder.id = :userId")
+            "b.id = :userId")
     List<Auction> findAllByBidder(Long userId);
 
     @Query("select a from Auction a " +
             "join fetch a.artPiece " +
             "join fetch a.artist " +
-            "join fetch a.bidder " +
+            "join fetch a.bid b " +
             "where a.isFinish = false " +
             "and " +
             "a.auctionUuId = :uuid")

@@ -14,9 +14,10 @@ public class OAuthController {
     public void login(
             @PathVariable("provider") String provider,
             @RequestParam("code") String code,
-            @RequestParam("state") String state,
+            @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "redirectUri", required = false) String redirectUri,
             HttpServletResponse res
     ) {
-        customOAuth2UserService.login(res, provider, code, state);
+        customOAuth2UserService.login(res, provider, code, state, redirectUri);
     }
 }

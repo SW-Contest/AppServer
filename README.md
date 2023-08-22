@@ -15,7 +15,7 @@
 <hr/>
 
 ## Architecture
-![](document/artfolio-server-architecture.png)
+![](document/artfolio-architecture.png)
 
 <hr/>
 

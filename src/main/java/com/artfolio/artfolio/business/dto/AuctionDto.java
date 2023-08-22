@@ -134,7 +134,7 @@ public class AuctionDto {
     public static class DetailInfoRes {
         private ArtistInfo artistInfo;
         private ArtPieceInfo artPieceInfo;
-        private AuctionInfo auctionInfo;
+        private AuctionInfo2 auctionInfo;
         private AIInfo aiInfo;
         private List<BidderInfo> bidderInfos;
 
@@ -152,7 +152,7 @@ public class AuctionDto {
                     .map(ArtPiecePhoto::getFilePath)
                     .toList();
 
-            AuctionInfo auctionInfo = AuctionInfo.of(auction, photoPaths);
+            AuctionInfo2 auctionInfo = AuctionInfo2.of(auction, photoPaths);
 
             ArtPieceInfo artPieceInfo = ArtPieceInfo.of(artPiece);
 
@@ -167,6 +167,37 @@ public class AuctionDto {
                     .auctionInfo(auctionInfo)
                     .bidderInfos(bidderInfos)
                     .aiInfo(aiInfo)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class AuctionInfo2 {
+        private String id;
+        private String title;
+        private String content;
+        private Long startPrice;
+        private Long currentPrice;
+        private Boolean isFinish;
+        private Integer like;
+        private LocalDateTime createdAt;
+        private LocalDateTime finishedAt;
+        private List<String> photoPaths;
+
+        public static AuctionInfo2 of(Auction auction, List<String> photoPaths) {
+            return AuctionInfo2.builder()
+                    .id(auction.getAuctionUuId())
+                    .title(auction.getTitle())
+                    .content(auction.getContent())
+                    .startPrice(auction.getStartPrice())
+                    .currentPrice(auction.getCurrentPrice())
+                    .isFinish(auction.getIsFinish())
+                    .like(auction.getLikes())
+                    .createdAt(auction.getCreatedAt())
+                    .finishedAt(auction.getCreatedAt().plusDays(DEFAULT_AUCTION_FINISH_DAYS))
+                    .photoPaths(photoPaths)
                     .build();
         }
     }

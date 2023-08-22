@@ -7,20 +7,15 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class NaverLogin implements SocialLogin {
-    @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}")
-    private String DEFAULT_GRANT_TYPE;
+    private static final String DEFAULT_GRANT_TYPE = "authorization_code";
 
-    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
-    private String NAVER_CLIENT_ID;
+    private static final String NAVER_CLIENT_ID = "7M3VC0kOvjSMITe2yKF5";
 
-    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
-    private String NAVER_CLIENT_SECRET;
+    private static final String NAVER_CLIENT_SECRET = "sGZSTKAW_o";
 
-    @Value("${spring.security.oauth2.client.provider.naver.token_uri}")
-    private String NAVER_TOKEN_URI;
+    private static final String NAVER_TOKEN_URI = "https://nid.naver.com/oauth2.0/token";
 
-    @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
-    private String NAVER_USER_INFO_URI;
+    private static final String NAVER_USER_INFO_URI = "https://openapi.naver.com/v1/nid/me";
 
     private final String code, state;
     private static LoginDto.NaverUserInfo userInfo;
@@ -28,6 +23,7 @@ public class NaverLogin implements SocialLogin {
     public NaverLogin(String code, String state) {
         this.code = code;
         this.state = state;
+        userInfo = null;
     }
 
     @Override

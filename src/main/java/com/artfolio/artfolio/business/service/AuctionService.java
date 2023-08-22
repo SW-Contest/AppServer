@@ -22,6 +22,7 @@ import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class AuctionService {
     private final UserRepository userRepository;
@@ -30,8 +31,8 @@ public class AuctionService {
     private final BidRedisRepository bidderRedisRepository;
     private final UserAuctionRepository userAuctionRepository;
     private final AIRedisRepository aiRedisRepository;
+    private final BidRepository bidRepository;
 
-    @Transactional
     public CreateAuction.Res createAuction(CreateAuction.Req req) {
         // 1. 아티스트 엔티티와 아트피스 엔티티를 찾아온다.
         Long artPieceId = req.getArtPieceId();
@@ -118,7 +119,6 @@ public class AuctionService {
         return AuctionDto.PreviewInfoRes.of(auctions);
     }
 
-    @Transactional
     public synchronized AuctionBidDto.Res updatePrice(Principal principal, AuctionBidDto.Req req) {
         String auctionKey = req.getAuctionId();
         Long price = req.getPrice();
@@ -140,7 +140,6 @@ public class AuctionService {
         AuctionBidInfo bidInfo = bidderRedisRepository.save(AuctionBidInfo.of(bidder, auctionKey, price));
 
         // 경매 정보 업데이트
-        auction.updateLastBidder(bidder);
         auction.updateCurrentPrice(price);
         auctionRepository.save(auction);
 
@@ -148,7 +147,6 @@ public class AuctionService {
         return AuctionBidDto.Res.of(bidInfo);
     }
 
-    @Transactional
     public Integer updateLike(String auctionKey, Long userId) {
         // 경매 정보 찾기
         Auction auction = auctionRepository.findAuctionWithFetchJoin(auctionKey)
@@ -174,7 +172,6 @@ public class AuctionService {
         return auctionRepository.saveAndFlush(auction).getLikes();
     }
 
-    @Transactional
     public Long deleteAuction(String auctionKey, Long artistId) {
         Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
@@ -196,6 +193,7 @@ public class AuctionService {
         return 0L;
     }
 
+    @Transactional(readOnly = true)
     public AuctionDto.SearchResultRes searchAuction(String keyword) {
         List<Auction> allBySearch = auctionRepository.findAllBySearch(keyword);
         return AuctionDto.SearchResultRes.of(allBySearch);
@@ -220,5 +218,42 @@ public class AuctionService {
                 .toList();
 
         return AuctionDto.MyAuctions.of(auctions, aiInfos);
+    }
+
+    public Long finishAuctionWithBidder(String auctionKey) {
+        Optional<AuctionBidInfo> bidOp = bidderRedisRepository.findByAuctionKey(auctionKey)
+                .stream()
+                .max(Comparator.comparingLong(AuctionBidInfo::getBidPrice));
+
+        if (bidOp.isEmpty()) return 0L;
+
+        AuctionBidInfo bidInfo = bidOp.get();
+        Long bidderId = bidInfo.getBidderId();
+
+        User bidder = userRepository.findById(bidderId)
+                .orElseThrow(() -> new UserNotFoundException(bidderId));
+
+        Auction auction = auctionRepository.findByAuctionUuId(auctionKey)
+                .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
+
+        Bid bid = Bid.builder()
+                .auction(auction)
+                .bidder(bidder)
+                .bidPrice(bidInfo.getBidPrice())
+                .bidDate(bidInfo.getBidDate())
+                .build();
+
+        bid = bidRepository.saveAndFlush(bid);
+
+        auction.updateBidInfo(bid);
+
+        List<String> ids = bidderRedisRepository.findByAuctionKey(auctionKey)
+                .stream()
+                .map(AuctionBidInfo::getId)
+                .toList();
+
+        bidderRedisRepository.deleteAllById(ids);
+
+        return 1L;
     }
 }

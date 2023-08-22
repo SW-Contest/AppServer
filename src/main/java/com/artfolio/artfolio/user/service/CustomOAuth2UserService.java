@@ -22,11 +22,13 @@ public class CustomOAuth2UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    public void login(HttpServletResponse res, String provider, String code, String state) {
+    public void login(HttpServletResponse res, String provider, String code, String state, String redirectUri) {
         log.info("CustomOAuth2UserService.loadUser() 실행");
 
+        log.info("provider=" + provider + " code=" + code + " state=" + state + " redirectUri=" + redirectUri);
+
         SocialType socialType = getSocialType(provider);
-        SocialLogin socialLogin = getLoginObject(socialType, code, state);
+        SocialLogin socialLogin = getLoginObject(socialType, code, state, redirectUri);
 
         if (socialLogin == null) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -56,9 +58,9 @@ public class CustomOAuth2UserService {
         return null;
     }
 
-    private SocialLogin getLoginObject(SocialType socialType, String code, String state) {
+    private SocialLogin getLoginObject(SocialType socialType, String code, String state, String redirectUri) {
         if (SocialType.NAVER.equals(socialType)) return new NaverLogin(code, state);
-        else if (SocialType.KAKAO.equals(socialType)) return new KakaoLogin(code);
+        else if (SocialType.KAKAO.equals(socialType)) return new KakaoLogin(code, redirectUri);
         return null;
     }
 }

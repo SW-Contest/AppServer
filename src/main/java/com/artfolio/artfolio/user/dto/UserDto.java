@@ -15,13 +15,22 @@ public class UserDto {
     @Getter @Setter
     public static class SignUpReq {
         private String email;
-        private String password;
         private String nickname;
         private String profilePhoto;
-        private Role role;
-        private SocialType socialType;
-        private String socialId;
         private String content;
+
+        public User toEntity() {
+            return User.builder()
+                    .email(email)
+                    .nickname(nickname)
+                    .profilePhoto(profilePhoto)
+                    .content(content)
+                    .role(Role.TEST)
+                    .socialType(SocialType.TEST)
+                    .refreshToken(null)
+                    .socialId(null)
+                    .build();
+        }
     }
 
     @Getter @Setter @ToString @Builder
@@ -90,17 +99,11 @@ public class UserDto {
     @AllArgsConstructor
     public static class UserLikeArtPiecesRes {
         private Integer size;
-        private List<ArtPieceDto.ArtPieceInfo> artPieceInfos;
+        private List<ArtPieceDto.ArtPieceInfoRes> artPieceInfos;
 
         public static UserLikeArtPiecesRes of(List<ArtPiece> artPieces) {
-            List<ArtPieceDto.ArtPieceInfo> list = artPieces.stream()
-                    .map(piece -> ArtPieceDto.ArtPieceInfo.of(
-                            piece,
-                            piece.getArtPiecePhotos()
-                                    .stream()
-                                    .map(ArtPiecePhoto::getFilePath)
-                                    .toList()
-                    ))
+            List<ArtPieceDto.ArtPieceInfoRes> list = artPieces.stream()
+                    .map(ArtPieceDto.ArtPieceInfoRes::of)
                     .toList();
 
             return UserLikeArtPiecesRes.builder()

@@ -7,13 +7,10 @@ import com.artfolio.artfolio.business.repository.BidRedisRepository;
 import com.artfolio.artfolio.business.repository.UserArtPieceRepository;
 import com.artfolio.artfolio.business.repository.UserAuctionRepository;
 import com.artfolio.artfolio.global.exception.UserNotFoundException;
-import com.artfolio.artfolio.user.dto.Role;
-import com.artfolio.artfolio.user.dto.SocialType;
 import com.artfolio.artfolio.user.dto.UserDto;
 import com.artfolio.artfolio.user.entity.User;
 import com.artfolio.artfolio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +26,11 @@ public class UserService {
     private final BidRedisRepository bidRedisRepository;
     private final UserArtPieceRepository userArtPieceRepository;
     private final UserAuctionRepository userAuctionRepository;
+
+    public Long testUserSignUp(UserDto.SignUpReq req) {
+        User user = req.toEntity();
+        return userRepository.save(user).getId();
+    }
 
     @Transactional(readOnly = true)
     public UserDto.UserBidAuctionListRes getLiveAuctionList(Long userId) {

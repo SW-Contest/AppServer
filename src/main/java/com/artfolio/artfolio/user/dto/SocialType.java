@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum SocialType {
-    NAVER("naver"), KAKAO("kakao"), GOOGLE("google");
+    TEST("test"), NAVER("naver"), KAKAO("kakao"), GOOGLE("google");
 
     private final String type;
 
