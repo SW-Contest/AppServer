@@ -34,11 +34,9 @@ public class SecurityConfig {
                 .and()
 
                 // 세션 사용X
-                .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // URL별 권한 관리 옵션
-        /*
-
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/login", "/login/**", "/sock/**", "/sock", "/oauth2/**")
                                 .permitAll()
@@ -47,7 +45,7 @@ public class SecurityConfig {
                 )
 
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
-*/
+
         return http.build();
     }
 
