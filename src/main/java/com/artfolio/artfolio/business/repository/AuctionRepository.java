@@ -37,7 +37,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     @Query("select a from Auction a " +
             "join fetch a.artPiece " +
             "join fetch a.artist " +
-            "join fetch a.bid b " +
             "where a.isFinish = false " +
             "and " +
             "a.auctionUuId = :uuid")
