@@ -63,7 +63,7 @@ public class AuctionService {
     @Transactional(readOnly = true)
     public AuctionDto.DetailInfoRes getAuction(String auctionKey) {
         // 경매 정보 찾아오기
-        Auction auction = auctionRepository.findAuctionWithFetchJoin(auctionKey)
+        Auction auction = auctionRepository.findAnyAuctionWithFetchJoin(auctionKey)
                 .orElseThrow(() -> new AuctionNotFoundException(auctionKey));
 
         // 작가 정보 찾아오기

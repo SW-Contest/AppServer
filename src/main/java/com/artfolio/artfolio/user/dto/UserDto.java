@@ -6,7 +6,11 @@ import com.artfolio.artfolio.business.dto.AuctionDto;
 import com.artfolio.artfolio.user.entity.User;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 public class UserDto {
@@ -29,6 +33,95 @@ public class UserDto {
                     .socialType(SocialType.TEST)
                     .refreshToken(null)
                     .socialId(null)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @ToString @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserAttendingAuctionListRes {
+        private AuctionDto.ArtistInfo userInfo;
+        private List<UserAttendingAuction> userAttendingAuctionList;
+
+        public static UserAttendingAuctionListRes of(User user, List<Auction> list, List<AuctionBidInfo> auctionBidInfos) {
+            List<UserAttendingAuction> userAttendingAuctions = new ArrayList<>();
+
+            for (int i = 0; i < auctionBidInfos.size(); i++) {
+                AuctionBidInfo bidInfo = auctionBidInfos.get(i);
+                Long bidPrice = bidInfo.getBidPrice();
+                LocalDateTime bidDate = bidInfo.getBidDate();
+                Auction auction = list.get(i);
+
+                UserAttendingAuction userAttendingAuction = UserAttendingAuction.of(auction, bidPrice, bidDate);
+
+                if (userAttendingAuctions.contains(userAttendingAuction)) {
+                    Optional<UserAttendingAuction> first = userAttendingAuctions
+                            .stream()
+                            .filter(ua -> Objects.equals(ua.getAuctionUuId(), userAttendingAuction.auctionUuId))
+                            .findFirst();
+
+                    if (first.isPresent()) {
+                        UserAttendingAuction prev = first.get();
+
+                        if (prev.getBidPrice() > userAttendingAuction.getBidPrice()) continue;
+                        else {
+                            userAttendingAuctions.remove(prev);
+                            userAttendingAuctions.add(userAttendingAuction);
+                        }
+                    }
+                }
+
+                else {
+                    userAttendingAuctions.add(userAttendingAuction);
+                }
+            }
+
+            return UserAttendingAuctionListRes.builder()
+                    .userInfo(AuctionDto.ArtistInfo.of(user))
+                    .userAttendingAuctionList(userAttendingAuctions)
+                    .build();
+        }
+    }
+
+    @Getter @Setter @Builder @ToString
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class UserAttendingAuction {
+        private String auctionUuId;
+        private Long bidPrice;
+        private LocalDateTime bidDate;
+        private AuctionDto.ArtistInfo artistInfo;
+        private AuctionDto.AuctionInfo auctionInfo;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            UserAttendingAuction that = (UserAttendingAuction) o;
+            return Objects.equals(auctionUuId, that.auctionUuId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(auctionUuId);
+        }
+
+        public static UserAttendingAuction of(Auction auction, Long bidPrice, LocalDateTime bidDate) {
+            List<String> paths = auction.getArtPiece()
+                    .getArtPiecePhotos()
+                    .stream()
+                    .map(ArtPiecePhoto::getFilePath)
+                    .toList();
+
+            User artist = auction.getArtist();
+
+            return UserAttendingAuction.builder()
+                    .auctionUuId(auction.getAuctionUuId())
+                    .bidPrice(bidPrice)
+                    .bidDate(bidDate)
+                    .artistInfo(AuctionDto.ArtistInfo.of(artist))
+                    .auctionInfo(AuctionDto.AuctionInfo.of(auction, paths))
                     .build();
         }
     }

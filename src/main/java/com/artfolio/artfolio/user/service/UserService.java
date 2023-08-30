@@ -33,17 +33,31 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto.UserBidAuctionListRes getLiveAuctionList(Long userId) {
+    public UserDto.UserAttendingAuctionListRes getLiveAuctionList(Long userId) {
         // 1. userId로 입찰 목록 검색
         // 2. 가져온 입찰 목록으로 경매 검색
+        /*
         List<Auction> auctions = bidRedisRepository.findByBidderId(userId)
                 .stream()
                 .map(info -> auctionRepository.findByAuctionUuIdWithFetch(info.getAuctionKey()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
+         */
 
-        return UserDto.UserBidAuctionListRes.of(auctions);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        List<AuctionBidInfo> auctionBidInfos = bidRedisRepository.findByBidderId(userId);
+
+        List<Auction> list = auctionBidInfos
+                .stream()
+                .map(bidInfo -> auctionRepository.findByAuctionUuIdWithFetch(bidInfo.getAuctionKey()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+        return UserDto.UserAttendingAuctionListRes.of(user, list, auctionBidInfos);
     }
 
     @Transactional(readOnly = true)

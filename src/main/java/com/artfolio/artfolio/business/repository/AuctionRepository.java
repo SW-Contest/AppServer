@@ -20,6 +20,12 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     @Query("select a from Auction a " +
             "join fetch a.artist " +
             "join fetch a.artPiece " +
+            "where a.auctionUuId = :uuid")
+    Optional<Auction> findAnyAuctionWithFetchJoin(String uuid);
+
+    @Query("select a from Auction a " +
+            "join fetch a.artist " +
+            "join fetch a.artPiece " +
             "where a.isFinish = false " +
             "and " +
             "(a.title like %:keyword% or a.artist.nickname like %:keyword% or a.artPiece.title like %:keyword%)")
@@ -37,7 +43,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     @Query("select a from Auction a " +
             "join fetch a.artPiece " +
             "join fetch a.artist " +
-            "join fetch a.bid b " +
             "where a.isFinish = false " +
             "and " +
             "a.auctionUuId = :uuid")

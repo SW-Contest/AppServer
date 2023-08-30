@@ -37,7 +37,6 @@ public class SecurityConfig {
                 .sessionManagement(ses -> ses.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // URL별 권한 관리 옵션
-
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/login", "/login/**", "/sock/**", "/sock", "/oauth2/**")
                                 .permitAll()
