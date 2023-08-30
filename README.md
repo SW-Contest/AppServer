@@ -9,13 +9,12 @@
 - H2(Dev), PostgreSQL(Prod), Redis
 - OpenAI API, Clova API, Java-JWT, OAuth2, STOMP
 - AWS EC2, S3, Route 53, Rekognition
-- Docker, Docker-Compose, GitHub Actions
-- Nginx, Hashicorp Vault, Certbot
+- Docker, Docker-Compose, Nginx
 
 <hr/>
 
 ## Architecture
-![](document/artfolio-architecture.png)
+![](document/artfolio-server-architecture.png)
 
 <hr/>
 
