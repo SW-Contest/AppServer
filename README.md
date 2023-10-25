@@ -1,8 +1,9 @@
+![](document/artfolio_main.png)
+
 ## Contributors
 - 이지영
 - 황승수
 
-<hr/>
 
 ## Tech Stack
 - Spring Boot, Spring Data JPA, Spring Security
@@ -13,10 +14,10 @@
 
 <hr/>
 
-## Architecture
-![](document/artfolio-server-architecture.png)
+## Server Architecture
+![](document/artfolio_architecture.png)
 
 <hr/>
 
-## ERD
+## Entity Relationship Diagram
 ![](document/artfolio_erd.png)
