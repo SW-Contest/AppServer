@@ -17,9 +17,15 @@
 - Docker, Docker-Compose, Nginx
 
 ---
-## 서버 구조
+## Architecture
 ![](document/artfolio_architecture.png)
 
 ---
+
 ## Entity Relationship Diagram
 ![](document/artfolio_erd.png)
+
+---
+
+## Usecase Diagram
+![](document/artfolio_usecase.png)
